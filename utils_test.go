@@ -42,7 +42,7 @@ func testParallelN(n, procs int) bool {
 		}
 	})
 	runtime.GOMAXPROCS(before)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		if !data[i] {
 			return false
 		}
@@ -69,7 +69,7 @@ func testParallelMaxProcsN(n, procs int) bool {
 		}
 	})
 	SetMaxProcs(0)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		if !data[i] {
 			return false
 		}
@@ -157,7 +157,7 @@ func compareBytes(a, b []uint8, delta int) bool {
 	if len(a) != len(b) {
 		return false
 	}
-	for i := 0; i < len(a); i++ {
+	for i := range len(a) {
 		if absint(int(a[i])-int(b[i])) > delta {
 			return false
 		}
