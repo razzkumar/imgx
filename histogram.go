@@ -38,14 +38,14 @@ func Histogram(img image.Image) [256]float64 {
 			}
 		}
 		mu.Lock()
-		for i := 0; i < 256; i++ {
+		for i := range 256 {
 			histogram[i] += tmpHistogram[i]
 		}
 		total += tmpTotal
 		mu.Unlock()
 	})
 
-	for i := 0; i < 256; i++ {
+	for i := range 256 {
 		histogram[i] = histogram[i] / total
 	}
 	return histogram
