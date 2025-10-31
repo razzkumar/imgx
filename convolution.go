@@ -75,19 +75,8 @@ func convolve(img image.Image, kernel []float64, options *ConvolveOptions) *imag
 			for x := 0; x < w; x++ {
 				var r, g, b float64
 				for _, c := range coefs {
-					ix := x + c.x
-					if ix < 0 {
-						ix = 0
-					} else if ix >= w {
-						ix = w - 1
-					}
-
-					iy := y + c.y
-					if iy < 0 {
-						iy = 0
-					} else if iy >= h {
-						iy = h - 1
-					}
+					ix := max(0, min(x+c.x, w-1))
+					iy := max(0, min(y+c.y, h-1))
 
 					off := iy*src.Stride + ix*4
 					s := src.Pix[off : off+3 : off+3]
