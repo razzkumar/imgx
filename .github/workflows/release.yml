@@ -8,7 +8,6 @@ on:
 permissions:
   contents: write
   packages: write
-  id-token: write
 
 jobs:
   goreleaser:
@@ -24,10 +23,6 @@ jobs:
 
       - name: setup required binaries
         run: |
-          curl -O -L "https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64"
-          sudo mv cosign-linux-amd64 /usr/local/bin/cosign
-          sudo chmod +x /usr/local/bin/cosign
-
           curl -sSfL https://get.anchore.io/syft | sudo sh -s -- -b /usr/local/bin
 
       - name: Run GoReleaser
@@ -38,6 +33,3 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          COSIGN_YES: "true"
-          COSIGN_EXPERIMENTAL: "1"
-          COSIGN_OIDC_PROVIDER: "github"
