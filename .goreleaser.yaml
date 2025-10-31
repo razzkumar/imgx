@@ -98,6 +98,12 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end -}}
+    files:
+      - manpages/imgx.1.gz
+      - completions/imgx.bash
+      - completions/_imgx
+      - completions/imgx.fish
+
 homebrew_casks:
   - repository:
       owner: razzkumar
@@ -105,6 +111,12 @@ homebrew_casks:
     homepage: https://github.com/razzkumar/imgx
     description: A powerful command-line image processing tool
     license: MIT
+    manpages:
+      - "manpages/imgx.1.gz"
+    completions:
+      bash: "completions/imgx.bash"
+      zsh: "completions/_imgx"
+      fish: "completions/imgx.fish"
     url:
       verified: github.com/razzkumar/imgx/releases/download
 

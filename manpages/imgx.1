@@ -1,0 +1,117 @@
+.TH IMGX 1 "2025" "imgx 0.1.0" "User Commands"
+.SH NAME
+imgx \- A powerful command-line image processing tool
+.SH SYNOPSIS
+.B imgx
+[\fIOPTIONS\fR]
+.IR COMMAND
+[\fIARGS\fR]
+.SH DESCRIPTION
+.B imgx
+is a CLI tool for common image processing operations including resizing, transformations, color adjustments, effects, and watermarking.
+.SH GLOBAL OPTIONS
+.TP
+.BR \-o ", " \-\-output " " \fIPATH\fR
+Output file path (auto-generated if not specified)
+.TP
+.BR \-q ", " \-\-quality " " \fINUM\fR
+JPEG quality 1-100 (default: 95)
+.TP
+.BR \-\-auto\-orient
+Auto-orient based on EXIF data
+.TP
+.BR \-\-format " " \fIFORMAT\fR
+Force output format (jpg, png, gif, tiff, bmp)
+.TP
+.BR \-v ", " \-\-verbose
+Verbose output
+.SH COMMANDS
+.SS Resize Operations
+.TP
+.B resize
+Resize image to specific dimensions
+.TP
+.B fit
+Resize image to fit within dimensions
+.TP
+.B fill
+Resize and crop image to fill dimensions
+.TP
+.B thumbnail
+Create a square thumbnail
+.SS Transform Operations
+.TP
+.B rotate
+Rotate image by arbitrary angle
+.TP
+.B rotate90, rotate180, rotate270
+Rotate image by 90, 180, or 270 degrees
+.TP
+.B flip
+Flip image horizontally or vertically
+.TP
+.B crop
+Crop image to specified dimensions
+.TP
+.B transpose
+Transpose image (flip diagonally)
+.TP
+.B transverse
+Transverse image (flip anti-diagonally)
+.SS Color Adjustments
+.TP
+.B adjust
+Apply multiple color adjustments
+.TP
+.B grayscale
+Convert image to grayscale
+.TP
+.B invert
+Invert image colors
+.SS Effects
+.TP
+.B blur
+Apply Gaussian blur
+.TP
+.B sharpen
+Sharpen image
+.SS Other Commands
+.TP
+.B watermark
+Add text watermark to image
+.TP
+.B info
+Display image information
+.SH EXAMPLES
+.TP
+Resize an image to 800x600:
+.B imgx resize photo.jpg -w 800 -h 600 -o resized.jpg
+.TP
+Create a thumbnail:
+.B imgx thumbnail photo.jpg -s 150 -o thumb.jpg
+.TP
+Apply multiple adjustments:
+.B imgx adjust photo.jpg --brightness 10 --contrast 15 --saturation 5
+.TP
+Add watermark:
+.B imgx watermark photo.jpg -t "Copyright 2025" -a bottomright
+.TP
+Display image info:
+.B imgx info photo.jpg
+.SH SHELL COMPLETION
+Generate shell completion with:
+.TP
+Bash:
+.B imgx --generate-shell-completion
+.TP
+For setup instructions, see the documentation.
+.SH SEE ALSO
+Full documentation available at:
+.UR https://github.com/razzkumar/imgx
+.UE
+.SH AUTHOR
+Written by Razz Kumar.
+.SH COPYRIGHT
+This project is based on the imaging library by Grigory Dryapak.
+.SH LICENSE
+See the LICENSE file for details.
