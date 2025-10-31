@@ -133,7 +133,7 @@ func AdjustContrast(img image.Image, percentage float64) *image.NRGBA {
 	lut := make([]uint8, 256)
 
 	v := (100.0 + percentage) / 100.0
-	for i := 0; i < 256; i++ {
+	for i := range 256 {
 		switch {
 		case 0 <= v && v <= 1:
 			lut[i] = clamp((0.5 + (float64(i)/255.0-0.5)*v) * 255.0)
@@ -165,7 +165,7 @@ func AdjustBrightness(img image.Image, percentage float64) *image.NRGBA {
 	lut := make([]uint8, 256)
 
 	shift := 255.0 * percentage / 100.0
-	for i := 0; i < 256; i++ {
+	for i := range 256 {
 		lut[i] = clamp(float64(i) + shift)
 	}
 
@@ -188,7 +188,7 @@ func AdjustGamma(img image.Image, gamma float64) *image.NRGBA {
 	e := 1.0 / math.Max(gamma, 0.0001)
 	lut := make([]uint8, 256)
 
-	for i := 0; i < 256; i++ {
+	for i := range 256 {
 		lut[i] = clamp(math.Pow(float64(i)/255.0, e) * 255.0)
 	}
 
@@ -219,14 +219,14 @@ func AdjustSigmoid(img image.Image, midpoint, factor float64) *image.NRGBA {
 	e := 1.0e-6
 
 	if factor > 0 {
-		for i := 0; i < 256; i++ {
+		for i := range 256 {
 			x := float64(i) / 255.0
 			sigX := sigmoid(a, b, x)
 			f := (sigX - sig0) / (sig1 - sig0)
 			lut[i] = clamp(f * 255.0)
 		}
 	} else {
-		for i := 0; i < 256; i++ {
+		for i := range 256 {
 			x := float64(i) / 255.0
 			arg := math.Min(math.Max((sig1-sig0)*x+sig0, e), 1.0-e)
 			f := a - math.Log(1.0/arg-1.0)/b
