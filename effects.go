@@ -45,16 +45,10 @@ func blurHorizontal(img image.Image, kernel []float64) *image.NRGBA {
 				scanLineF[i] = float64(v)
 			}
 			for x := 0; x < src.w; x++ {
-				min := x - radius
-				if min < 0 {
-					min = 0
-				}
-				max := x + radius
-				if max > src.w-1 {
-					max = src.w - 1
-				}
+				minX := max(0, x-radius)
+				maxX := min(src.w-1, x+radius)
 				var r, g, b, a, wsum float64
-				for ix := min; ix <= max; ix++ {
+				for ix := minX; ix <= maxX; ix++ {
 					i := ix * 4
 					weight := kernel[absint(x-ix)]
 					wsum += weight
@@ -95,16 +89,10 @@ func blurVertical(img image.Image, kernel []float64) *image.NRGBA {
 				scanLineF[i] = float64(v)
 			}
 			for y := 0; y < src.h; y++ {
-				min := y - radius
-				if min < 0 {
-					min = 0
-				}
-				max := y + radius
-				if max > src.h-1 {
-					max = src.h - 1
-				}
+				minY := max(0, y-radius)
+				maxY := min(src.h-1, y+radius)
 				var r, g, b, a, wsum float64
-				for iy := min; iy <= max; iy++ {
+				for iy := minY; iy <= maxY; iy++ {
 					i := iy * 4
 					weight := kernel[absint(y-iy)]
 					wsum += weight
@@ -154,11 +142,7 @@ func Sharpen(img image.Image, sigma float64) *image.NRGBA {
 			j := y * dst.Stride
 			for i := 0; i < src.w*4; i++ {
 				val := int(scanLine[i])<<1 - int(blurred.Pix[j])
-				if val < 0 {
-					val = 0
-				} else if val > 0xff {
-					val = 0xff
-				}
+				val = max(0, min(val, 0xff))
 				dst.Pix[j] = uint8(val)
 				j++
 			}

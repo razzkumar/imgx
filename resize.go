@@ -26,14 +26,8 @@ func computeSourceBounds(dstPos, srcSize int, du, ru float64) (begin, end int) {
 	fu := (float64(dstPos)+0.5)*du - 0.5
 
 	// Calculate range of contributing source pixels.
-	begin = int(math.Ceil(fu - ru))
-	if begin < 0 {
-		begin = 0
-	}
-	end = int(math.Floor(fu + ru))
-	if end > srcSize-1 {
-		end = srcSize - 1
-	}
+	begin = max(0, int(math.Ceil(fu-ru)))
+	end = min(srcSize-1, int(math.Floor(fu+ru)))
 	return begin, end
 }
 
