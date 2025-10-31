@@ -295,127 +295,177 @@ const (
 	orientationRotate90    = 8
 )
 
-// readOrientation tries to read the orientation EXIF flag from image data in r.
-// If the EXIF data block is not found or the orientation flag is not found
-// or any other error occures while reading the data, it returns the
-// orientationUnspecified (0) value.
-func readOrientation(r io.Reader) orientation {
-	const (
-		markerSOI      = 0xffd8
-		markerAPP1     = 0xffe1
-		exifHeader     = 0x45786966
-		byteOrderBE    = 0x4d4d
-		byteOrderLE    = 0x4949
-		orientationTag = 0x0112
-	)
+// JPEG and EXIF format constants
+const (
+	markerSOI      = 0xffd8
+	markerAPP1     = 0xffe1
+	exifHeader     = 0x45786966
+	byteOrderBE    = 0x4d4d
+	byteOrderLE    = 0x4949
+	orientationTag = 0x0112
+)
 
-	// Check if JPEG SOI marker is present.
+// checkJPEGSOI checks if the JPEG Start Of Image marker is present.
+func checkJPEGSOI(r io.Reader) bool {
 	var soi uint16
 	if err := binary.Read(r, binary.BigEndian, &soi); err != nil {
-		return orientationUnspecified
+		return false
 	}
-	if soi != markerSOI {
-		return orientationUnspecified // Missing JPEG SOI marker.
-	}
+	return soi == markerSOI
+}
 
-	// Find JPEG APP1 marker.
+// findAPP1Marker searches for the JPEG APP1 marker that contains EXIF data.
+func findAPP1Marker(r io.Reader) bool {
 	for {
 		var marker, size uint16
 		if err := binary.Read(r, binary.BigEndian, &marker); err != nil {
-			return orientationUnspecified
+			return false
 		}
 		if err := binary.Read(r, binary.BigEndian, &size); err != nil {
-			return orientationUnspecified
+			return false
 		}
 		if marker>>8 != 0xff {
-			return orientationUnspecified // Invalid JPEG marker.
+			return false // Invalid JPEG marker.
 		}
 		if marker == markerAPP1 {
-			break
+			return true
 		}
 		if size < 2 {
-			return orientationUnspecified // Invalid block size.
+			return false // Invalid block size.
 		}
 		if _, err := io.CopyN(io.Discard, r, int64(size-2)); err != nil {
-			return orientationUnspecified
+			return false
 		}
 	}
+}
 
-	// Check if EXIF header is present.
+// validateEXIFHeader checks if the EXIF header is present and valid.
+func validateEXIFHeader(r io.Reader) bool {
 	var header uint32
 	if err := binary.Read(r, binary.BigEndian, &header); err != nil {
-		return orientationUnspecified
+		return false
 	}
 	if header != exifHeader {
-		return orientationUnspecified
+		return false
 	}
+	// Skip the null terminator (2 bytes).
 	if _, err := io.CopyN(io.Discard, r, 2); err != nil {
-		return orientationUnspecified
+		return false
+	}
+	return true
+}
+
+// readByteOrder reads and determines the byte order from the TIFF header.
+func readByteOrder(r io.Reader) (binary.ByteOrder, bool) {
+	var byteOrderTag uint16
+	if err := binary.Read(r, binary.BigEndian, &byteOrderTag); err != nil {
+		return nil, false
 	}
 
-	// Read byte order information.
-	var (
-		byteOrderTag uint16
-		byteOrder    binary.ByteOrder
-	)
-	if err := binary.Read(r, binary.BigEndian, &byteOrderTag); err != nil {
-		return orientationUnspecified
-	}
+	var byteOrder binary.ByteOrder
 	switch byteOrderTag {
 	case byteOrderBE:
 		byteOrder = binary.BigEndian
 	case byteOrderLE:
 		byteOrder = binary.LittleEndian
 	default:
-		return orientationUnspecified // Invalid byte order flag.
-	}
-	if _, err := io.CopyN(io.Discard, r, 2); err != nil {
-		return orientationUnspecified
+		return nil, false // Invalid byte order flag.
 	}
 
-	// Skip the EXIF offset.
+	// Skip the TIFF version (2 bytes, should be 42).
+	if _, err := io.CopyN(io.Discard, r, 2); err != nil {
+		return nil, false
+	}
+
+	return byteOrder, true
+}
+
+// skipToIFD skips to the Image File Directory using the offset.
+func skipToIFD(r io.Reader, byteOrder binary.ByteOrder) bool {
 	var offset uint32
 	if err := binary.Read(r, byteOrder, &offset); err != nil {
-		return orientationUnspecified
+		return false
 	}
 	if offset < 8 {
-		return orientationUnspecified // Invalid offset value.
+		return false // Invalid offset value.
 	}
+	// We've already read 8 bytes, so skip offset-8 bytes.
 	if _, err := io.CopyN(io.Discard, r, int64(offset-8)); err != nil {
-		return orientationUnspecified
+		return false
 	}
+	return true
+}
 
-	// Read the number of tags.
+// findOrientationInTags searches for the orientation tag in the IFD.
+func findOrientationInTags(r io.Reader, byteOrder binary.ByteOrder) orientation {
 	var numTags uint16
 	if err := binary.Read(r, byteOrder, &numTags); err != nil {
 		return orientationUnspecified
 	}
 
-	// Find the orientation tag.
+	// Iterate through all IFD tags to find the orientation tag.
 	for i := 0; i < int(numTags); i++ {
 		var tag uint16
 		if err := binary.Read(r, byteOrder, &tag); err != nil {
 			return orientationUnspecified
 		}
+
 		if tag != orientationTag {
+			// Skip the rest of this tag entry (type, count, value = 10 bytes).
 			if _, err := io.CopyN(io.Discard, r, 10); err != nil {
 				return orientationUnspecified
 			}
 			continue
 		}
+
+		// Found the orientation tag, skip type and count (6 bytes).
 		if _, err := io.CopyN(io.Discard, r, 6); err != nil {
 			return orientationUnspecified
 		}
+
+		// Read the orientation value.
 		var val uint16
 		if err := binary.Read(r, byteOrder, &val); err != nil {
 			return orientationUnspecified
 		}
+
 		if val < 1 || val > 8 {
 			return orientationUnspecified // Invalid tag value.
 		}
+
 		return orientation(val)
 	}
-	return orientationUnspecified // Missing orientation tag.
+
+	return orientationUnspecified // Orientation tag not found.
+}
+
+// readOrientation tries to read the orientation EXIF flag from image data in r.
+// If the EXIF data block is not found or the orientation flag is not found
+// or any other error occurs while reading the data, it returns the
+// orientationUnspecified (0) value.
+func readOrientation(r io.Reader) orientation {
+	if !checkJPEGSOI(r) {
+		return orientationUnspecified
+	}
+
+	if !findAPP1Marker(r) {
+		return orientationUnspecified
+	}
+
+	if !validateEXIFHeader(r) {
+		return orientationUnspecified
+	}
+
+	byteOrder, ok := readByteOrder(r)
+	if !ok {
+		return orientationUnspecified
+	}
+
+	if !skipToIFD(r, byteOrder) {
+		return orientationUnspecified
+	}
+
+	return findOrientationInTags(r, byteOrder)
 }
 
 // fixOrientation applies a transform to img corresponding to the given orientation flag.

@@ -10,7 +10,37 @@ type indexWeight struct {
 	weight float64
 }
 
+// normalizeWeights normalizes a slice of weights so they sum to 1.0.
+func normalizeWeights(weights []indexWeight, sum float64) {
+	if sum == 0 {
+		return
+	}
+	for i := range weights {
+		weights[i].weight /= sum
+	}
+}
+
+// computeSourceBounds calculates the range of source pixels that contribute to a destination pixel.
+func computeSourceBounds(dstPos, srcSize int, du, ru float64) (begin, end int) {
+	// Map destination pixel center to source space.
+	fu := (float64(dstPos)+0.5)*du - 0.5
+
+	// Calculate range of contributing source pixels.
+	begin = int(math.Ceil(fu - ru))
+	if begin < 0 {
+		begin = 0
+	}
+	end = int(math.Floor(fu + ru))
+	if end > srcSize-1 {
+		end = srcSize - 1
+	}
+	return begin, end
+}
+
+// precomputeWeights calculates resampling weights for transforming from srcSize to dstSize.
+// For each destination pixel, it computes which source pixels contribute and their weights.
 func precomputeWeights(dstSize, srcSize int, filter ResampleFilter) [][]indexWeight {
+	// Calculate the scale factor and filter radius.
 	du := float64(srcSize) / float64(dstSize)
 	scale := du
 	if scale < 1.0 {
@@ -18,21 +48,16 @@ func precomputeWeights(dstSize, srcSize int, filter ResampleFilter) [][]indexWei
 	}
 	ru := math.Ceil(scale * filter.Support)
 
+	// Preallocate output and temporary storage.
 	out := make([][]indexWeight, dstSize)
 	tmp := make([]indexWeight, 0, dstSize*int(ru+2)*2)
 
+	// Compute weights for each destination pixel.
 	for v := 0; v < dstSize; v++ {
+		begin, end := computeSourceBounds(v, srcSize, du, ru)
+
+		// Calculate filter weights for contributing source pixels.
 		fu := (float64(v)+0.5)*du - 0.5
-
-		begin := int(math.Ceil(fu - ru))
-		if begin < 0 {
-			begin = 0
-		}
-		end := int(math.Floor(fu + ru))
-		if end > srcSize-1 {
-			end = srcSize - 1
-		}
-
 		var sum float64
 		for u := begin; u <= end; u++ {
 			w := filter.Kernel((float64(u) - fu) / scale)
@@ -41,11 +66,9 @@ func precomputeWeights(dstSize, srcSize int, filter ResampleFilter) [][]indexWei
 				tmp = append(tmp, indexWeight{index: u, weight: w})
 			}
 		}
-		if sum != 0 {
-			for i := range tmp {
-				tmp[i].weight /= sum
-			}
-		}
+
+		// Normalize weights to sum to 1.0.
+		normalizeWeights(tmp, sum)
 
 		out[v] = tmp
 		tmp = tmp[len(tmp):]
