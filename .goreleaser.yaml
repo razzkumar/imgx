@@ -39,19 +39,6 @@ checksum:
 sboms:
   - artifacts: archive
 
-signs:
-  - cmd: cosign
-    certificate: "${artifact}.pem"
-    output: true
-    artifacts: checksum
-    args:
-      - sign-blob
-      - "--output-certificate=${certificate}"
-      - "--output-signature=${signature}"
-      - "--bundle=${artifact}.bundle"
-      - "${artifact}"
-      - --yes
-
 changelog:
   sort: asc
   use: github
