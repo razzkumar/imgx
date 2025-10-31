@@ -2,3 +2,4 @@
 /dist
 /manpages/*.gz
 /completions
+.env
