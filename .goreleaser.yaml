@@ -42,12 +42,14 @@ sboms:
 signs:
   - cmd: cosign
     certificate: "${artifact}.pem"
+    signature: "${artifact}.sig"
     output: true
     artifacts: checksum
     args:
       - sign-blob
       - "--output-certificate=${certificate}"
       - "--output-signature=${signature}"
+      - "--bundle=${artifact}.bundle"
       - "${artifact}"
       - --yes
 
