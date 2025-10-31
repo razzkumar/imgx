@@ -6,6 +6,13 @@ import (
 	"math"
 )
 
+// luminance weights used for grayscale conversion (per ITU-R BT.601).
+const (
+	luminanceRedWeight   = 0.299
+	luminanceGreenWeight = 0.587
+	luminanceBlueWeight  = 0.114
+)
+
 // Grayscale produces a grayscale version of the image.
 func Grayscale(img image.Image) *image.NRGBA {
 	src := newScanner(img)
@@ -19,7 +26,7 @@ func Grayscale(img image.Image) *image.NRGBA {
 				r := d[0]
 				g := d[1]
 				b := d[2]
-				f := 0.299*float64(r) + 0.587*float64(g) + 0.114*float64(b)
+				f := luminanceRedWeight*float64(r) + luminanceGreenWeight*float64(g) + luminanceBlueWeight*float64(b)
 				y := uint8(f + 0.5)
 				d[0] = y
 				d[1] = y

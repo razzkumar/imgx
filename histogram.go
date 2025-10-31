@@ -31,7 +31,7 @@ func Histogram(img image.Image) [256]float64 {
 				r := s[0]
 				g := s[1]
 				b := s[2]
-				y := 0.299*float32(r) + 0.587*float32(g) + 0.114*float32(b)
+				y := float32(luminanceRedWeight)*float32(r) + float32(luminanceGreenWeight)*float32(g) + float32(luminanceBlueWeight)*float32(b)
 				tmpHistogram[int(y+0.5)]++
 				tmpTotal++
 				i += 4
