@@ -1,22 +1,19 @@
-# Imaging
+# imgx
 
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/disintegration/imaging)](https://pkg.go.dev/github.com/disintegration/imaging)
-[![Build Status](https://travis-ci.org/disintegration/imaging.svg?branch=master)](https://travis-ci.org/disintegration/imaging)
-[![Coverage Status](https://coveralls.io/repos/github/disintegration/imaging/badge.svg?branch=master&service=github)](https://coveralls.io/github/disintegration/imaging?branch=master)
-[![Go Report Card](https://goreportcard.com/badge/github.com/disintegration/imaging)](https://goreportcard.com/report/github.com/disintegration/imaging)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/razzkumar/imgx)](https://pkg.go.dev/github.com/razzkumar/imgx)
 
-Package imaging provides basic image processing functions (resize, rotate, crop, brightness/contrast adjustments, etc.).
+Package imgx provides basic image processing functions (resize, rotate, crop, brightness/contrast adjustments, etc.).
 
 All the image processing functions provided by the package accept any image type that implements `image.Image` interface
 as an input, and return a new image of `*image.NRGBA` type (32bit RGBA colors, non-premultiplied alpha).
 
 ## Installation
 
-    go get -u github.com/disintegration/imaging
+    go get -u github.com/razzkumar/imgx
 
 ## Documentation
 
-https://pkg.go.dev/github.com/disintegration/imaging
+https://pkg.go.dev/github.com/razzkumar/imgx
 
 ## Usage examples
 
@@ -26,16 +23,16 @@ A few usage examples can be found below. See the documentation for the full list
 
 ```go
 // Resize srcImage to size = 128x128px using the Lanczos filter.
-dstImage128 := imaging.Resize(srcImage, 128, 128, imaging.Lanczos)
+dstImage128 := imgx.Resize(srcImage, 128, 128, imgx.Lanczos)
 
 // Resize srcImage to width = 800px preserving the aspect ratio.
-dstImage800 := imaging.Resize(srcImage, 800, 0, imaging.Lanczos)
+dstImage800 := imgx.Resize(srcImage, 800, 0, imgx.Lanczos)
 
 // Scale down srcImage to fit the 800x600px bounding box.
-dstImageFit := imaging.Fit(srcImage, 800, 600, imaging.Lanczos)
+dstImageFit := imgx.Fit(srcImage, 800, 600, imgx.Lanczos)
 
 // Resize and crop the srcImage to fill the 100x100px area.
-dstImageFill := imaging.Fill(srcImage, 100, 100, imaging.Center, imaging.Lanczos)
+dstImageFill := imgx.Fill(srcImage, 100, 100, imgx.Center, imgx.Lanczos)
 ```
 
 Imaging supports image resizing using various resampling filters. The most notable ones:
@@ -59,16 +56,16 @@ From faster (lower quality) to slower (higher quality):
 
 Filter                    | Resize result
 --------------------------|---------------------------------------------
-`imaging.NearestNeighbor` | ![dstImage](testdata/out_resize_nearest.png)
-`imaging.Linear`          | ![dstImage](testdata/out_resize_linear.png)
-`imaging.CatmullRom`      | ![dstImage](testdata/out_resize_catrom.png)
-`imaging.Lanczos`         | ![dstImage](testdata/out_resize_lanczos.png)
+`imgx.NearestNeighbor` | ![dstImage](testdata/out_resize_nearest.png)
+`imgx.Linear`          | ![dstImage](testdata/out_resize_linear.png)
+`imgx.CatmullRom`      | ![dstImage](testdata/out_resize_catrom.png)
+`imgx.Lanczos`         | ![dstImage](testdata/out_resize_lanczos.png)
 
 
 ### Gaussian Blur
 
 ```go
-dstImage := imaging.Blur(srcImage, 0.5)
+dstImage := imgx.Blur(srcImage, 0.5)
 ```
 
 Sigma parameter allows to control the strength of the blurring effect.
@@ -80,7 +77,7 @@ Original image                     | Sigma = 0.5                            | Si
 ### Sharpening
 
 ```go
-dstImage := imaging.Sharpen(srcImage, 0.5)
+dstImage := imgx.Sharpen(srcImage, 0.5)
 ```
 
 `Sharpen` uses gaussian function internally. Sigma parameter allows to control the strength of the sharpening effect.
@@ -92,7 +89,7 @@ Original image                     | Sigma = 0.5                               |
 ### Gamma correction
 
 ```go
-dstImage := imaging.AdjustGamma(srcImage, 0.75)
+dstImage := imgx.AdjustGamma(srcImage, 0.75)
 ```
 
 Original image                     | Gamma = 0.75                             | Gamma = 1.25
@@ -102,7 +99,7 @@ Original image                     | Gamma = 0.75                             | 
 ### Contrast adjustment
 
 ```go
-dstImage := imaging.AdjustContrast(srcImage, 20)
+dstImage := imgx.AdjustContrast(srcImage, 20)
 ```
 
 Original image                     | Contrast = 15                              | Contrast = -15
@@ -112,7 +109,7 @@ Original image                     | Contrast = 15                              
 ### Brightness adjustment
 
 ```go
-dstImage := imaging.AdjustBrightness(srcImage, 20)
+dstImage := imgx.AdjustBrightness(srcImage, 20)
 ```
 
 Original image                     | Brightness = 10                              | Brightness = -10
@@ -122,7 +119,7 @@ Original image                     | Brightness = 10                            
 ### Saturation adjustment
 
 ```go
-dstImage := imaging.AdjustSaturation(srcImage, 20)
+dstImage := imgx.AdjustSaturation(srcImage, 20)
 ```
 
 Original image                     | Saturation = 30                              | Saturation = -30
@@ -132,7 +129,7 @@ Original image                     | Saturation = 30                            
 ### Hue adjustment
 
 ```go
-dstImage := imaging.AdjustHue(srcImage, 20)
+dstImage := imgx.AdjustHue(srcImage, 20)
 ```
 
 Original image                     | Hue = 60                                     | Hue = -60
@@ -151,12 +148,12 @@ the image orientation is changed after decoding, according to the
 orientation tag (if present). Here's the example:
 
 ```go
-img, err := imaging.Open("test.jpg", imaging.AutoOrientation(true))
+img, err := imgx.Open("test.jpg", imgx.AutoOrientation(true))
 ```
 
 ### What's the difference between `imaging` and `gift` packages?
 
-[imaging](https://github.com/disintegration/imaging)
+[imaging](https://github.com/razzkumar/imgx)
 is designed to be a lightweight and simple image manipulation package.
 It provides basic image processing functions and a few helper functions
 such as `Open` and `Save`. It consistently returns *image.NRGBA image 
@@ -178,35 +175,35 @@ import (
 	"image/color"
 	"log"
 
-	"github.com/disintegration/imaging"
+	"github.com/razzkumar/imgx"
 )
 
 func main() {
 	// Open a test image.
-	src, err := imaging.Open("testdata/flowers.png")
+	src, err := imgx.Open("testdata/flowers.png")
 	if err != nil {
 		log.Fatalf("failed to open image: %v", err)
 	}
 
 	// Crop the original image to 300x300px size using the center anchor.
-	src = imaging.CropAnchor(src, 300, 300, imaging.Center)
+	src = imgx.CropAnchor(src, 300, 300, imgx.Center)
 
 	// Resize the cropped image to width = 200px preserving the aspect ratio.
-	src = imaging.Resize(src, 200, 0, imaging.Lanczos)
+	src = imgx.Resize(src, 200, 0, imgx.Lanczos)
 
 	// Create a blurred version of the image.
-	img1 := imaging.Blur(src, 5)
+	img1 := imgx.Blur(src, 5)
 
 	// Create a grayscale version of the image with higher contrast and sharpness.
-	img2 := imaging.Grayscale(src)
-	img2 = imaging.AdjustContrast(img2, 20)
-	img2 = imaging.Sharpen(img2, 2)
+	img2 := imgx.Grayscale(src)
+	img2 = imgx.AdjustContrast(img2, 20)
+	img2 = imgx.Sharpen(img2, 2)
 
 	// Create an inverted version of the image.
-	img3 := imaging.Invert(src)
+	img3 := imgx.Invert(src)
 
 	// Create an embossed version of the image using a convolution filter.
-	img4 := imaging.Convolve3x3(
+	img4 := imgx.Convolve3x3(
 		src,
 		[9]float64{
 			-1, -1, 0,
@@ -217,14 +214,14 @@ func main() {
 	)
 
 	// Create a new image and paste the four produced images into it.
-	dst := imaging.New(400, 400, color.NRGBA{0, 0, 0, 0})
-	dst = imaging.Paste(dst, img1, image.Pt(0, 0))
-	dst = imaging.Paste(dst, img2, image.Pt(0, 200))
-	dst = imaging.Paste(dst, img3, image.Pt(200, 0))
-	dst = imaging.Paste(dst, img4, image.Pt(200, 200))
+	dst := imgx.New(400, 400, color.NRGBA{0, 0, 0, 0})
+	dst = imgx.Paste(dst, img1, image.Pt(0, 0))
+	dst = imgx.Paste(dst, img2, image.Pt(0, 200))
+	dst = imgx.Paste(dst, img3, image.Pt(200, 0))
+	dst = imgx.Paste(dst, img4, image.Pt(200, 200))
 
 	// Save the resulting image as JPEG.
-	err = imaging.Save(dst, "testdata/out_example.jpg")
+	err = imgx.Save(dst, "testdata/out_example.jpg")
 	if err != nil {
 		log.Fatalf("failed to save image: %v", err)
 	}

@@ -1,4 +1,4 @@
-module github.com/disintegration/imaging
+module github.com/razzkumar/imgx
 
 go 1.25.3
 
