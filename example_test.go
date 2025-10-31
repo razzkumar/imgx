@@ -10,7 +10,7 @@ import (
 
 func Example() {
 	// Open a test image.
-	src, err := imgx.Open("testdata/flowers.png")
+	src, err := imgx.Open("testdata/flower.jpg")
 	if err != nil {
 		log.Fatalf("failed to open image: %v", err)
 	}

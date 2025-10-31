@@ -309,7 +309,7 @@ func BenchmarkConvolve3x3(b *testing.B) {
 	b.ReportAllocs()
 	for b.Loop() {
 		Convolve3x3(
-			testdataBranchesJPG,
+			testdataBranchJPG,
 			[9]float64{
 				-1, -1, 0,
 				-1, 0, 1,
@@ -324,7 +324,7 @@ func BenchmarkConvolve5x5(b *testing.B) {
 	b.ReportAllocs()
 	for b.Loop() {
 		Convolve5x5(
-			testdataBranchesJPG,
+			testdataBranchJPG,
 			[25]float64{
 				-1, -1, -1, -1, 0,
 				-1, -1, -1, 0, 1,

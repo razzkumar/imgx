@@ -54,6 +54,6 @@ func TestHistogram(t *testing.T) {
 func BenchmarkHistogram(b *testing.B) {
 	b.ReportAllocs()
 	for b.Loop() {
-		Histogram(testdataBranchesJPG)
+		Histogram(testdataBranchJPG)
 	}
 }
