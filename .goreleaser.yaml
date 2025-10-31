@@ -42,7 +42,6 @@ sboms:
 signs:
   - cmd: cosign
     certificate: "${artifact}.pem"
-    signature: "${artifact}.sig"
     output: true
     artifacts: checksum
     args:
