@@ -5,6 +5,7 @@ A powerful command-line tool for image processing operations including resizing,
 ## Table of Contents
 
 - [Installation](#installation)
+- [Shell Completion](#shell-completion)
 - [Quick Start](#quick-start)
 - [Global Options](#global-options)
 - [Commands](#commands)
@@ -25,6 +26,104 @@ go build -o imgx ./cmd/imgx
 
 # Or install
 go install github.com/razzkumar/imgx/cmd/imgx@latest
+```
+
+## Shell Completion
+
+imgx supports shell completion for Bash, Zsh, Fish, and PowerShell. This enables tab completion for commands, flags, and options.
+
+### Bash
+
+**Temporary (current session only):**
+```bash
+source <(imgx completion bash)
+```
+
+**Permanent:**
+```bash
+# Save to completion directory
+imgx completion bash > ~/.bash_completion.d/imgx
+source ~/.bash_completion.d/imgx
+
+# Or add to .bashrc
+echo 'source <(imgx completion bash)' >> ~/.bashrc
+```
+
+### Zsh
+
+**Add to `.zshrc`:**
+```bash
+# Enable completions if not already enabled
+autoload -Uz compinit
+compinit
+
+# Load imgx completions
+source <(imgx completion zsh)
+
+# Or add this line to .zshrc
+echo 'source <(imgx completion zsh)' >> ~/.zshrc
+```
+
+**Alternative (using completion directory):**
+```bash
+# Save to zsh completion directory
+imgx completion zsh > "${fpath[1]}/_imgx"
+```
+
+### Fish
+
+```bash
+# Save to fish completion directory
+imgx completion fish > ~/.config/fish/completions/imgx.fish
+```
+
+### PowerShell
+
+```powershell
+# Generate completion script
+imgx completion pwsh > imgx.ps1
+
+# Load completions (add to your PowerShell profile)
+& path\to\imgx.ps1
+```
+
+**To find your PowerShell profile location:**
+```powershell
+echo $PROFILE
+```
+
+### Testing Completions
+
+After setting up completions, test them by typing:
+
+```bash
+imgx <TAB>          # Shows all available commands
+imgx resize <TAB>   # Shows subcommands and help
+imgx --<TAB>        # Shows global flags (--output, --quality, etc.)
+```
+
+### What Completions Support
+
+The shell completions currently support:
+
+✅ **Command completion** - Complete command names (resize, adjust, blur, etc.)
+✅ **Subcommand completion** - Navigate through command hierarchy
+✅ **Global flag completion** - Complete global flags at the root level (--output, --quality, --verbose)
+⚠️ **Subcommand flags** - Limited support for flags within subcommands (use `imgx <command> --help` to see available flags)
+
+### ⚠️ Important: Shell Completion Quirk
+
+When you type `imgx <command> <TAB>`, the completion will suggest `help` as an option. However:
+
+- **DON'T use:** `imgx thumbnail help` ❌ (will fail with "Required flag not set" error)
+- **DO use instead:** `imgx help thumbnail` ✅ or `imgx thumbnail --help` ✅
+
+The completion system suggests `help` because it's technically a subcommand, but it doesn't work correctly with commands that have required flags. Always use one of the correct help syntaxes shown above.
+
+**Note:** To see all available flags for a specific command, use the help system:
+```bash
+imgx adjust --help     # Shows all adjust command flags
+imgx resize --help     # Shows all resize command flags
 ```
 
 ## Quick Start
@@ -627,17 +726,46 @@ imgx resize pixelart.png -w 800 -f nearest -o scaled-pixelart.png
 
 ## Getting Help
 
-```bash
-# General help
-imgx --help
+imgx provides comprehensive help at every level.
 
-# Command-specific help
-imgx resize --help
-imgx adjust --help
-imgx watermark --help
+### General Help
+
+```bash
+# Show all commands
+imgx --help
+imgx -h
 
 # Version information
 imgx --version
+```
+
+### Command-Specific Help
+
+There are two ways to get help for a specific command:
+
+**Method 1: `help` before the command name**
+```bash
+imgx help resize
+imgx help adjust
+imgx help watermark
+```
+
+**Method 2: `--help` flag after the command name** (also shows global options)
+```bash
+imgx resize --help
+imgx adjust --help
+imgx watermark --help
+```
+
+**Note:** Don't use `imgx <command> help` (help after the command) - this syntax doesn't work correctly.
+
+### Shell Completion Scripts
+
+```bash
+imgx completion bash
+imgx completion zsh
+imgx completion fish
+imgx completion pwsh
 ```
 
 ## Exit Codes
