@@ -39,12 +39,10 @@ func parallel(start, stop int, fn func(<-chan int)) {
 	close(c)
 
 	var wg sync.WaitGroup
-	for i := 0; i < procs; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range procs {
+		wg.Go(func() {
 			fn(c)
-		}()
+		})
 	}
 	wg.Wait()
 }
