@@ -1080,8 +1080,8 @@ func TestAdjustFunc(t *testing.T) {
 					0x00, 0x00, 0x00, 0xff, 0x33, 0x33, 0x33, 0xff, 0xff, 0xff, 0xff, 0xff,
 				},
 			},
-			func(c color.NRGBA) color.NRGBA {
-				y := 0.299*float64(c.R) + 0.587*float64(c.G) + 0.114*float64(c.B)
+		func(c color.NRGBA) color.NRGBA {
+			y := luminanceRedWeight*float64(c.R) + luminanceGreenWeight*float64(c.G) + luminanceBlueWeight*float64(c.B)
 				if y > 0x55 {
 					return color.NRGBA{0xff, 0xff, 0xff, c.A}
 				}

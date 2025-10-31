@@ -271,12 +271,12 @@ func Save(img image.Image, filename string, opts ...EncodeOption) (err error) {
 	if err != nil {
 		return err
 	}
-	err = Encode(file, img, f, opts...)
-	errc := file.Close()
-	if err == nil {
-		err = errc
+	encodeErr := Encode(file, img, f, opts...)
+	closeErr := file.Close()
+	if encodeErr != nil {
+		return encodeErr
 	}
-	return err
+	return closeErr
 }
 
 // orientation is an EXIF flag that specifies the transformation
