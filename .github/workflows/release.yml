@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   packages: write
+  id-token: write
 
 jobs:
   goreleaser:
@@ -39,3 +40,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           COSIGN_YES: "true"
           COSIGN_EXPERIMENTAL: "1"
+          COSIGN_OIDC_PROVIDER: "github"
