@@ -49,17 +49,10 @@ The full list of supported filters:  NearestNeighbor, Box, Linear, Hermite, Mitc
 
 Original image:
 
-![srcImage](testdata/branches.png)
+![srcImage](testdata/branch.jpg)
 
-The same image resized from 600x400px to 150x100px using different resampling filters.
-From faster (lower quality) to slower (higher quality):
-
-Filter                    | Resize result
---------------------------|---------------------------------------------
-`imgx.NearestNeighbor` | ![dstImage](testdata/out_resize_nearest.png)
-`imgx.Linear`          | ![dstImage](testdata/out_resize_linear.png)
-`imgx.CatmullRom`      | ![dstImage](testdata/out_resize_catrom.png)
-`imgx.Lanczos`         | ![dstImage](testdata/out_resize_lanczos.png)
+The same image can be resized using different resampling filters.
+From faster (lower quality) to slower (higher quality): `NearestNeighbor`, `Linear`, `CatmullRom`, `Lanczos`.
 
 
 ### Gaussian Blur
@@ -70,9 +63,9 @@ dstImage := imgx.Blur(srcImage, 0.5)
 
 Sigma parameter allows to control the strength of the blurring effect.
 
-Original image                     | Sigma = 0.5                            | Sigma = 1.5
------------------------------------|----------------------------------------|---------------------------------------
-![srcImage](testdata/flowers_small.png) | ![dstImage](testdata/out_blur_0.5.png) | ![dstImage](testdata/out_blur_1.5.png)
+Original image:
+
+![srcImage](testdata/flower.jpg)
 
 ### Sharpening
 
@@ -82,9 +75,9 @@ dstImage := imgx.Sharpen(srcImage, 0.5)
 
 `Sharpen` uses gaussian function internally. Sigma parameter allows to control the strength of the sharpening effect.
 
-Original image                     | Sigma = 0.5                               | Sigma = 1.5
------------------------------------|-------------------------------------------|------------------------------------------
-![srcImage](testdata/flowers_small.png) | ![dstImage](testdata/out_sharpen_0.5.png) | ![dstImage](testdata/out_sharpen_1.5.png)
+Original image:
+
+![srcImage](testdata/flower.jpg)
 
 ### Gamma correction
 
@@ -92,9 +85,9 @@ Original image                     | Sigma = 0.5                               |
 dstImage := imgx.AdjustGamma(srcImage, 0.75)
 ```
 
-Original image                     | Gamma = 0.75                             | Gamma = 1.25
------------------------------------|------------------------------------------|-----------------------------------------
-![srcImage](testdata/flowers_small.png) | ![dstImage](testdata/out_gamma_0.75.png) | ![dstImage](testdata/out_gamma_1.25.png)
+Original image:
+
+![srcImage](testdata/flower.jpg)
 
 ### Contrast adjustment
 
@@ -102,9 +95,9 @@ Original image                     | Gamma = 0.75                             | 
 dstImage := imgx.AdjustContrast(srcImage, 20)
 ```
 
-Original image                     | Contrast = 15                              | Contrast = -15
------------------------------------|--------------------------------------------|-------------------------------------------
-![srcImage](testdata/flowers_small.png) | ![dstImage](testdata/out_contrast_p15.png) | ![dstImage](testdata/out_contrast_m15.png)
+Original image:
+
+![srcImage](testdata/flower.jpg)
 
 ### Brightness adjustment
 
@@ -112,9 +105,9 @@ Original image                     | Contrast = 15                              
 dstImage := imgx.AdjustBrightness(srcImage, 20)
 ```
 
-Original image                     | Brightness = 10                              | Brightness = -10
------------------------------------|----------------------------------------------|---------------------------------------------
-![srcImage](testdata/flowers_small.png) | ![dstImage](testdata/out_brightness_p10.png) | ![dstImage](testdata/out_brightness_m10.png)
+Original image:
+
+![srcImage](testdata/flower.jpg)
 
 ### Saturation adjustment
 
@@ -122,9 +115,9 @@ Original image                     | Brightness = 10                            
 dstImage := imgx.AdjustSaturation(srcImage, 20)
 ```
 
-Original image                     | Saturation = 30                              | Saturation = -30
------------------------------------|----------------------------------------------|---------------------------------------------
-![srcImage](testdata/flowers_small.png) | ![dstImage](testdata/out_saturation_p30.png) | ![dstImage](testdata/out_saturation_m30.png)
+Original image:
+
+![srcImage](testdata/flower.jpg)
 
 ### Hue adjustment
 
@@ -132,9 +125,9 @@ Original image                     | Saturation = 30                            
 dstImage := imgx.AdjustHue(srcImage, 20)
 ```
 
-Original image                     | Hue = 60                                     | Hue = -60
------------------------------------|----------------------------------------------|---------------------------------------------
-![srcImage](testdata/flowers_small.png) | ![dstImage](testdata/out_hue_p60.png) | ![dstImage](testdata/out_hue_m60.png)
+Original image:
+
+![srcImage](testdata/flower.jpg)
 
 ## FAQ
 
@@ -174,7 +167,7 @@ import (
 
 func main() {
 	// Open a test image.
-	src, err := imgx.Open("testdata/flowers.png")
+	src, err := imgx.Open("testdata/flower.jpg")
 	if err != nil {
 		log.Fatalf("failed to open image: %v", err)
 	}
@@ -221,10 +214,6 @@ func main() {
 	}
 }
 ```
-
-Output:
-
-![dstImage](testdata/out_example.jpg)
 
 ## Acknowledgments
 
