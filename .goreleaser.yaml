@@ -100,11 +100,6 @@ archives:
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
       {{- if .Arm }}v{{ .Arm }}{{ end -}}
-    files:
-      - manpages/imgx.1.gz
-      - completions/imgx.bash
-      - completions/_imgx
-      - completions/imgx.fish
 
 milestones:
   - close: true

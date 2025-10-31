@@ -29,10 +29,6 @@ jobs:
 
           curl -sSfL https://get.anchore.io/syft | sudo sh -s -- -b /usr/local/bin
 
-      - name: setup assets
-        run: |
-          go mod tidy
-
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
