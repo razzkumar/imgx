@@ -1,4 +1,4 @@
-imgx
-dist
-manpages/*.gz
-completions
+/imgx
+/dist
+/manpages/*.gz
+/completions
