@@ -211,7 +211,7 @@ func TestWatermarkDifferentImageTypes(t *testing.T) {
 			}
 
 			// Result should always be *image.NRGBA
-			if _, ok := interface{}(result).(*image.NRGBA); !ok {
+			if _, ok := any(result).(*image.NRGBA); !ok {
 				t.Fatal("result should be *image.NRGBA")
 			}
 		})

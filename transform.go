@@ -166,7 +166,7 @@ func Rotate(img image.Image, angle float64, bgColor color.Color) *image.NRGBA {
 
 	parallel(0, dstH, func(ys <-chan int) {
 		for dstY := range ys {
-			for dstX := 0; dstX < dstW; dstX++ {
+			for dstX := range dstW {
 				xf, yf := rotatePoint(float64(dstX)-dstXOff, float64(dstY)-dstYOff, sin, cos)
 				xf, yf = xf+srcXOff, yf+srcYOff
 				interpolatePoint(dst, dstX, dstY, src, xf, yf, bgColorNRGBA)
@@ -239,7 +239,7 @@ func interpolatePoint(dst *image.NRGBA, dstX, dstY int, src *image.NRGBA, xf, yf
 	}
 
 	var r, g, b, a float64
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		p := points[i]
 		w := weights[i]
 		if p.In(bounds) {

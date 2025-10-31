@@ -47,7 +47,7 @@ func precomputeWeights(dstSize, srcSize int, filter ResampleFilter) [][]indexWei
 	tmp := make([]indexWeight, 0, dstSize*int(ru+2)*2)
 
 	// Compute weights for each destination pixel.
-	for v := 0; v < dstSize; v++ {
+	for v := range dstSize {
 		begin, end := computeSourceBounds(v, srcSize, du, ru)
 
 		// Calculate filter weights for contributing source pixels.
@@ -78,7 +78,6 @@ func precomputeWeights(dstSize, srcSize int, filter ResampleFilter) [][]indexWei
 // Example:
 //
 //	dstImage := imaging.Resize(srcImage, 800, 600, imaging.Lanczos)
-//
 func Resize(img image.Image, width, height int, filter ResampleFilter) *image.NRGBA {
 	dstW, dstH := width, height
 	if dstW < 0 || dstH < 0 {
@@ -204,7 +203,7 @@ func resizeNearest(img image.Image, width, height int) *image.NRGBA {
 			for y := range ys {
 				srcY := int((float64(y) + 0.5) * dy)
 				dstOff := y * dst.Stride
-				for x := 0; x < width; x++ {
+				for x := range width {
 					srcX := int((float64(x) + 0.5) * dx)
 					src.scan(srcX, srcY, srcX+1, srcY+1, dst.Pix[dstOff:dstOff+4])
 					dstOff += 4
@@ -218,7 +217,7 @@ func resizeNearest(img image.Image, width, height int) *image.NRGBA {
 				srcY := int((float64(y) + 0.5) * dy)
 				srcOff0 := srcY * src.Stride
 				dstOff := y * dst.Stride
-				for x := 0; x < width; x++ {
+				for x := range width {
 					srcX := int((float64(x) + 0.5) * dx)
 					srcOff := srcOff0 + srcX*4
 					copy(dst.Pix[dstOff:dstOff+4], src.Pix[srcOff:srcOff+4])
@@ -237,7 +236,6 @@ func resizeNearest(img image.Image, width, height int) *image.NRGBA {
 // Example:
 //
 //	dstImage := imaging.Fit(srcImage, 800, 600, imaging.Lanczos)
-//
 func Fit(img image.Image, width, height int, filter ResampleFilter) *image.NRGBA {
 	maxW, maxH := width, height
 
@@ -278,7 +276,6 @@ func Fit(img image.Image, width, height int, filter ResampleFilter) *image.NRGBA
 // Example:
 //
 //	dstImage := imaging.Fill(srcImage, 800, 600, imaging.Center, imaging.Lanczos)
-//
 func Fill(img image.Image, width, height int, anchor Anchor, filter ResampleFilter) *image.NRGBA {
 	dstW, dstH := width, height
 
@@ -357,7 +354,6 @@ func resizeAndCrop(img image.Image, width, height int, anchor Anchor, filter Res
 // Example:
 //
 //	dstImage := imaging.Thumbnail(srcImage, 100, 100, imaging.Lanczos)
-//
 func Thumbnail(img image.Image, width, height int, filter ResampleFilter) *image.NRGBA {
 	return Fill(img, width, height, Center, filter)
 }
@@ -384,7 +380,6 @@ func Thumbnail(img image.Image, width, height int, filter ResampleFilter) *image
 //
 //	- NearestNeighbor
 //		Fastest resampling filter, no antialiasing.
-//
 type ResampleFilter struct {
 	Support float64
 	Kernel  func(float64) float64
