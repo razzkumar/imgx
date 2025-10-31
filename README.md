@@ -225,3 +225,24 @@ func main() {
 Output:
 
 ![dstImage](testdata/out_example.jpg)
+
+## Acknowledgments
+
+This project is based on the [imaging](https://github.com/disintegration/imaging) library created by [Grigory Dryapak](https://github.com/disintegration).
+
+### What's New in imgx?
+
+- **Modernized codebase** using latest Go features (1.21+):
+  - Range over int (`for range 256`)
+  - Built-in `min`/`max` functions
+  - `WaitGroup.Go()` for goroutine management
+  - `b.Loop()` for benchmarks
+- **Improved code organization**: Refactored complex functions for better maintainability
+- **CLI tool**: Coming soon - command-line interface for image processing
+- **Active development**: New features and improvements
+
+We're grateful to the original author for creating such a solid foundation for image processing in Go!
+
+## License
+
+This project maintains the original license. Please see the LICENSE file for details.
