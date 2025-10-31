@@ -4,4 +4,4 @@ go 1.25.3
 
 require golang.org/x/image v0.32.0
 
-require github.com/urfave/cli/v3 v3.5.0 // indirect
+require github.com/urfave/cli/v3 v3.5.0
