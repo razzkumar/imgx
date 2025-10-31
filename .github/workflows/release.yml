@@ -33,17 +33,6 @@ jobs:
         run: |
           go mod tidy
 
-          # Compress manpage
-          gzip -c manpages/imgx.1 > manpages/imgx.1.gz
-
-          mkdir -p completions
-
-          go build -o imgx ./cmd/imgx
-
-          ./imgx completions zsh > completions/_imgx
-          ./imgx completions bash > completions/imgx.bash
-          ./imgx completions fish > completions/imgx.fish
-
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
         with:
@@ -51,4 +40,4 @@ jobs:
           version: "~> v2"
           args: release --clean
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
