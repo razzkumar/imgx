@@ -83,10 +83,7 @@ func completionsAction(ctx context.Context, cmd *cli.Command) error {
 		fmt.Println("================================")
 		fmt.Println()
 		fmt.Println("imgx supports dynamic shell completions using the --generate-shell-completion flag.")
-		fmt.Println()
-		fmt.Println(bashSetup)
-		fmt.Println(zshSetup)
-		fmt.Println(fishSetup)
+
 		return nil
 	}
 
