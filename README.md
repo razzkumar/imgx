@@ -159,12 +159,6 @@ It provides basic image processing functions and a few helper functions
 such as `Open` and `Save`. It consistently returns *image.NRGBA image 
 type (8 bits per channel, RGBA).
 
-[gift](https://github.com/disintegration/gift)
-supports more advanced image processing, for example, sRGB/Linear color
-space conversions. It also supports different output image types
-(e.g. 16 bits per channel) and provides easy-to-use API for chaining
-multiple processing steps together.
-
 ## Example code
 
 ```go
