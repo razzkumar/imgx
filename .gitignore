@@ -1,2 +1,4 @@
 imgx
 dist
+manpages/*.gz
+completions

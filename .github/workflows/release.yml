@@ -35,11 +35,8 @@ jobs:
         run: |
           go mod tidy
 
-          go build -o imgx ./cmd/imgx
-
-          ./imgx completions zsh > completions/_imgx
-          ./imgx completions bash > completions/imgx.bash
-          ./imgx completions fish > completions/imgx.fish
+          # Compress manpage
+          gzip -c manpages/imgx.1 > manpages/imgx.1.gz
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v6
