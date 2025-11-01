@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0  # Fetch all history for proper versioning
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v6
@@ -57,7 +57,7 @@ jobs:
 
           VERSION="${{ steps.get_version.outputs.version }}"
 
-          # Add changes if there are any
+          # Only add specific files we want to commit
           git add version.go VERSION
 
           # Check if there are changes to commit
@@ -65,8 +65,6 @@ jobs:
             echo "No version changes to commit"
           else
             git commit -m "chore: bump version to v$VERSION [skip ci]"
-            git fetch origin main
-            git rebase origin/main
             git push origin HEAD:main
           fi
 
