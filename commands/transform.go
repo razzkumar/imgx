@@ -3,7 +3,6 @@ package commands
 import (
 	"context"
 	"fmt"
-	"image"
 
 	"github.com/razzkumar/imgx"
 	"github.com/urfave/cli/v3"
@@ -61,7 +60,7 @@ func rotateAction(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Rotate
-	result := imgx.Rotate(img, angle, bgColor)
+	result := img.Rotate(angle, bgColor)
 
 	// Save
 	outputPath := getOutputPath(cmd, inputPath, "-rotated")
@@ -115,14 +114,14 @@ func flipAction(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Apply flips
-	var result *image.NRGBA
+	var result *imgx.Image
 	if horizontal && vertical {
 		// Both flips = 180 degree rotation
-		result = imgx.Rotate180(img)
+		result = img.Rotate180()
 	} else if horizontal {
-		result = imgx.FlipH(img)
+		result = img.FlipH()
 	} else {
-		result = imgx.FlipV(img)
+		result = img.FlipV()
 	}
 
 	// Save
@@ -194,7 +193,7 @@ func cropAction(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	var result *image.NRGBA
+	var result *imgx.Image
 
 	// Check if coordinates are specified
 	if x >= 0 && y >= 0 {
@@ -205,14 +204,14 @@ func cropAction(ctx context.Context, cmd *cli.Command) error {
 		rect.Min.Y = y
 		rect.Max.X = x + width
 		rect.Max.Y = y + height
-		result = imgx.Crop(img, rect)
+		result = img.Crop(rect)
 	} else {
 		// Use anchor
 		anchor, err := ParseAnchor(anchorName)
 		if err != nil {
 			return err
 		}
-		result = imgx.CropAnchor(img, width, height, anchor)
+		result = img.CropAnchor(width, height, anchor)
 	}
 
 	// Save
@@ -247,7 +246,7 @@ func transposeAction(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Transpose
-	result := imgx.Transpose(img)
+	result := img.Transpose()
 
 	// Save
 	outputPath := getOutputPath(cmd, inputPath, "-transposed")
@@ -281,7 +280,7 @@ func transverseAction(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Transverse
-	result := imgx.Transverse(img)
+	result := img.Transverse()
 
 	// Save
 	outputPath := getOutputPath(cmd, inputPath, "-transversed")
@@ -306,7 +305,7 @@ Example:
 			if err != nil {
 				return err
 			}
-			result := imgx.Rotate90(img)
+			result := img.Rotate90()
 			outputPath := getOutputPath(cmd, inputPath, "-rot90")
 			return saveImage(cmd, result, outputPath)
 		},
@@ -330,7 +329,7 @@ Example:
 			if err != nil {
 				return err
 			}
-			result := imgx.Rotate180(img)
+			result := img.Rotate180()
 			outputPath := getOutputPath(cmd, inputPath, "-rot180")
 			return saveImage(cmd, result, outputPath)
 		},
@@ -354,7 +353,7 @@ Example:
 			if err != nil {
 				return err
 			}
-			result := imgx.Rotate270(img)
+			result := img.Rotate270()
 			outputPath := getOutputPath(cmd, inputPath, "-rot270")
 			return saveImage(cmd, result, outputPath)
 		},

@@ -1,6 +1,7 @@
 package imgx
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"math"
@@ -265,4 +266,70 @@ func interpolatePoint(dst *image.NRGBA, dstX, dstY int, src *image.NRGBA, xf, yf
 		d[2] = clamp(b * aInv)
 		d[3] = clamp(a)
 	}
+}
+
+// FlipH flips the image horizontally
+func (img *Image) FlipH() *Image {
+	newData := FlipH(img.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("flipH", "horizontal flip")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// FlipV flips the image vertically
+func (img *Image) FlipV() *Image {
+	newData := FlipV(img.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("flipV", "vertical flip")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Transpose flips the image horizontally and rotates 90° counter-clockwise
+func (img *Image) Transpose() *Image {
+	newData := Transpose(img.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("transpose", "flip horizontal + rotate 90° CCW")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Transverse flips the image vertically and rotates 90° counter-clockwise
+func (img *Image) Transverse() *Image {
+	newData := Transverse(img.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("transverse", "flip vertical + rotate 90° CCW")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Rotate90 rotates the image 90° counter-clockwise
+func (img *Image) Rotate90() *Image {
+	newData := Rotate90(img.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("rotate90", "90° counter-clockwise")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Rotate180 rotates the image 180°
+func (img *Image) Rotate180() *Image {
+	newData := Rotate180(img.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("rotate180", "180°")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Rotate270 rotates the image 270° counter-clockwise (90° clockwise)
+func (img *Image) Rotate270() *Image {
+	newData := Rotate270(img.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("rotate270", "270° counter-clockwise (90° clockwise)")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Rotate rotates the image by the given angle counter-clockwise.
+// The angle parameter is the rotation angle in degrees.
+// The bgColor parameter specifies the color of the uncovered areas after rotation.
+func (img *Image) Rotate(angle float64, bgColor color.Color) *Image {
+	newData := Rotate(img.data, angle, bgColor)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("rotate", fmt.Sprintf("%.2f° counter-clockwise", angle))
+	return &Image{data: newData, metadata: newMeta}
 }

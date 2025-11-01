@@ -2,6 +2,7 @@ package imgx
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"image/color"
 	"math"
@@ -254,4 +255,59 @@ func OverlayCenter(background, img image.Image, opacity float64) *image.NRGBA {
 	y0 := centerY - img.Bounds().Dy()/2
 
 	return Overlay(background, img, image.Point{x0, y0}, opacity)
+}
+// Crop cuts out a rectangular region from the image
+func (img *Image) Crop(rect image.Rectangle) *Image {
+	newData := Crop(img.data, rect)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("crop", fmt.Sprintf("x=%d, y=%d, w=%d, h=%d", rect.Min.X, rect.Min.Y, rect.Dx(), rect.Dy()))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// CropAnchor cuts out a rectangular region with the specified size using the anchor point
+func (img *Image) CropAnchor(width, height int, anchor Anchor) *Image {
+	newData := CropAnchor(img.data, width, height, anchor)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("cropAnchor", fmt.Sprintf("w=%d, h=%d, anchor=%s", width, height, formatAnchorName(anchor)))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// CropCenter cuts out a rectangular region from the center of the image
+func (img *Image) CropCenter(width, height int) *Image {
+	newData := CropCenter(img.data, width, height)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("cropCenter", fmt.Sprintf("w=%d, h=%d", width, height))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Paste pastes another image onto this image at the specified position
+func (img *Image) Paste(src *Image, pos image.Point) *Image {
+	newData := Paste(img.data, src.data, pos)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("paste", fmt.Sprintf("x=%d, y=%d", pos.X, pos.Y))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// PasteCenter pastes another image at the center of this image
+func (img *Image) PasteCenter(src *Image) *Image {
+	newData := PasteCenter(img.data, src.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("pasteCenter", "paste at center")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Overlay overlays another image on top of this image with the specified opacity
+func (img *Image) Overlay(src *Image, pos image.Point, opacity float64) *Image {
+	newData := Overlay(img.data, src.data, pos, opacity)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("overlay", fmt.Sprintf("x=%d, y=%d, opacity=%.2f", pos.X, pos.Y, opacity))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// OverlayCenter overlays another image at the center with the specified opacity
+func (img *Image) OverlayCenter(src *Image, opacity float64) *Image {
+	newData := OverlayCenter(img.data, src.data, opacity)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("overlayCenter", fmt.Sprintf("opacity=%.2f", opacity))
+	return &Image{data: newData, metadata: newMeta}
 }

@@ -3,3 +3,6 @@
 /manpages/*.gz
 /completions
 .env
+examples/generator/generator
+examples/metadata/metadata
+metadata

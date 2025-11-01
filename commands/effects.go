@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/razzkumar/imgx"
 	"github.com/urfave/cli/v3"
 )
 
@@ -56,7 +55,7 @@ func blurAction(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Apply blur
-	result := imgx.Blur(img, sigma)
+	result := img.Blur(sigma)
 
 	// Save
 	outputPath := getOutputPath(cmd, inputPath, "-blurred")
@@ -111,7 +110,7 @@ func sharpenAction(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Apply sharpen
-	result := imgx.Sharpen(img, sigma)
+	result := img.Sharpen(sigma)
 
 	// Save
 	outputPath := getOutputPath(cmd, inputPath, "-sharpened")

@@ -97,7 +97,7 @@ func watermarkAction(ctx context.Context, cmd *cli.Command) error {
 		Padding:   padding,
 	}
 
-	result := imgx.Watermark(img, opts)
+	result := img.Watermark(opts)
 
 	// Save
 	outputPath := getOutputPath(cmd, inputPath, "-watermarked")

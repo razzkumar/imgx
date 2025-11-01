@@ -81,16 +81,8 @@ func Decode(r io.Reader, opts ...DecodeOption) (image.Image, error) {
 	return fixOrientation(img, orient), nil
 }
 
-// Open loads an image from file.
-//
-// Examples:
-//
-//	// Load an image from file.
-//	img, err := imaging.Open("test.jpg")
-//
-//	// Load an image and transform it depending on the EXIF orientation tag (if present).
-//	img, err := imaging.Open("test.jpg", imaging.AutoOrientation(true))
-func Open(filename string, opts ...DecodeOption) (image.Image, error) {
+// open loads an image from file (internal use only - use Load() instead).
+func open(filename string, opts ...DecodeOption) (image.Image, error) {
 	file, err := fs.Open(filename)
 	if err != nil {
 		return nil, err
@@ -251,18 +243,8 @@ func Encode(w io.Writer, img image.Image, format Format, opts ...EncodeOption) e
 	return ErrUnsupportedFormat
 }
 
-// Save saves the image to file with the specified filename.
-// The format is determined from the filename extension:
-// "jpg" (or "jpeg"), "png", "gif", "tif" (or "tiff") and "bmp" are supported.
-//
-// Examples:
-//
-//	// Save the image as PNG.
-//	err := imaging.Save(img, "out.png")
-//
-//	// Save the image as JPEG with optional quality parameter set to 80.
-//	err := imaging.Save(img, "out.jpg", imaging.JPEGQuality(80))
-func Save(img image.Image, filename string, opts ...EncodeOption) (err error) {
+// save saves the image to file (internal use only - use img.Save() instead).
+func save(img image.Image, filename string, opts ...EncodeOption) (err error) {
 	f, err := FormatFromFilename(filename)
 	if err != nil {
 		return err

@@ -2,25 +2,21 @@ package commands
 
 import (
 	"fmt"
-	"image"
 
 	"github.com/razzkumar/imgx"
 	"github.com/urfave/cli/v3"
 )
 
 // loadImage loads an image from the specified path, respecting global flags
-func loadImage(cmd *cli.Command, path string) (image.Image, error) {
+func loadImage(cmd *cli.Command, path string) (*imgx.Image, error) {
 	autoOrient := cmd.Bool("auto-orient")
 
-	var img image.Image
-	var err error
-
+	var opts []imgx.LoadOption
 	if autoOrient {
-		img, err = imgx.Open(path, imgx.AutoOrientation(true))
-	} else {
-		img, err = imgx.Open(path)
+		opts = append(opts, imgx.AutoOrient())
 	}
 
+	img, err := imgx.Load(path, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open image: %w", err)
 	}
@@ -34,15 +30,15 @@ func loadImage(cmd *cli.Command, path string) (image.Image, error) {
 }
 
 // saveImage saves an image to the specified path, respecting global flags
-func saveImage(cmd *cli.Command, img image.Image, path string) error {
+func saveImage(cmd *cli.Command, img *imgx.Image, path string) error {
 	quality := cmd.Int("quality")
 	formatName := cmd.String("format")
 
-	var opts []imgx.EncodeOption
+	var opts []imgx.SaveOption
 
 	// Add quality option for JPEG
 	if quality > 0 {
-		opts = append(opts, imgx.JPEGQuality(quality))
+		opts = append(opts, imgx.WithJPEGQuality(quality))
 	}
 
 	// If format is specified, ensure output path has correct extension
@@ -61,7 +57,7 @@ func saveImage(cmd *cli.Command, img image.Image, path string) error {
 		fmt.Printf("Saving: %s (%dx%d)\n", path, bounds.Dx(), bounds.Dy())
 	}
 
-	err := imgx.Save(img, path, opts...)
+	err := img.Save(path, opts...)
 	if err != nil {
 		return fmt.Errorf("failed to save image: %w", err)
 	}

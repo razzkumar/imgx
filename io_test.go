@@ -108,12 +108,12 @@ func TestOpenSave(t *testing.T) {
 		}
 
 		for _, opts := range options {
-			err := Save(img, filename, opts...)
+			err := save(img, filename, opts...)
 			if err != nil {
 				t.Fatalf("failed to save image (%q): %v", filename, err)
 			}
 
-			img2, err := Open(filename)
+			img2, err := open(filename)
 			if err != nil {
 				t.Fatalf("failed to open image (%q): %v", filename, err)
 			}
@@ -148,7 +148,7 @@ func TestOpenSave(t *testing.T) {
 		t.Fatalf("decoding bad data: expected error got nil")
 	}
 
-	err = Save(imgWithAlpha, filepath.Join(dir, "test.unknown"))
+	err = save(imgWithAlpha, filepath.Join(dir, "test.unknown"))
 	if err != ErrUnsupportedFormat {
 		t.Fatalf("got %v want ErrUnsupportedFormat", err)
 	}
@@ -157,17 +157,17 @@ func TestOpenSave(t *testing.T) {
 	fs = badFS{}
 	defer func() { fs = prevFS }()
 
-	err = Save(imgWithAlpha, "test.jpg")
+	err = save(imgWithAlpha, "test.jpg")
 	if err != errCreate {
 		t.Fatalf("got error %v want errCreate", err)
 	}
 
-	err = Save(imgWithAlpha, "badFile.jpg")
+	err = save(imgWithAlpha, "badFile.jpg")
 	if err != errClose {
 		t.Fatalf("got error %v want errClose", err)
 	}
 
-	_, err = Open("test.jpg")
+	_, err = open("test.jpg")
 	if err != errOpen {
 		t.Fatalf("got error %v want errOpen", err)
 	}
@@ -418,7 +418,7 @@ func TestAutoOrientation(t *testing.T) {
 		{"testdata/orientation_8.jpg"},
 	}
 	for _, tc := range testCases {
-		img, err := Open(tc.path, AutoOrientation(true))
+		img, err := open(tc.path, AutoOrientation(true))
 		if err != nil {
 			t.Fatal(err)
 		}

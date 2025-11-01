@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/razzkumar/imgx"
 	"github.com/urfave/cli/v3"
 )
 
@@ -75,40 +74,39 @@ func adjustAction(ctx context.Context, cmd *cli.Command) error {
 
 	// Apply adjustments in order
 	result := img
-
 	if brightness != 0 {
 		if cmd.Bool("verbose") {
 			fmt.Printf("Applying brightness: %.1f\n", brightness)
 		}
-		result = imgx.AdjustBrightness(result, brightness)
+		result = result.AdjustBrightness(brightness)
 	}
 
 	if contrast != 0 {
 		if cmd.Bool("verbose") {
 			fmt.Printf("Applying contrast: %.1f\n", contrast)
 		}
-		result = imgx.AdjustContrast(result, contrast)
+		result = result.AdjustContrast(contrast)
 	}
 
 	if gamma != 1.0 {
 		if cmd.Bool("verbose") {
 			fmt.Printf("Applying gamma: %.2f\n", gamma)
 		}
-		result = imgx.AdjustGamma(result, gamma)
+		result = result.AdjustGamma(gamma)
 	}
 
 	if saturation != 0 {
 		if cmd.Bool("verbose") {
 			fmt.Printf("Applying saturation: %.1f\n", saturation)
 		}
-		result = imgx.AdjustSaturation(result, saturation)
+		result = result.AdjustSaturation(saturation)
 	}
 
 	if hue != 0 {
 		if cmd.Bool("verbose") {
 			fmt.Printf("Applying hue shift: %.1f degrees\n", hue)
 		}
-		result = imgx.AdjustHue(result, hue)
+		result = result.AdjustHue(hue)
 	}
 
 	// Save
@@ -143,7 +141,7 @@ func grayscaleAction(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Convert to grayscale
-	result := imgx.Grayscale(img)
+	result := img.Grayscale()
 
 	// Save
 	outputPath := getOutputPath(cmd, inputPath, "-grayscale")
@@ -177,7 +175,7 @@ func invertAction(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Invert
-	result := imgx.Invert(img)
+	result := img.Invert()
 
 	// Save
 	outputPath := getOutputPath(cmd, inputPath, "-inverted")

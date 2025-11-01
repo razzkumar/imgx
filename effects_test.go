@@ -8,13 +8,13 @@ import (
 func TestBlur(t *testing.T) {
 	testCases := []struct {
 		name  string
-		src   image.Image
+		src   *Image
 		sigma float64
 		want  *image.NRGBA
 	}{
 		{
 			"Blur 3x3 0",
-			&image.NRGBA{
+			FromImage(&image.NRGBA{
 				Rect:   image.Rect(-1, -1, 2, 2),
 				Stride: 3 * 4,
 				Pix: []uint8{
@@ -22,7 +22,7 @@ func TestBlur(t *testing.T) {
 					0x00, 0x00, 0x00, 0x00, 0x66, 0xaa, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
 					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				},
-			},
+			}),
 			0.0,
 			&image.NRGBA{
 				Rect:   image.Rect(0, 0, 3, 3),
@@ -36,7 +36,7 @@ func TestBlur(t *testing.T) {
 		},
 		{
 			"Blur 3x3 0.5",
-			&image.NRGBA{
+			FromImage(&image.NRGBA{
 				Rect:   image.Rect(-1, -1, 2, 2),
 				Stride: 3 * 4,
 				Pix: []uint8{
@@ -44,7 +44,7 @@ func TestBlur(t *testing.T) {
 					0x00, 0x00, 0x00, 0x00, 0x66, 0xaa, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
 					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				},
-			},
+			}),
 			0.5,
 			&image.NRGBA{
 				Rect:   image.Rect(0, 0, 3, 3),
@@ -58,7 +58,7 @@ func TestBlur(t *testing.T) {
 		},
 		{
 			"Blur 3x3 10",
-			&image.NRGBA{
+			FromImage(&image.NRGBA{
 				Rect:   image.Rect(-1, -1, 2, 2),
 				Stride: 3 * 4,
 				Pix: []uint8{
@@ -66,7 +66,7 @@ func TestBlur(t *testing.T) {
 					0x00, 0x00, 0x00, 0x00, 0x66, 0xaa, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
 					0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 				},
-			},
+			}),
 			10,
 			&image.NRGBA{
 				Rect:   image.Rect(0, 0, 3, 3),
@@ -81,7 +81,7 @@ func TestBlur(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := Blur(tc.src, tc.sigma)
+			got := tc.src.Blur(tc.sigma).ToNRGBA()
 			if !compareNRGBA(got, tc.want, 0) {
 				t.Fatalf("got result %#v want %#v", got, tc.want)
 			}
@@ -95,12 +95,12 @@ func TestBlurGolden(t *testing.T) {
 		"out_blur_0.5.png": 0.5,
 		"out_blur_1.5.png": 1.5,
 	} {
-		got := Blur(testdataFlowerJPG, sigma)
-		want, err := Open("testdata/" + name)
+		got := testdataFlowerJPG.Blur(sigma).ToNRGBA()
+		want, err := Load("testdata/" + name)
 		if err != nil {
 			t.Fatalf("failed to open image: %v", err)
 		}
-		if !compareNRGBAGolden(got, toNRGBA(want)) {
+		if !compareNRGBAGolden(got, want.ToNRGBA()) {
 			t.Fatalf("resulting image differs from golden: %s", name)
 		}
 	}
@@ -109,20 +109,20 @@ func TestBlurGolden(t *testing.T) {
 func BenchmarkBlur(b *testing.B) {
 	b.ReportAllocs()
 	for b.Loop() {
-		Blur(testdataBranchJPG, 3)
+		testdataBranchJPG.Blur(3)
 	}
 }
 
 func TestSharpen(t *testing.T) {
 	testCases := []struct {
 		name  string
-		src   image.Image
+		src   *Image
 		sigma float64
 		want  *image.NRGBA
 	}{
 		{
 			"Sharpen 3x3 0",
-			&image.NRGBA{
+			FromImage(&image.NRGBA{
 				Rect:   image.Rect(-1, -1, 2, 2),
 				Stride: 3 * 4,
 				Pix: []uint8{
@@ -130,7 +130,7 @@ func TestSharpen(t *testing.T) {
 					0x66, 0x66, 0x66, 0x66, 0x77, 0x77, 0x77, 0x77, 0x66, 0x66, 0x66, 0x66,
 					0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
 				},
-			},
+			}),
 			0,
 			&image.NRGBA{
 				Rect:   image.Rect(0, 0, 3, 3),
@@ -144,7 +144,7 @@ func TestSharpen(t *testing.T) {
 		},
 		{
 			"Sharpen 3x3 0.5",
-			&image.NRGBA{
+			FromImage(&image.NRGBA{
 				Rect:   image.Rect(-1, -1, 2, 2),
 				Stride: 3 * 4,
 				Pix: []uint8{
@@ -152,7 +152,7 @@ func TestSharpen(t *testing.T) {
 					0x66, 0x66, 0x66, 0x66, 0x77, 0x77, 0x77, 0x77, 0x66, 0x66, 0x66, 0x66,
 					0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
 				},
-			},
+			}),
 			0.5,
 			&image.NRGBA{
 				Rect:   image.Rect(0, 0, 3, 3),
@@ -166,7 +166,7 @@ func TestSharpen(t *testing.T) {
 		},
 		{
 			"Sharpen 3x3 100",
-			&image.NRGBA{
+			FromImage(&image.NRGBA{
 				Rect:   image.Rect(-1, -1, 2, 2),
 				Stride: 3 * 4,
 				Pix: []uint8{
@@ -174,7 +174,7 @@ func TestSharpen(t *testing.T) {
 					0x66, 0x66, 0x66, 0x66, 0x77, 0x77, 0x77, 0x77, 0x66, 0x66, 0x66, 0x66,
 					0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
 				},
-			},
+			}),
 			100,
 			&image.NRGBA{
 				Rect:   image.Rect(0, 0, 3, 3),
@@ -188,13 +188,13 @@ func TestSharpen(t *testing.T) {
 		},
 		{
 			"Sharpen 3x1 10",
-			&image.NRGBA{
+			FromImage(&image.NRGBA{
 				Rect:   image.Rect(-1, -1, 2, 0),
 				Stride: 3 * 4,
 				Pix: []uint8{
 					0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff,
 				},
-			},
+			}),
 			10,
 			&image.NRGBA{
 				Rect:   image.Rect(0, 0, 3, 1),
@@ -207,7 +207,7 @@ func TestSharpen(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			got := Sharpen(tc.src, tc.sigma)
+			got := tc.src.Sharpen(tc.sigma).ToNRGBA()
 			if !compareNRGBA(got, tc.want, 0) {
 				t.Fatalf("got result %#v want %#v", got, tc.want)
 			}
@@ -221,12 +221,12 @@ func TestSharpenGolden(t *testing.T) {
 		"out_sharpen_0.5.png": 0.5,
 		"out_sharpen_1.5.png": 1.5,
 	} {
-		got := Sharpen(testdataFlowerJPG, sigma)
-		want, err := Open("testdata/" + name)
+		got := testdataFlowerJPG.Sharpen(sigma).ToNRGBA()
+		want, err := Load("testdata/" + name)
 		if err != nil {
 			t.Fatalf("failed to open image: %v", err)
 		}
-		if !compareNRGBAGolden(got, toNRGBA(want)) {
+		if !compareNRGBAGolden(got, want.ToNRGBA()) {
 			t.Fatalf("resulting image differs from golden: %s", name)
 		}
 	}
@@ -235,6 +235,6 @@ func TestSharpenGolden(t *testing.T) {
 func BenchmarkSharpen(b *testing.B) {
 	b.ReportAllocs()
 	for b.Loop() {
-		Sharpen(testdataBranchJPG, 3)
+		testdataBranchJPG.Sharpen(3)
 	}
 }

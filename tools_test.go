@@ -384,7 +384,7 @@ func TestCrop(t *testing.T) {
 func BenchmarkCrop(b *testing.B) {
 	b.ReportAllocs()
 	for b.Loop() {
-		Crop(testdataBranchJPG, image.Rect(100, 100, 300, 300))
+		testdataBranchJPG.Crop( image.Rect(100, 100, 300, 300))
 	}
 }
 
@@ -963,7 +963,7 @@ func TestPaste(t *testing.T) {
 func BenchmarkPaste(b *testing.B) {
 	b.ReportAllocs()
 	for b.Loop() {
-		Paste(testdataBranchJPG, testdataFlowerJPG, image.Pt(100, 100))
+		testdataBranchJPG.Paste(testdataFlowerJPG, image.Pt(100, 100))
 	}
 }
 
@@ -1124,7 +1124,7 @@ func TestOverlay(t *testing.T) {
 func BenchmarkOverlay(b *testing.B) {
 	b.ReportAllocs()
 	for b.Loop() {
-		Overlay(testdataBranchJPG, testdataFlowerJPG, image.Pt(100, 100), 0.5)
+		testdataBranchJPG.Overlay(testdataFlowerJPG, image.Pt(100, 100), 0.5)
 	}
 }
 

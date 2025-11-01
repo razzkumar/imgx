@@ -13,8 +13,8 @@ var (
 	testdataFlowerJPG = mustOpen("testdata/flower.jpg")
 )
 
-func mustOpen(filename string) image.Image {
-	img, err := Open(filename)
+func mustOpen(filename string) *Image {
+	img, err := Load(filename)
 	if err != nil {
 		panic(err)
 	}

@@ -1,6 +1,7 @@
 package imgx
 
 import (
+	"fmt"
 	"image"
 	"math"
 )
@@ -605,5 +606,108 @@ func init() {
 			}
 			return 0
 		},
+	}
+}
+
+// Resize resizes the image to the specified width and height using the specified resampling filter.
+// If width or height is 0, it will be calculated to preserve the aspect ratio.
+func (img *Image) Resize(width, height int, filter ResampleFilter) *Image {
+	newData := Resize(img.data, width, height, filter)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("resize", formatResizeParams(width, height, filter))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Fit scales the image down to fit within the specified maximum width and height while preserving aspect ratio.
+func (img *Image) Fit(width, height int, filter ResampleFilter) *Image {
+	newData := Fit(img.data, width, height, filter)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("fit", formatResizeParams(width, height, filter))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Fill resizes and crops the image to fill the specified dimensions using the specified anchor point.
+func (img *Image) Fill(width, height int, anchor Anchor, filter ResampleFilter) *Image {
+	newData := Fill(img.data, width, height, anchor, filter)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("fill", formatFillParams(width, height, anchor, filter))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Thumbnail creates a square thumbnail by cropping and resizing the image.
+func (img *Image) Thumbnail(width, height int, filter ResampleFilter) *Image {
+	newData := Thumbnail(img.data, width, height, filter)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("thumbnail", formatResizeParams(width, height, filter))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+func formatResizeParams(width, height int, filter ResampleFilter) string {
+	return fmt.Sprintf("%dx%d, filter=%s", width, height, formatFilterName(filter))
+}
+
+func formatFillParams(width, height int, anchor Anchor, filter ResampleFilter) string {
+	return fmt.Sprintf("%dx%d, anchor=%s, filter=%s", width, height, formatAnchorName(anchor), formatFilterName(filter))
+}
+
+func formatFilterName(filter ResampleFilter) string {
+	switch filter.Support {
+	case NearestNeighbor.Support:
+		return "NearestNeighbor"
+	case Box.Support:
+		return "Box"
+	case Linear.Support:
+		return "Linear"
+	case Hermite.Support:
+		return "Hermite"
+	case MitchellNetravali.Support:
+		return "MitchellNetravali"
+	case CatmullRom.Support:
+		return "CatmullRom"
+	case BSpline.Support:
+		return "BSpline"
+	case Gaussian.Support:
+		return "Gaussian"
+	case Lanczos.Support:
+		return "Lanczos"
+	case Hann.Support:
+		return "Hann"
+	case Hamming.Support:
+		return "Hamming"
+	case Blackman.Support:
+		return "Blackman"
+	case Bartlett.Support:
+		return "Bartlett"
+	case Welch.Support:
+		return "Welch"
+	case Cosine.Support:
+		return "Cosine"
+	default:
+		return "Custom"
+	}
+}
+
+func formatAnchorName(anchor Anchor) string {
+	switch anchor {
+	case Center:
+		return "Center"
+	case TopLeft:
+		return "TopLeft"
+	case Top:
+		return "Top"
+	case TopRight:
+		return "TopRight"
+	case Left:
+		return "Left"
+	case Right:
+		return "Right"
+	case BottomLeft:
+		return "BottomLeft"
+	case Bottom:
+		return "Bottom"
+	case BottomRight:
+		return "BottomRight"
+	default:
+		return "Unknown"
 	}
 }

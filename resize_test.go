@@ -250,12 +250,12 @@ func TestResizeGolden(t *testing.T) {
 		"out_resize_catrom.png":  CatmullRom,
 		"out_resize_lanczos.png": Lanczos,
 	} {
-		got := Resize(testdataBranchJPG, 150, 0, filter)
-		want, err := Open("testdata/" + name)
+		got := testdataBranchJPG.Resize(150, 0, filter).ToNRGBA()
+		want, err := Load("testdata/" + name)
 		if err != nil {
 			t.Fatalf("failed to open image: %v", err)
 		}
-		if !compareNRGBAGolden(got, toNRGBA(want)) {
+		if !compareNRGBAGolden(got, want.ToNRGBA()) {
 			t.Fatalf("resulting image differs from golden: %s", name)
 		}
 	}
@@ -378,13 +378,13 @@ func TestFit(t *testing.T) {
 
 func TestFitGolden(t *testing.T) {
 	t.Skip("golden test images removed from testdata")
-	got := Fit(testdataBranchJPG, 150, 150, Box)
+	got := testdataBranchJPG.Fit(150, 150, Box).ToNRGBA()
 	name := filepath.Join("testdata", "out_fit.png")
-	want, err := Open(name)
+	want, err := Load(name)
 	if err != nil {
 		t.Fatalf("failed to open image: %v", err)
 	}
-	if !compareNRGBAGolden(got, toNRGBA(want)) {
+	if !compareNRGBAGolden(got, want.ToNRGBA()) {
 		t.Fatalf("resulting image differs from golden: %s", name)
 	}
 }
@@ -484,13 +484,13 @@ func TestFillGolden(t *testing.T) {
 		"right":  Right,
 	}
 	for apName, ap := range anchorPoints {
-		got := Fill(testdataBranchJPG, 150, 150, ap, Box)
+		got := testdataBranchJPG.Fill(150, 150, ap, Box).ToNRGBA()
 		name := filepath.Join("testdata", "out_fill_"+apName+".png")
-		want, err := Open(name)
+		want, err := Load(name)
 		if err != nil {
 			t.Fatalf("failed to open image: %v", err)
 		}
-		if !compareNRGBAGolden(got, toNRGBA(want)) {
+		if !compareNRGBAGolden(got, want.ToNRGBA()) {
 			t.Fatalf("resulting image differs from golden: %s", name)
 		}
 	}
@@ -904,9 +904,9 @@ func BenchmarkResize(b *testing.B) {
 				var img image.Image
 				switch format {
 				case "JPEG":
-					img = testdataBranchJPG
+					img = testdataBranchJPG.ToNRGBA()
 				case "PNG":
-					img = testdataBranchJPG
+					img = testdataBranchJPG.ToNRGBA()
 				}
 
 				b.Run(fmt.Sprintf("%s %s %s", dir, filter, format), func(b *testing.B) {
@@ -949,9 +949,9 @@ func BenchmarkFill(b *testing.B) {
 				var img image.Image
 				switch format {
 				case "JPEG":
-					img = testdataBranchJPG
+					img = testdataBranchJPG.ToNRGBA()
 				case "PNG":
-					img = testdataBranchJPG
+					img = testdataBranchJPG.ToNRGBA()
 				}
 
 				b.Run(fmt.Sprintf("%s %s %s", dir, filter, format), func(b *testing.B) {

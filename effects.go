@@ -1,6 +1,7 @@
 package imgx
 
 import (
+	"fmt"
 	"image"
 	"math"
 )
@@ -150,4 +151,19 @@ func Sharpen(img image.Image, sigma float64) *image.NRGBA {
 	})
 
 	return dst
+}
+// Blur applies Gaussian blur to the image
+func (img *Image) Blur(sigma float64) *Image {
+	newData := Blur(img.data, sigma)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("blur", fmt.Sprintf("sigma=%.2f", sigma))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Sharpen sharpens the image
+func (img *Image) Sharpen(sigma float64) *Image {
+	newData := Sharpen(img.data, sigma)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("sharpen", fmt.Sprintf("sigma=%.2f", sigma))
+	return &Image{data: newData, metadata: newMeta}
 }

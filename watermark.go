@@ -1,6 +1,7 @@
 package imgx
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -216,4 +217,12 @@ func applyOpacity(img *image.NRGBA, opacity float64) {
 			img.Pix[i+3] = uint8(alpha + 0.5)
 		}
 	}
+}
+// Watermark adds a text watermark to the image
+func (img *Image) Watermark(opts WatermarkOptions) *Image {
+	newData := Watermark(img.data, opts)
+	newMeta := img.metadata.Clone()
+	params := fmt.Sprintf("text=%q, position=%s, opacity=%.2f", opts.Text, formatAnchorName(opts.Position), opts.Opacity)
+	newMeta.AddOperation("watermark", params)
+	return &Image{data: newData, metadata: newMeta}
 }

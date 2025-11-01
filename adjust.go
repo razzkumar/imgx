@@ -1,6 +1,7 @@
 package imgx
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"math"
@@ -301,4 +302,68 @@ func AdjustFunc(img image.Image, fn func(c color.NRGBA) color.NRGBA) *image.NRGB
 		}
 	})
 	return dst
+}
+
+// Grayscale converts the image to grayscale
+func (img *Image) Grayscale() *Image {
+	newData := Grayscale(img.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("grayscale", "convert to grayscale")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Invert inverts the colors of the image
+func (img *Image) Invert() *Image {
+	newData := Invert(img.data)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("invert", "invert colors")
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// AdjustContrast adjusts the contrast of the image
+func (img *Image) AdjustContrast(percentage float64) *Image {
+	newData := AdjustContrast(img.data, percentage)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("adjustContrast", fmt.Sprintf("%.1f%%", percentage))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// AdjustBrightness adjusts the brightness of the image
+func (img *Image) AdjustBrightness(percentage float64) *Image {
+	newData := AdjustBrightness(img.data, percentage)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("adjustBrightness", fmt.Sprintf("%.1f%%", percentage))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// AdjustGamma adjusts the gamma of the image
+func (img *Image) AdjustGamma(gamma float64) *Image {
+	newData := AdjustGamma(img.data, gamma)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("adjustGamma", fmt.Sprintf("gamma=%.2f", gamma))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// AdjustSaturation adjusts the saturation of the image
+func (img *Image) AdjustSaturation(percentage float64) *Image {
+	newData := AdjustSaturation(img.data, percentage)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("adjustSaturation", fmt.Sprintf("%.1f%%", percentage))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// AdjustHue adjusts the hue of the image
+func (img *Image) AdjustHue(shift float64) *Image {
+	newData := AdjustHue(img.data, shift)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("adjustHue", fmt.Sprintf("shift=%.1f°", shift))
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// AdjustSigmoid applies a sigmoid function to the image
+func (img *Image) AdjustSigmoid(midpoint, factor float64) *Image {
+	newData := AdjustSigmoid(img.data, midpoint, factor)
+	newMeta := img.metadata.Clone()
+	newMeta.AddOperation("adjustSigmoid", fmt.Sprintf("midpoint=%.2f, factor=%.2f", midpoint, factor))
+	return &Image{data: newData, metadata: newMeta}
 }

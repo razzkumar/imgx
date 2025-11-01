@@ -11,7 +11,7 @@ import (
 func main() {
 	imagePath := "testdata/flower.jpg"
 
-	fmt.Println("=== Metadata Extraction Example ===")
+	fmt.Println("=== Metadata Extraction and Tracking Example ===")
 	fmt.Println()
 
 	// Example 1: Extract all available metadata
@@ -231,6 +231,58 @@ func main() {
 	}
 	fmt.Println()
 
+	// Example 4: Demonstrating metadata tracking with image processing
+	fmt.Println("---")
+	fmt.Println()
+	fmt.Println("4. Processing metadata tracking (new instance-based API)...")
+	fmt.Println()
+
+	// Load image using new instance-based API
+	img, err := imgx.Load(imagePath)
+	if err != nil {
+		log.Fatalf("Failed to load image: %v", err)
+	}
+
+	fmt.Println("Performing image operations with automatic metadata tracking:")
+	fmt.Println()
+
+	// Chain multiple operations - metadata is tracked automatically
+	processed := img.
+		Resize(800, 0, imgx.Lanczos).
+		AdjustContrast(20).
+		AdjustBrightness(10).
+		Sharpen(1.2)
+
+	// Retrieve processing metadata
+	procMetadata := processed.GetMetadata()
+
+	fmt.Printf("Total operations performed: %d\n", len(procMetadata.Operations))
+	fmt.Println()
+	fmt.Println("Operations history:")
+	for i, op := range procMetadata.Operations {
+		fmt.Printf("  %d. %s\n", i+1, op.Action)
+		if op.Parameters != "" {
+			fmt.Printf("     Parameters: %s\n", op.Parameters)
+		}
+		fmt.Printf("     Timestamp: %s\n", op.Timestamp.Format("2006-01-02 15:04:05"))
+	}
+	fmt.Println()
+
+	// Save the processed image (metadata will be written to XMP sidecar)
+	outputPath := "testdata/flower_processed.jpg"
+	if err := processed.Save(outputPath); err != nil {
+		log.Fatalf("Failed to save processed image: %v", err)
+	}
+	fmt.Printf("Processed image saved to: %s\n", outputPath)
+	fmt.Printf("XMP sidecar created: %s\n", outputPath+".xmp")
+	fmt.Println()
+
+	// Example 5: JSON export of all metadata
+	fmt.Println("---")
+	fmt.Println()
+	fmt.Println("5. JSON representation of extracted metadata...")
+	fmt.Println()
+
 	jsonData, err := json.MarshalIndent(metadata, "", "  ")
 	if err != nil {
 		fmt.Println("Error:", err)
@@ -238,6 +290,7 @@ func main() {
 	}
 
 	fmt.Println(string(jsonData))
+	fmt.Println()
 
-	fmt.Println("=== Metadata extraction complete! ===")
+	fmt.Println("=== Metadata extraction and tracking complete! ===")
 }

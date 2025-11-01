@@ -9,77 +9,101 @@ import (
 )
 
 func main() {
-	// Open source images
-	flower, err := imgx.Open("testdata/flower.jpg")
+	// Load source images using new instance-based API
+	flower, err := imgx.Load("testdata/flower.jpg")
 	if err != nil {
-		log.Fatalf("failed to open flower.jpg: %v", err)
+		log.Fatalf("failed to load flower.jpg: %v", err)
 	}
 
-	branch, err := imgx.Open("testdata/branch.jpg")
+	branch, err := imgx.Load("testdata/branch.jpg")
 	if err != nil {
-		log.Fatalf("failed to open branch.jpg: %v", err)
+		log.Fatalf("failed to load branch.jpg: %v", err)
 	}
 
 	// 1. Resize examples
 	log.Println("Creating resize examples...")
-	resized200 := imgx.Resize(flower, 200, 0, imgx.Lanczos)
-	imgx.Save(resized200, "testdata/flower_resized_200.jpg")
+	if err := flower.Resize(200, 0, imgx.Lanczos).Save("testdata/flower_resized_200.jpg"); err != nil {
+		log.Fatalf("failed to save flower_resized_200.jpg: %v", err)
+	}
 
-	resized800 := imgx.Resize(flower, 800, 0, imgx.Lanczos)
-	imgx.Save(resized800, "testdata/flower_resized_800.jpg")
+	if err := flower.Resize(800, 0, imgx.Lanczos).Save("testdata/flower_resized_800.jpg"); err != nil {
+		log.Fatalf("failed to save flower_resized_800.jpg: %v", err)
+	}
 
 	// 2. Fill/Thumbnail example
 	log.Println("Creating thumbnail example...")
-	thumbnail := imgx.Fill(flower, 300, 300, imgx.Center, imgx.Lanczos)
-	imgx.Save(thumbnail, "testdata/flower_thumbnail_300x300.jpg")
+	if err := flower.Fill(300, 300, imgx.Center, imgx.Lanczos).Save("testdata/flower_thumbnail_300x300.jpg"); err != nil {
+		log.Fatalf("failed to save thumbnail: %v", err)
+	}
 
 	// 3. Rotate examples
 	log.Println("Creating rotate examples...")
-	rotated90 := imgx.Rotate90(branch)
-	imgx.Save(rotated90, "testdata/branch_rotated_90.jpg")
+	if err := branch.Rotate90().Save("testdata/branch_rotated_90.jpg"); err != nil {
+		log.Fatalf("failed to save rotated image: %v", err)
+	}
 
-	rotated45 := imgx.Rotate(branch, 45, color.NRGBA{255, 255, 255, 255})
-	imgx.Save(rotated45, "testdata/branch_rotated_45.jpg")
+	if err := branch.Rotate(45, color.NRGBA{255, 255, 255, 255}).Save("testdata/branch_rotated_45.jpg"); err != nil {
+		log.Fatalf("failed to save rotated image: %v", err)
+	}
 
 	// 4. Blur examples
 	log.Println("Creating blur examples...")
-	blurred := imgx.Blur(flower, 2.0)
-	imgx.Save(blurred, "testdata/flower_blur_2.jpg")
+	if err := flower.Blur(2.0).Save("testdata/flower_blur_2.jpg"); err != nil {
+		log.Fatalf("failed to save blurred image: %v", err)
+	}
 
 	// 5. Sharpen example
 	log.Println("Creating sharpen example...")
-	sharpened := imgx.Sharpen(flower, 1.5)
-	imgx.Save(sharpened, "testdata/flower_sharpen_1.5.jpg")
+	if err := flower.Sharpen(1.5).Save("testdata/flower_sharpen_1.5.jpg"); err != nil {
+		log.Fatalf("failed to save sharpened image: %v", err)
+	}
 
-	// 6. Color adjustments
+	// 6. Color adjustments - demonstrating method chaining
 	log.Println("Creating color adjustment examples...")
-	brightness := imgx.AdjustBrightness(flower, 30)
-	imgx.Save(brightness, "testdata/flower_brightness_30.jpg")
+	if err := flower.AdjustBrightness(30).Save("testdata/flower_brightness_30.jpg"); err != nil {
+		log.Fatalf("failed to save brightness adjusted image: %v", err)
+	}
 
-	contrast := imgx.AdjustContrast(flower, 30)
-	imgx.Save(contrast, "testdata/flower_contrast_30.jpg")
+	if err := flower.AdjustContrast(30).Save("testdata/flower_contrast_30.jpg"); err != nil {
+		log.Fatalf("failed to save contrast adjusted image: %v", err)
+	}
 
-	saturation := imgx.AdjustSaturation(flower, 50)
-	imgx.Save(saturation, "testdata/flower_saturation_50.jpg")
+	if err := flower.AdjustSaturation(50).Save("testdata/flower_saturation_50.jpg"); err != nil {
+		log.Fatalf("failed to save saturation adjusted image: %v", err)
+	}
 
-	grayscale := imgx.Grayscale(flower)
-	imgx.Save(grayscale, "testdata/flower_grayscale.jpg")
+	if err := flower.Grayscale().Save("testdata/flower_grayscale.jpg"); err != nil {
+		log.Fatalf("failed to save grayscale image: %v", err)
+	}
 
 	// 7. Flip examples
 	log.Println("Creating flip examples...")
-	flippedH := imgx.FlipH(branch)
-	imgx.Save(flippedH, "testdata/branch_flip_horizontal.jpg")
+	if err := branch.FlipH().Save("testdata/branch_flip_horizontal.jpg"); err != nil {
+		log.Fatalf("failed to save flipped image: %v", err)
+	}
 
-	// 8. Watermark example (using branch as watermark on flower)
+	// 8. Watermark example with method chaining
 	log.Println("Creating watermark example...")
 	// Resize branch to be smaller for watermark
-	watermark := imgx.Resize(branch, 150, 0, imgx.Lanczos)
+	watermark := branch.Resize(150, 0, imgx.Lanczos)
 	// Position in bottom-right
 	flowerBounds := flower.Bounds()
 	wmBounds := watermark.Bounds()
 	pos := image.Pt(flowerBounds.Dx()-wmBounds.Dx()-20, flowerBounds.Dy()-wmBounds.Dy()-20)
-	watermarked := imgx.Overlay(flower, watermark, pos, 0.6)
-	imgx.Save(watermarked, "testdata/flower_watermarked.jpg")
+	if err := flower.Overlay(watermark, pos, 0.6).Save("testdata/flower_watermarked.jpg"); err != nil {
+		log.Fatalf("failed to save watermarked image: %v", err)
+	}
+
+	// 9. Demonstrate complex method chaining
+	log.Println("Creating complex chained transformation...")
+	if err := flower.
+		Resize(400, 0, imgx.Lanczos).
+		AdjustContrast(20).
+		AdjustSaturation(30).
+		Sharpen(1.0).
+		Save("testdata/flower_complex_chain.jpg"); err != nil {
+		log.Fatalf("failed to save chained transformation: %v", err)
+	}
 
 	log.Println("All example images generated successfully!")
 }

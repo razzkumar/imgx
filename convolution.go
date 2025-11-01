@@ -1,6 +1,7 @@
 package imgx
 
 import (
+	"fmt"
 	"image"
 )
 
@@ -134,4 +135,27 @@ func normalizeKernel(kernel []float64) {
 			kernel[i] /= sumpos
 		}
 	}
+}
+// Convolve3x3 applies a 3x3 convolution kernel to the image
+func (img *Image) Convolve3x3(kernel [9]float64, options *ConvolveOptions) *Image {
+	newData := Convolve3x3(img.data, kernel, options)
+	newMeta := img.metadata.Clone()
+	opts := ""
+	if options != nil {
+		opts = fmt.Sprintf("normalize=%v, abs=%v, bias=%d", options.Normalize, options.Abs, options.Bias)
+	}
+	newMeta.AddOperation("convolve3x3", opts)
+	return &Image{data: newData, metadata: newMeta}
+}
+
+// Convolve5x5 applies a 5x5 convolution kernel to the image
+func (img *Image) Convolve5x5(kernel [25]float64, options *ConvolveOptions) *Image {
+	newData := Convolve5x5(img.data, kernel, options)
+	newMeta := img.metadata.Clone()
+	opts := ""
+	if options != nil {
+		opts = fmt.Sprintf("normalize=%v, abs=%v, bias=%d", options.Normalize, options.Abs, options.Bias)
+	}
+	newMeta.AddOperation("convolve5x5", opts)
+	return &Image{data: newData, metadata: newMeta}
 }

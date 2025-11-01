@@ -225,7 +225,7 @@ func extractBasicMetadata(src string) (*ImageMetadata, error) {
 	}
 
 	// Open and decode image
-	img, err := Open(src)
+	img, err := open(src)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open image: %w", err)
 	}

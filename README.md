@@ -92,17 +92,17 @@ import (
 )
 
 func main() {
-    // Open an image file
-    src, err := imgx.Open("input.jpg")
+    // Load an image file
+    img, err := imgx.Load("input.jpg")
     if err != nil {
-        log.Fatalf("failed to open image: %v", err)
+        log.Fatalf("failed to load image: %v", err)
     }
 
     // Resize to width 800px, maintaining aspect ratio
-    dst := imgx.Resize(src, 800, 0, imgx.Lanczos)
+    img = img.Resize(800, 0, imgx.Lanczos)
 
-    // Save the result
-    err = imgx.Save(dst, "output.jpg")
+    // Save the result (with automatic metadata tracking)
+    err = img.Save("output.jpg")
     if err != nil {
         log.Fatalf("failed to save image: %v", err)
     }
@@ -112,17 +112,20 @@ func main() {
 ### Image resizing
 
 ```go
-// Resize srcImage to size = 128x128px using the Lanczos filter.
-dstImage128 := imgx.Resize(srcImage, 128, 128, imgx.Lanczos)
+// Load an image
+img, _ := imgx.Load("input.jpg")
 
-// Resize srcImage to width = 800px preserving the aspect ratio.
-dstImage800 := imgx.Resize(srcImage, 800, 0, imgx.Lanczos)
+// Resize to size = 128x128px using the Lanczos filter.
+img128 := img.Resize(128, 128, imgx.Lanczos)
 
-// Scale down srcImage to fit the 800x600px bounding box.
-dstImageFit := imgx.Fit(srcImage, 800, 600, imgx.Lanczos)
+// Resize to width = 800px preserving the aspect ratio.
+img800 := img.Resize(800, 0, imgx.Lanczos)
 
-// Resize and crop the srcImage to fill the 100x100px area.
-dstImageFill := imgx.Fill(srcImage, 100, 100, imgx.Center, imgx.Lanczos)
+// Scale down to fit the 800x600px bounding box.
+imgFit := img.Fit(800, 600, imgx.Lanczos)
+
+// Resize and crop to fill the 100x100px area.
+imgFill := img.Fill(100, 100, imgx.Center, imgx.Lanczos)
 ```
 
 **Example Output:**
@@ -157,17 +160,20 @@ From faster (lower quality) to slower (higher quality): `NearestNeighbor`, `Line
 ### Image Rotation
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Rotate 90 degrees clockwise
-rotated90 := imgx.Rotate90(srcImage)
+rotated90 := img.Rotate90()
 
 // Rotate 180 degrees
-rotated180 := imgx.Rotate180(srcImage)
+rotated180 := img.Rotate180()
 
 // Rotate 270 degrees clockwise (90 counter-clockwise)
-rotated270 := imgx.Rotate270(srcImage)
+rotated270 := img.Rotate270()
 
 // Rotate arbitrary angle (45 degrees) with white background
-rotated45 := imgx.Rotate(srcImage, 45, color.White)
+rotated45 := img.Rotate(45, color.White)
 ```
 
 **Example Output:**
@@ -187,11 +193,14 @@ rotated45 := imgx.Rotate(srcImage, 45, color.White)
 ### Image Flipping
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Flip horizontally
-flippedH := imgx.FlipH(srcImage)
+flippedH := img.FlipH()
 
 // Flip vertically
-flippedV := imgx.FlipV(srcImage)
+flippedV := img.FlipV()
 ```
 
 **Example Output:**
@@ -208,14 +217,17 @@ flippedV := imgx.FlipV(srcImage)
 ### Gaussian Blur
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Light blur
-lightBlur := imgx.Blur(srcImage, 0.5)
+lightBlur := img.Blur(0.5)
 
 // Medium blur
-mediumBlur := imgx.Blur(srcImage, 2.0)
+mediumBlur := img.Blur(2.0)
 
 // Heavy blur
-heavyBlur := imgx.Blur(srcImage, 5.0)
+heavyBlur := img.Blur(5.0)
 ```
 
 Sigma parameter allows to control the strength of the blurring effect. Higher values create stronger blur.
@@ -233,14 +245,17 @@ Sigma parameter allows to control the strength of the blurring effect. Higher va
 ### Sharpening
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Light sharpening
-lightSharp := imgx.Sharpen(srcImage, 0.5)
+lightSharp := img.Sharpen(0.5)
 
 // Medium sharpening
-mediumSharp := imgx.Sharpen(srcImage, 1.0)
+mediumSharp := img.Sharpen(1.0)
 
 // Heavy sharpening
-heavySharp := imgx.Sharpen(srcImage, 2.0)
+heavySharp := img.Sharpen(2.0)
 ```
 
 `Sharpen` uses unsharp mask technique internally. Sigma parameter controls the strength of the sharpening effect.
@@ -260,21 +275,27 @@ heavySharp := imgx.Sharpen(srcImage, 2.0)
 #### Gamma Correction
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Darken image (gamma < 1.0)
-darker := imgx.AdjustGamma(srcImage, 0.5)
+darker := img.AdjustGamma(0.5)
 
 // Lighten image (gamma > 1.0)
-lighter := imgx.AdjustGamma(srcImage, 1.5)
+lighter := img.AdjustGamma(1.5)
 ```
 
 #### Contrast Adjustment
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Decrease contrast
-lowContrast := imgx.AdjustContrast(srcImage, -20)
+lowContrast := img.AdjustContrast(-20)
 
 // Increase contrast
-highContrast := imgx.AdjustContrast(srcImage, 20)
+highContrast := img.AdjustContrast(20)
 ```
 
 Range: -100 (min contrast) to 100 (max contrast)
@@ -292,11 +313,14 @@ Range: -100 (min contrast) to 100 (max contrast)
 #### Brightness Adjustment
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Decrease brightness
-darker := imgx.AdjustBrightness(srcImage, -20)
+darker := img.AdjustBrightness(-20)
 
 // Increase brightness
-brighter := imgx.AdjustBrightness(srcImage, 20)
+brighter := img.AdjustBrightness(20)
 ```
 
 Range: -100 (darkest) to 100 (brightest)
@@ -314,14 +338,17 @@ Range: -100 (darkest) to 100 (brightest)
 #### Saturation Adjustment
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Desaturate (move towards grayscale)
-desaturated := imgx.AdjustSaturation(srcImage, -50)
+desaturated := img.AdjustSaturation(-50)
 
 // Increase saturation (more vivid colors)
-saturated := imgx.AdjustSaturation(srcImage, 50)
+saturated := img.AdjustSaturation(50)
 
 // Complete desaturation
-grayscale := imgx.AdjustSaturation(srcImage, -100)
+grayscale := img.AdjustSaturation(-100)
 ```
 
 Range: -100 (grayscale) to 500 (highly saturated)
@@ -339,11 +366,14 @@ Range: -100 (grayscale) to 500 (highly saturated)
 #### Hue Adjustment
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Shift hue by 20 degrees
-shifted := imgx.AdjustHue(srcImage, 20)
+shifted := img.AdjustHue(20)
 
 // Shift hue by 180 degrees (complementary colors)
-inverted := imgx.AdjustHue(srcImage, 180)
+inverted := img.AdjustHue(180)
 ```
 
 Range: -180 to 180 degrees
@@ -351,8 +381,11 @@ Range: -180 to 180 degrees
 #### Grayscale Conversion
 
 ```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
 // Convert image to grayscale
-gray := imgx.Grayscale(srcImage)
+gray := img.Grayscale()
 ```
 
 **Example Output:**
@@ -365,17 +398,17 @@ gray := imgx.Grayscale(srcImage)
 
 ![Grayscale flower](testdata/flower_grayscale.jpg)
 
-**Example:** Complete color adjustment pipeline
+**Example:** Complete color adjustment pipeline with method chaining
 ```go
-src, _ := imgx.Open("input.jpg")
+// Load and process image with method chaining
+img, _ := imgx.Load("input.jpg")
 
-// Adjust multiple properties
-result := src
-result = imgx.AdjustBrightness(result, 10)
-result = imgx.AdjustContrast(result, 20)
-result = imgx.AdjustSaturation(result, 30)
+// Adjust multiple properties by chaining methods
+result := img.AdjustBrightness(10).
+    AdjustContrast(20).
+    AdjustSaturation(30)
 
-imgx.Save(result, "output_adjusted.jpg")
+result.Save("output_adjusted.jpg")
 ```
 
 ## More Library Usage Examples
@@ -391,21 +424,21 @@ import (
 )
 
 func main() {
-    // Open source image
-    src, err := imgx.Open("photo.jpg")
+    // Load source image
+    img, err := imgx.Load("photo.jpg")
     if err != nil {
         log.Fatal(err)
     }
 
     // Create different thumbnail sizes
-    thumb100 := imgx.Thumbnail(src, 100, 100, imgx.Lanczos)
-    thumb200 := imgx.Thumbnail(src, 200, 200, imgx.Lanczos)
-    thumb400 := imgx.Thumbnail(src, 400, 400, imgx.Lanczos)
+    thumb100 := img.Thumbnail(100, 100, imgx.Lanczos)
+    thumb200 := img.Thumbnail(200, 200, imgx.Lanczos)
+    thumb400 := img.Thumbnail(400, 400, imgx.Lanczos)
 
     // Save thumbnails
-    imgx.Save(thumb100, "thumb_100.jpg")
-    imgx.Save(thumb200, "thumb_200.jpg")
-    imgx.Save(thumb400, "thumb_400.jpg")
+    thumb100.Save("thumb_100.jpg")
+    thumb200.Save("thumb_200.jpg")
+    thumb400.Save("thumb_400.jpg")
 }
 ```
 
@@ -427,23 +460,23 @@ func main() {
     files, _ := filepath.Glob("input/*.jpg")
 
     for _, file := range files {
-        // Open image
-        src, err := imgx.Open(file)
+        // Load image
+        img, err := imgx.Load(file)
         if err != nil {
-            log.Printf("Failed to open %s: %v", file, err)
+            log.Printf("Failed to load %s: %v", file, err)
             continue
         }
 
-        // Process: resize and enhance
-        processed := imgx.Resize(src, 1920, 0, imgx.Lanczos)
-        processed = imgx.AdjustContrast(processed, 10)
-        processed = imgx.Sharpen(processed, 0.5)
+        // Process with method chaining: resize, enhance contrast, and sharpen
+        processed := img.Resize(1920, 0, imgx.Lanczos).
+            AdjustContrast(10).
+            Sharpen(0.5)
 
         // Save with new name
         basename := filepath.Base(file)
         outname := "output/" + strings.TrimSuffix(basename, ".jpg") + "_processed.jpg"
 
-        if err := imgx.Save(processed, outname); err != nil {
+        if err := processed.Save(outname); err != nil {
             log.Printf("Failed to save %s: %v", outname, err)
         }
     }
@@ -462,22 +495,22 @@ import (
 )
 
 func main() {
-    // Open main image
-    src, err := imgx.Open("photo.jpg")
+    // Load main image
+    img, err := imgx.Load("photo.jpg")
     if err != nil {
         log.Fatal(err)
     }
 
-    // Open watermark
-    watermark, err := imgx.Open("watermark.png")
+    // Load watermark
+    watermark, err := imgx.Load("watermark.png")
     if err != nil {
         log.Fatal(err)
     }
 
     // Resize watermark to 20% of image width
-    bounds := src.Bounds()
+    bounds := img.Bounds()
     wmWidth := bounds.Dx() / 5
-    watermark = imgx.Resize(watermark, wmWidth, 0, imgx.Lanczos)
+    watermark = watermark.Resize(wmWidth, 0, imgx.Lanczos)
 
     // Position watermark in bottom-right corner
     wmBounds := watermark.Bounds()
@@ -486,11 +519,9 @@ func main() {
         bounds.Dy()-wmBounds.Dy()-20,
     )
 
-    // Overlay watermark with transparency
-    result := imgx.Overlay(src, watermark, position, 0.6)
-
-    // Save result
-    imgx.Save(result, "watermarked.jpg")
+    // Overlay watermark with transparency and save
+    result := img.Overlay(watermark, position, 0.6)
+    result.Save("watermarked.jpg")
 }
 ```
 
@@ -515,30 +546,25 @@ import (
 )
 
 func main() {
-    src, err := imgx.Open("photo.jpg")
+    img, err := imgx.Load("photo.jpg")
     if err != nil {
         log.Fatal(err)
     }
 
     // Rotate 90 degrees
-    rotated90 := imgx.Rotate90(src)
-    imgx.Save(rotated90, "rotated_90.jpg")
+    img.Rotate90().Save("rotated_90.jpg")
 
     // Rotate 45 degrees with white background
-    rotated45 := imgx.Rotate(src, 45, imgx.White)
-    imgx.Save(rotated45, "rotated_45.jpg")
+    img.Rotate(45, imgx.White).Save("rotated_45.jpg")
 
     // Flip horizontal
-    flipped := imgx.FlipH(src)
-    imgx.Save(flipped, "flipped_h.jpg")
+    img.FlipH().Save("flipped_h.jpg")
 
     // Flip vertical
-    flippedV := imgx.FlipV(src)
-    imgx.Save(flippedV, "flipped_v.jpg")
+    img.FlipV().Save("flipped_v.jpg")
 
     // Transpose (flip + rotate)
-    transposed := imgx.Transpose(src)
-    imgx.Save(transposed, "transposed.jpg")
+    img.Transpose().Save("transposed.jpg")
 }
 ```
 
@@ -553,42 +579,36 @@ import (
 )
 
 func main() {
-    src, err := imgx.Open("photo.jpg")
+    img, err := imgx.Load("photo.jpg")
     if err != nil {
         log.Fatal(err)
     }
 
     // Convert to grayscale
-    gray := imgx.Grayscale(src)
-    imgx.Save(gray, "grayscale.jpg")
+    img.Grayscale().Save("grayscale.jpg")
 
     // Invert colors
-    inverted := imgx.Invert(src)
-    imgx.Save(inverted, "inverted.jpg")
+    img.Invert().Save("inverted.jpg")
 
     // Apply custom convolution (edge detection)
-    edgeDetect := imgx.Convolve3x3(
-        src,
+    img.Convolve3x3(
         [9]float64{
             -1, -1, -1,
             -1,  8, -1,
             -1, -1, -1,
         },
         nil,
-    )
-    imgx.Save(edgeDetect, "edges.jpg")
+    ).Save("edges.jpg")
 
     // Emboss effect
-    emboss := imgx.Convolve3x3(
-        src,
+    img.Convolve3x3(
         [9]float64{
             -1, -1, 0,
             -1,  1, 1,
              0,  1, 1,
         },
         nil,
-    )
-    imgx.Save(emboss, "embossed.jpg")
+    ).Save("embossed.jpg")
 }
 ```
 
@@ -603,21 +623,21 @@ import (
 )
 
 func main() {
-    // Open with auto-orientation from EXIF
-    src, err := imgx.Open("photo.jpg", imgx.AutoOrientation(true))
+    // Load with auto-orientation from EXIF
+    img, err := imgx.Load("photo.jpg", imgx.AutoOrient())
     if err != nil {
         log.Fatal(err)
     }
 
     // Process
-    processed := imgx.Resize(src, 800, 0, imgx.Lanczos)
+    processed := img.Resize(800, 0, imgx.Lanczos)
 
-    // Save as different formats
-    imgx.Save(processed, "output.jpg")  // JPEG
-    imgx.Save(processed, "output.png")  // PNG
-    imgx.Save(processed, "output.gif")  // GIF
-    imgx.Save(processed, "output.tiff") // TIFF
-    imgx.Save(processed, "output.bmp")  // BMP
+    // Save as different formats (format auto-detected from extension)
+    processed.Save("output.jpg")  // JPEG
+    processed.Save("output.png")  // PNG
+    processed.Save("output.gif")  // GIF
+    processed.Save("output.tiff") // TIFF
+    processed.Save("output.bmp")  // BMP
 }
 ```
 
@@ -673,6 +693,124 @@ func main() {
 }
 ```
 
+## Automatic Processing Metadata Tracking
+
+imgx automatically tracks all processing operations applied to images and can embed this information as XMP metadata when saving. This feature provides full transparency about how images were processed.
+
+### How It Works
+
+When you use the instance-based API (`imgx.Load()`, method chaining), imgx automatically:
+1. Records every operation (resize, rotate, adjust, etc.)
+2. Tracks parameters for each operation
+3. Timestamps each operation
+4. Embeds this information as XMP metadata when saving (if exiftool is available)
+
+### Basic Usage
+
+```go
+// Load an image - metadata tracking starts automatically
+img, _ := imgx.Load("photo.jpg")
+
+// Apply operations - each operation is recorded
+result := img.Resize(800, 0, imgx.Lanczos).
+    AdjustBrightness(10).
+    AdjustContrast(20).
+    Sharpen(1.0)
+
+// Save - metadata is automatically embedded in the output file
+result.Save("output.jpg")
+
+// The output.jpg file now contains XMP metadata with:
+// - Software: imgx v1.0.0
+// - Processing history: resize, adjust brightness, adjust contrast, sharpen
+// - Parameters for each operation
+// - Timestamps for each operation
+```
+
+### Disabling Metadata
+
+There are three ways to disable metadata tracking:
+
+**1. Per-Image (at load time):**
+```go
+// Disable metadata for a specific image
+img, _ := imgx.Load("photo.jpg", imgx.DisableMetadata())
+img.Resize(800, 0, imgx.Lanczos).Save("output.jpg")  // No metadata written
+```
+
+**2. Per-Save Operation:**
+```go
+// Process with metadata tracking, but don't write it
+img, _ := imgx.Load("photo.jpg")
+result := img.Resize(800, 0, imgx.Lanczos)
+result.Save("output.jpg", imgx.WithoutMetadata())  // Skip metadata on save
+```
+
+**3. Globally (environment variable):**
+```bash
+# Disable metadata for all operations
+export IMGX_ADD_METADATA=false
+
+# Or in code:
+imgx.SetAddMetadata(false)
+```
+
+### Working with Standard Library
+
+The instance-based API is fully compatible with Go's standard `image.Image` interface:
+
+```go
+// Load from standard library image
+var stdImg image.Image = loadFromSomewhere()
+img := imgx.FromImage(stdImg)
+
+// Process with metadata tracking
+result := img.Resize(800, 0, imgx.Lanczos)
+
+// Convert back to standard library type if needed
+nrgba := result.ToNRGBA()
+```
+
+### Method Chaining
+
+All processing methods return new `*imgx.Image` instances, allowing for clean method chaining:
+
+```go
+img, _ := imgx.Load("photo.jpg")
+
+// Chain multiple operations
+result := img.
+    Resize(1920, 0, imgx.Lanczos).
+    CropCenter(1200, 800).
+    AdjustBrightness(10).
+    AdjustContrast(15).
+    AdjustSaturation(20).
+    Sharpen(1.0)
+
+result.Save("processed.jpg")
+```
+
+### Migration from Functional API
+
+If you're migrating from the older functional API (`imgx.Open`, `imgx.Resize`, etc.), both APIs are still available:
+
+**Old (Functional API):**
+```go
+img, _ := imgx.Open("input.jpg")
+img = imgx.Resize(img, 800, 0, imgx.Lanczos)
+img = imgx.AdjustContrast(img, 20)
+imgx.Save(img, "output.jpg")
+```
+
+**New (Instance-Based API with metadata):**
+```go
+img, _ := imgx.Load("input.jpg")
+img = img.Resize(800, 0, imgx.Lanczos).AdjustContrast(20)
+img.Save("output.jpg")
+```
+
+The functional API remains available for backward compatibility but does not include automatic metadata tracking.
+
 ## FAQ
 
 ### Incorrect image orientation after processing (e.g. an image appears rotated after resizing)
@@ -685,7 +823,7 @@ the image orientation is changed after decoding, according to the
 orientation tag (if present). Here's the example:
 
 ```go
-img, err := imgx.Open("test.jpg", imgx.AutoOrientation(true))
+img, err := imgx.Load("test.jpg", imgx.AutoOrient())
 ```
 
 ### What's the difference between `imaging` and `gift` packages?
@@ -712,32 +850,26 @@ import (
 )
 
 func main() {
-	// Open a test image.
-	src, err := imgx.Open("testdata/flower.jpg")
+	// Load a test image.
+	img, err := imgx.Load("testdata/flower.jpg")
 	if err != nil {
-		log.Fatalf("failed to open image: %v", err)
+		log.Fatalf("failed to load image: %v", err)
 	}
 
-	// Crop the original image to 300x300px size using the center anchor.
-	src = imgx.CropAnchor(src, 300, 300, imgx.Center)
-
-	// Resize the cropped image to width = 200px preserving the aspect ratio.
-	src = imgx.Resize(src, 200, 0, imgx.Lanczos)
+	// Crop and resize using method chaining
+	src := img.CropAnchor(300, 300, imgx.Center).Resize(200, 0, imgx.Lanczos)
 
 	// Create a blurred version of the image.
-	img1 := imgx.Blur(src, 5)
+	img1 := src.Blur(5)
 
-	// Create a grayscale version of the image with higher contrast and sharpness.
-	img2 := imgx.Grayscale(src)
-	img2 = imgx.AdjustContrast(img2, 20)
-	img2 = imgx.Sharpen(img2, 2)
+	// Create a grayscale version with higher contrast and sharpness.
+	img2 := src.Grayscale().AdjustContrast(20).Sharpen(2)
 
 	// Create an inverted version of the image.
-	img3 := imgx.Invert(src)
+	img3 := src.Invert()
 
-	// Create an embossed version of the image using a convolution filter.
-	img4 := imgx.Convolve3x3(
-		src,
+	// Create an embossed version using a convolution filter.
+	img4 := src.Convolve3x3(
 		[9]float64{
 			-1, -1, 0,
 			-1, 1, 1,
@@ -747,14 +879,14 @@ func main() {
 	)
 
 	// Create a new 400x400px image and paste the four produced images into it.
-	dst := imgx.New(400, 400, color.NRGBA{0, 0, 0, 0})
-	dst = imgx.Paste(dst, img1, image.Pt(0, 0))      // Top-left: Blurred
-	dst = imgx.Paste(dst, img2, image.Pt(0, 200))    // Bottom-left: Grayscale + Enhanced
-	dst = imgx.Paste(dst, img3, image.Pt(200, 0))    // Top-right: Inverted
-	dst = imgx.Paste(dst, img4, image.Pt(200, 200))  // Bottom-right: Embossed
+	dst := imgx.NewImage(400, 400, color.NRGBA{0, 0, 0, 0})
+	dst = dst.Paste(img1, image.Pt(0, 0))      // Top-left: Blurred
+	dst = dst.Paste(img2, image.Pt(0, 200))    // Bottom-left: Grayscale + Enhanced
+	dst = dst.Paste(img3, image.Pt(200, 0))    // Top-right: Inverted
+	dst = dst.Paste(img4, image.Pt(200, 200))  // Bottom-right: Embossed
 
 	// Save the resulting image as JPEG.
-	err = imgx.Save(dst, "testdata/out_example.jpg")
+	err = dst.Save("testdata/out_example.jpg")
 	if err != nil {
 		log.Fatalf("failed to save image: %v", err)
 	}
@@ -800,6 +932,13 @@ imgx provides a comprehensive set of image processing capabilities:
 - Encode/Decode with custom options
 - Format auto-detection from file extensions
 - Metadata extraction (EXIF, IPTC, XMP with exiftool)
+- Automatic processing metadata tracking and XMP embedding
+
+**API Design:**
+- Instance-based API with method chaining for clean, readable code
+- Automatic operation tracking and metadata embedding
+- Functional API still available for backward compatibility
+- Interoperable with Go's standard `image.Image` interface
 
 **Performance:**
 - Parallel processing across CPU cores
@@ -847,15 +986,18 @@ This project is based on the [imaging](https://github.com/disintegration/imaging
 
 imgx builds upon the original imaging library with several improvements:
 
+- **Instance-based API**: Modern method-chaining API for cleaner, more readable code
+- **Automatic metadata tracking**: Operations are automatically recorded and can be embedded as XMP metadata
 - **Modernized codebase** using Go 1.21+ features:
   - Range over int (`for range 256`)
   - Built-in `min`/`max` functions
   - `WaitGroup.Go()` for goroutine management
   - `b.Loop()` for benchmarks
 - **Improved code organization**: Refactored complex functions for better maintainability
-- **CLI tool**: Full-featured command-line interface for batch processing
+- **CLI tool**: Full-featured command-line interface for batch processing with metadata support
 - **Active development**: Regular updates and new features
 - **Better documentation**: Comprehensive examples and usage guides
+- **Backward compatible**: Functional API still available for existing code
 
 We're grateful to the original author for creating such a solid foundation for image processing in Go!
 

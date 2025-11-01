@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/razzkumar/imgx"
 	"github.com/urfave/cli/v3"
 )
 
@@ -71,7 +70,7 @@ func resizeAction(ctx context.Context, cmd *cli.Command) error {
 	}
 
 	// Resize
-	result := imgx.Resize(img, width, height, filter)
+	result := img.Resize(width, height, filter)
 
 	// Save
 	outputPath := getOutputPath(cmd, inputPath, "-resized")
@@ -132,7 +131,7 @@ func fitAction(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	result := imgx.Fit(img, width, height, filter)
+	result := img.Fit(width, height, filter)
 
 	outputPath := getOutputPath(cmd, inputPath, "-fit")
 	return saveImage(cmd, result, outputPath)
@@ -204,7 +203,7 @@ func fillAction(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	result := imgx.Fill(img, width, height, anchor, filter)
+	result := img.Fill(width, height, anchor, filter)
 
 	outputPath := getOutputPath(cmd, inputPath, "-fill")
 	return saveImage(cmd, result, outputPath)
@@ -257,7 +256,7 @@ func thumbnailAction(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	result := imgx.Thumbnail(img, size, size, filter)
+	result := img.Thumbnail(size, size, filter)
 
 	outputPath := getOutputPath(cmd, inputPath, "-thumb")
 	return saveImage(cmd, result, outputPath)
