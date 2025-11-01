@@ -65,6 +65,9 @@ imgx adjust photo.jpg --brightness 10 --contrast 20 -o adjusted.jpg
 
 # Apply blur effect
 imgx blur photo.jpg --sigma 2.5 -o blurred.jpg
+
+# Extract image metadata (requires exiftool for extended data)
+imgx metadata photo.jpg
 ```
 
 For complete CLI documentation with all commands, options, and examples, see **[CLI Documentation](./CLI.md)**.
@@ -618,6 +621,58 @@ func main() {
 }
 ```
 
+### Example 7: Extract Image Metadata
+
+```go
+package main
+
+import (
+    "fmt"
+    "log"
+    "github.com/razzkumar/imgx"
+)
+
+func main() {
+    // Extract metadata (uses exiftool if available, falls back to basic metadata)
+    metadata, err := imgx.Metadata("photo.jpg")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Display basic information (always available)
+    fmt.Printf("File: %s\n", metadata.FilePath)
+    fmt.Printf("Format: %s\n", metadata.Format)
+    fmt.Printf("Dimensions: %dx%d\n", metadata.Width, metadata.Height)
+    fmt.Printf("Megapixels: %.2f MP\n", metadata.Megapixels)
+
+    // Display extended metadata if available (requires exiftool)
+    if metadata.HasExtended {
+        fmt.Println("\nExtended Metadata:")
+        if metadata.CameraMake != "" {
+            fmt.Printf("Camera: %s %s\n", metadata.CameraMake, metadata.CameraModel)
+        }
+        if metadata.DateTimeOriginal != "" {
+            fmt.Printf("Date Taken: %s\n", metadata.DateTimeOriginal)
+        }
+        if metadata.ISO != "" {
+            fmt.Printf("ISO: %s\n", metadata.ISO)
+        }
+        if metadata.GPSLatitude != "" {
+            fmt.Printf("GPS: %s, %s\n", metadata.GPSLatitude, metadata.GPSLongitude)
+        }
+    } else {
+        fmt.Println("\nNote: Install exiftool for comprehensive metadata")
+    }
+
+    // Extract basic metadata only (skip exiftool check)
+    basicMeta, err := imgx.Metadata("photo.jpg", imgx.WithBasicOnly())
+    if err != nil {
+        log.Fatal(err)
+    }
+    fmt.Printf("\nFile Size: %d bytes\n", basicMeta.FileSize)
+}
+```
+
 ## FAQ
 
 ### Incorrect image orientation after processing (e.g. an image appears rotated after resizing)
@@ -744,6 +799,7 @@ imgx provides a comprehensive set of image processing capabilities:
 - EXIF auto-orientation for JPEG files
 - Encode/Decode with custom options
 - Format auto-detection from file extensions
+- Metadata extraction (EXIF, IPTC, XMP with exiftool)
 
 **Performance:**
 - Parallel processing across CPU cores

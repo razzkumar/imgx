@@ -523,8 +523,11 @@ imgx watermark photo.jpg --text "Watermark" --color ff000080 -o output.jpg
 Display detailed information about an image file.
 
 ```bash
-imgx info <input>
+imgx info <input> [options]
 ```
+
+**Options:**
+- `-e, --extended` - Show extended metadata (requires exiftool)
 
 **Output includes:**
 - File path
@@ -533,13 +536,23 @@ imgx info <input>
 - File size
 - Color model
 
-**Example:**
+**With `--extended` flag (requires exiftool):**
+- Camera information and settings
+- GPS location data
+- Date/time metadata
+- Copyright and authorship
+
+**Examples:**
 
 ```bash
+# Basic info
 imgx info photo.jpg
+
+# Extended metadata
+imgx info photo.jpg --extended
 ```
 
-**Sample output:**
+**Sample basic output:**
 
 ```
 File: photo.jpg
@@ -547,6 +560,179 @@ Format: JPEG
 Dimensions: 1920x1080
 Size: 245.3 KB
 Color Model: *color.modelFunc
+```
+
+**Sample extended output:**
+
+```
+File: photo.jpg
+Format: JPEG
+Dimensions: 1920x1080
+Size: 245.3 KB
+Color Model: *color.modelFunc
+
+Camera:
+  Make: Canon
+  Model: Canon EOS 5D Mark IV
+
+Date Taken: 2024:10:15 14:23:45
+
+Settings:
+  Focal Length: 50.0 mm
+  Aperture: f/1.8
+  ISO: 400
+```
+
+#### `metadata` - Extract comprehensive metadata
+
+Extract and display comprehensive image metadata including EXIF, IPTC, and XMP data.
+
+```bash
+imgx metadata <input> [options]
+```
+
+**Options:**
+- `-b, --basic` - Show basic metadata only (skip exiftool)
+- `-j, --json` - Output metadata as JSON
+
+**Features:**
+
+When **exiftool is installed**, displays:
+- **Camera Information:** Make, model, lens
+- **Camera Settings:** ISO, aperture (f-number), shutter speed, focal length, flash
+- **GPS Location:** Latitude, longitude, altitude
+- **Date/Time:** Original capture date, modification date
+- **Additional Info:** Software, artist, copyright
+- **File Details:** Format, dimensions, aspect ratio, megapixels, file size, color model
+
+When **exiftool is NOT installed**, displays basic metadata:
+- File path, format, and size
+- Image dimensions and aspect ratio
+- Megapixels and color model
+- Warning message with installation instructions
+
+**Examples:**
+
+```bash
+# Display all available metadata
+imgx metadata photo.jpg
+
+# Show basic metadata only (skip exiftool)
+imgx metadata photo.jpg --basic
+
+# Output as JSON for parsing
+imgx metadata photo.jpg --json > metadata.json
+```
+
+**Sample output (with exiftool):**
+
+```
+=== Image Metadata ===
+
+File Information:
+  Path:        photo.jpg
+  Format:      JPEG
+  Size:        2.3 MB
+
+Image Properties:
+  Dimensions:  4000x3000
+  Aspect Ratio: 1.33
+  Megapixels:  12.00 MP
+  Color Model: *color.modelFunc
+
+Camera Information:
+  Make:        Canon
+  Model:       Canon EOS 5D Mark IV
+  Lens:        EF50mm f/1.8 STM
+
+Camera Settings:
+  Focal Length: 50.0 mm
+  Aperture:    f/1.8
+  Shutter:     1/250
+  ISO:         400
+  Flash:       No Flash
+
+Date/Time:
+  Original:    2024:10:15 14:23:45
+  Modified:    2024:10:20 09:15:30
+
+GPS Location:
+  Latitude:    37.7749 N
+  Longitude:   122.4194 W
+  Altitude:    15.0 m
+
+Additional Information:
+  Software:    Adobe Photoshop CC 2024
+  Copyright:   © 2024 John Doe
+```
+
+**Sample output (without exiftool):**
+
+```
+=== Image Metadata ===
+
+File Information:
+  Path:        photo.jpg
+  Format:      JPEG
+  Size:        2.3 MB
+
+Image Properties:
+  Dimensions:  4000x3000
+  Aspect Ratio: 1.33
+  Megapixels:  12.00 MP
+  Color Model: *color.modelFunc
+
+---
+
+exiftool not found. Install exiftool for comprehensive metadata.
+
+Installation:
+  macOS:    brew install exiftool
+  Ubuntu:   sudo apt-get install libimage-exiftool-perl
+  Windows:  https://exiftool.org
+```
+
+**JSON Output Example:**
+
+```bash
+imgx metadata photo.jpg --json
+```
+
+```json
+{
+  "FilePath": "photo.jpg",
+  "Format": "JPEG",
+  "Width": 4000,
+  "Height": 3000,
+  "FileSize": 2415919,
+  "Megapixels": 12.00,
+  "AspectRatio": 1.33,
+  "HasExtended": true,
+  "CameraMake": "Canon",
+  "CameraModel": "Canon EOS 5D Mark IV",
+  "ISO": "400",
+  "FocalLength": "50.0 mm",
+  "DateTimeOriginal": "2024:10:15 14:23:45"
+}
+```
+
+**Installing exiftool:**
+
+```bash
+# macOS
+brew install exiftool
+
+# Ubuntu/Debian
+sudo apt-get install libimage-exiftool-perl
+
+# Fedora/RHEL
+sudo dnf install perl-Image-ExifTool
+
+# Windows
+# Download from https://exiftool.org and add to PATH
+
+# Verify installation
+exiftool -ver
 ```
 
 ## Common Use Cases
