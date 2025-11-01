@@ -13,7 +13,9 @@ as an input, and return a new image of `*image.NRGBA` type (32bit RGBA colors, n
   - [As a Library](#as-a-library)
   - [As a CLI Tool](#as-a-cli-tool)
 - [Documentation](#documentation)
-- [CLI Documentation](./CLI.md) - Complete CLI guide
+  - [CLI Documentation](./docs/CLI.md) - Complete CLI guide
+  - [Version Management](./docs/VERSIONING.md) - How versions are managed
+  - [Release Process](./docs/RELEASING.md) - How to create releases
 - [Library Usage Examples](#library-usage-examples)
   - [Quick Start](#quick-start---using-as-a-library)
   - [Image Resizing](#image-resizing)
