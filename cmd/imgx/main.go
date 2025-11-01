@@ -5,17 +5,16 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/razzkumar/imgx"
 	"github.com/razzkumar/imgx/commands"
 	"github.com/urfave/cli/v3"
 )
-
-const version = "0.1.0"
 
 func main() {
 	app := &cli.Command{
 		Name:                  "imgx",
 		Usage:                 "A powerful command-line image processing tool",
-		Version:               version,
+		Version:               imgx.Version,
 		EnableShellCompletion: true,
 		Description: `imgx is a CLI tool for common image processing operations including:
 - Resizing (resize, fit, fill, thumbnail)

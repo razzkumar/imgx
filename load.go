@@ -5,14 +5,7 @@ import (
 	"image/color"
 )
 
-const (
-	// Version is the current version of imgx
-	Version = "1.0.0"
-	// Author is the author of imgx
-	Author = "razzkumar"
-	// ProjectURL is the GitHub URL of the project
-	ProjectURL = "https://github.com/razzkumar/imgx"
-)
+// Version, Author, and ProjectURL are defined in version.go
 
 // Options holds configuration for loading and processing images
 type Options struct {
