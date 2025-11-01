@@ -24,49 +24,49 @@ jobs:
         with:
           go-version: 1.25
 
-      - name: Extract version from tag
-        id: get_version
-        run: |
-          # Get the tag name and remove 'v' prefix if present
-          VERSION=${GITHUB_REF#refs/tags/}
-          VERSION=${VERSION#v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Detected version: $VERSION"
+      # - name: Extract version from tag
+      #   id: get_version
+      #   run: |
+      #     # Get the tag name and remove 'v' prefix if present
+      #     VERSION=${GITHUB_REF#refs/tags/}
+      #     VERSION=${VERSION#v}
+      #     echo "version=$VERSION" >> $GITHUB_OUTPUT
+      #     echo "Detected version: $VERSION"
 
-      - name: Update version files
-        run: |
-          VERSION="${{ steps.get_version.outputs.version }}"
-          echo "Updating version to $VERSION"
+      # - name: Update version files
+      #   run: |
+      #     VERSION="${{ steps.get_version.outputs.version }}"
+      #     echo "Updating version to $VERSION"
 
-          # Update version.go
-          sed -i "s/const Version = \".*\"/const Version = \"$VERSION\"/" version.go
+      #     # Update version.go
+      #     sed -i "s/const Version = \".*\"/const Version = \"$VERSION\"/" version.go
 
-          # Update VERSION file
-          echo "$VERSION" > VERSION
+      #     # Update VERSION file
+      #     echo "$VERSION" > VERSION
 
-          # Show changes
-          echo "=== version.go ==="
-          grep "const Version" version.go
-          echo "=== VERSION ==="
-          cat VERSION
+      #     # Show changes
+      #     echo "=== version.go ==="
+      #     grep "const Version" version.go
+      #     echo "=== VERSION ==="
+      #     cat VERSION
 
-      - name: Commit version updates
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+      # - name: Commit version updates
+      #   run: |
+      #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
+      #     git config --local user.name "github-actions[bot]"
 
-          VERSION="${{ steps.get_version.outputs.version }}"
+      #     VERSION="${{ steps.get_version.outputs.version }}"
 
-          # Only add specific files we want to commit
-          git add version.go VERSION
+      #     # Only add specific files we want to commit
+      #     git add version.go VERSION
 
-          # Check if there are changes to commit
-          if git diff --cached --quiet; then
-            echo "No version changes to commit"
-          else
-            git commit -m "chore: bump version to v$VERSION [skip ci]"
-            git push origin HEAD:main
-          fi
+      #     # Check if there are changes to commit
+      #     if git diff --cached --quiet; then
+      #       echo "No version changes to commit"
+      #     else
+      #       git commit -m "chore: bump version to v$VERSION [skip ci]"
+      #       git push origin HEAD:main
+      #     fi
 
       - name: setup required binaries
         run: |
