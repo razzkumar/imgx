@@ -1,7 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2012 Grigory Dryapak (original imaging library)
-Copyright (c) 2025 Razz Kumar (modifications and extensions in imgx)
+Copyright (c) 2025 razzkumar
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,3 +19,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+This project was inspired by:
+- imaging (https://github.com/disintegration/imaging) by Grigory Dryapak
+  for image processing algorithm concepts and patterns
+- go-exiftool (https://github.com/barasher/go-exiftool) by Barasher
+  for metadata handling approaches

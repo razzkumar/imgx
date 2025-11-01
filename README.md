@@ -980,27 +980,29 @@ imgx.SetMaxProcs(4)  // Limit to 4 CPU cores
 
 ## Acknowledgments
 
-This project is based on the [imaging](https://github.com/disintegration/imaging) library created by [Grigory Dryapak](https://github.com/disintegration).
+imgx is a brand new image processing library designed from the ground up with modern Go practices. We drew inspiration from:
 
-### What's New in imgx?
+- **[imaging](https://github.com/disintegration/imaging)** by Grigory Dryapak - for foundational image processing algorithms and API design patterns
+- **[go-exiftool](https://github.com/barasher/go-exiftool)** - for metadata handling approaches and exiftool integration concepts
 
-imgx builds upon the original imaging library with several improvements:
+### What Makes imgx Different?
 
-- **Instance-based API**: Modern method-chaining API for cleaner, more readable code
-- **Automatic metadata tracking**: Operations are automatically recorded and can be embedded as XMP metadata
-- **Modernized codebase** using Go 1.21+ features:
-  - Range over int (`for range 256`)
-  - Built-in `min`/`max` functions
-  - `WaitGroup.Go()` for goroutine management
-  - `b.Loop()` for benchmarks
-- **Improved code organization**: Refactored complex functions for better maintainability
-- **CLI tool**: Full-featured command-line interface for batch processing with metadata support
-- **Active development**: Regular updates and new features
-- **Better documentation**: Comprehensive examples and usage guides
-- **Backward compatible**: Functional API still available for existing code
+imgx is a complete reimagination with a modern architecture:
 
-We're grateful to the original author for creating such a solid foundation for image processing in Go!
+- **Instance-based API**: Fluent method-chaining design for intuitive, readable code
+- **Automatic metadata tracking**: Built-in operation history with XMP embedding
+- **Modern Go 1.21+ features**:
+  - Range over integers, built-in min/max
+  - WaitGroup.Go() for goroutines
+  - Latest benchmarking patterns
+- **Comprehensive CLI**: Full-featured command-line tool with metadata support
+- **Clean architecture**: Modular design with clear separation of concerns
+- **Developer-friendly**: Extensive documentation, examples, and type safety
+
+Thank you to the Go community and these projects for the inspiration!
 
 ## License
 
-This project maintains the original license. Please see the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2025 razzkumar
