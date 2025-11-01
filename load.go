@@ -14,51 +14,36 @@ const (
 	ProjectURL = "https://github.com/razzkumar/imgx"
 )
 
-// LoadOption configures image loading
-type LoadOption func(*LoadConfig)
+// Options holds configuration for loading and processing images
+type Options struct {
+	// AutoOrient enables automatic orientation correction based on EXIF data
+	AutoOrient bool
 
-// LoadConfig holds configuration for loading images
-type LoadConfig struct {
-	AutoOrientation bool
+	// DisableMetadata disables metadata tracking for this image instance
 	DisableMetadata bool
-	CustomAuthor    string
-}
 
-// DisableMetadata disables metadata tracking for this image instance
-func DisableMetadata() LoadOption {
-	return func(c *LoadConfig) {
-		c.DisableMetadata = true
-	}
-}
-
-// AutoOrient enables automatic orientation correction based on EXIF data
-func AutoOrient() LoadOption {
-	return func(c *LoadConfig) {
-		c.AutoOrientation = true
-	}
-}
-
-// WithAuthor sets a custom artist/creator name for the image metadata
-// This overrides the default author but keeps creator_tool unchanged
-func WithAuthor(author string) LoadOption {
-	return func(c *LoadConfig) {
-		c.CustomAuthor = author
-	}
+	// Author sets a custom artist/creator name for the image metadata
+	// Empty string uses the default author
+	Author string
 }
 
 // Load loads an image from a file path and returns an Image instance
-func Load(path string, opts ...LoadOption) (*Image, error) {
-	config := &LoadConfig{
-		AutoOrientation: false,
-		DisableMetadata: false,
-	}
-	for _, opt := range opts {
-		opt(config)
+// Optionally pass Options to configure loading behavior
+//
+// Examples:
+//   img, err := imgx.Load("photo.jpg")  // use defaults
+//   img, err := imgx.Load("photo.jpg", imgx.Options{AutoOrient: true})
+//   img, err := imgx.Load("photo.jpg", imgx.Options{Author: "John Doe"})
+func Load(path string, opts ...Options) (*Image, error) {
+	// Use defaults if no opts provided
+	var opt Options
+	if len(opts) > 0 {
+		opt = opts[0]
 	}
 
 	// Use internal open() function
 	var decodeOpts []DecodeOption
-	if config.AutoOrientation {
+	if opt.AutoOrient {
 		decodeOpts = append(decodeOpts, AutoOrientation(true))
 	}
 
@@ -69,8 +54,8 @@ func Load(path string, opts ...LoadOption) (*Image, error) {
 
 	// Determine author - priority: per-image option > global config > default
 	author := Author
-	if config.CustomAuthor != "" {
-		author = config.CustomAuthor
+	if opt.Author != "" {
+		author = opt.Author
 	} else if globalAuthor := GetDefaultAuthor(); globalAuthor != "" {
 		author = globalAuthor
 	}
@@ -83,35 +68,71 @@ func Load(path string, opts ...LoadOption) (*Image, error) {
 			Version:     Version,
 			Author:      author,
 			ProjectURL:  ProjectURL,
-			AddMetadata: !config.DisableMetadata && globalConfig.AddMetadata,
+			AddMetadata: !opt.DisableMetadata && globalConfig.AddMetadata,
 		},
 	}, nil
 }
 
 // FromImage creates an Image instance from an existing image.Image
-func FromImage(img image.Image) *Image {
+// Optionally pass Options to configure metadata
+//
+// Examples:
+//   img := imgx.FromImage(stdImg)  // use defaults
+//   img := imgx.FromImage(stdImg, imgx.Options{Author: "Jane Doe"})
+func FromImage(img image.Image, opts ...Options) *Image {
+	var opt Options
+	if len(opts) > 0 {
+		opt = opts[0]
+	}
+
+	// Determine author
+	author := Author
+	if opt.Author != "" {
+		author = opt.Author
+	} else if globalAuthor := GetDefaultAuthor(); globalAuthor != "" {
+		author = globalAuthor
+	}
+
 	return &Image{
 		data: toNRGBA(img),
 		metadata: &ProcessingMetadata{
 			Software:    "imgx",
 			Version:     Version,
-			Author:      Author,
+			Author:      author,
 			ProjectURL:  ProjectURL,
-			AddMetadata: globalConfig.AddMetadata,
+			AddMetadata: !opt.DisableMetadata && globalConfig.AddMetadata,
 		},
 	}
 }
 
 // NewImage creates a new blank Image with the specified dimensions and fill color
-func NewImage(width, height int, fillColor color.Color) *Image {
+// Optionally pass Options to configure metadata
+//
+// Examples:
+//   img := imgx.NewImage(800, 600, color.White)  // use defaults
+//   img := imgx.NewImage(800, 600, color.White, imgx.Options{Author: "Bob"})
+func NewImage(width, height int, fillColor color.Color, opts ...Options) *Image {
+	var opt Options
+	if len(opts) > 0 {
+		opt = opts[0]
+	}
+
+	// Determine author
+	author := Author
+	if opt.Author != "" {
+		author = opt.Author
+	} else if globalAuthor := GetDefaultAuthor(); globalAuthor != "" {
+		author = globalAuthor
+	}
+
 	return &Image{
 		data: New(width, height, fillColor),
 		metadata: &ProcessingMetadata{
 			Software:    "imgx",
 			Version:     Version,
-			Author:      Author,
+			Author:      author,
 			ProjectURL:  ProjectURL,
-			AddMetadata: globalConfig.AddMetadata,
+			AddMetadata: !opt.DisableMetadata && globalConfig.AddMetadata,
 		},
 	}
 }

@@ -21,7 +21,7 @@ func main() {
 
 	// Example 2: Override author at load time
 	fmt.Println("2. Override at load time:")
-	img2, err := imgx.Load("testdata/branch_flip_horizontal.jpg", imgx.WithAuthor("John Doe"))
+	img2, err := imgx.Load("testdata/branch_flip_horizontal.jpg", imgx.Options{Author: "John Doe"})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -50,7 +50,7 @@ func main() {
 
 	// Example 5: Per-image override takes precedence over global
 	fmt.Println("5. Per-image override > global:")
-	img5, err := imgx.Load("testdata/branch_flip_horizontal.jpg", imgx.WithAuthor("Specific Artist"))
+	img5, err := imgx.Load("testdata/branch_flip_horizontal.jpg", imgx.Options{Author: "Specific Artist"})
 	if err != nil {
 		log.Fatal(err)
 	}

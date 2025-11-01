@@ -109,6 +109,37 @@ func main() {
 }
 ```
 
+### Loading Options
+
+You can customize image loading by passing an `Options` struct:
+
+```go
+// Load with auto-orientation
+img, err := imgx.Load("photo.jpg", imgx.Options{
+    AutoOrient: true,  // Apply EXIF orientation
+})
+
+// Load with custom author
+img, err := imgx.Load("photo.jpg", imgx.Options{
+    Author: "Your Name",  // Override default author in metadata
+})
+
+// Load with multiple options
+img, err := imgx.Load("photo.jpg", imgx.Options{
+    AutoOrient:      true,
+    Author:          "John Doe",
+    DisableMetadata: false,  // Enable/disable metadata tracking
+})
+
+// Or just use defaults (no options needed)
+img, err := imgx.Load("photo.jpg")
+```
+
+**Available Options:**
+- `AutoOrient` (bool) - Automatically correct image orientation from EXIF data
+- `Author` (string) - Set custom artist/creator name for metadata (empty = use default)
+- `DisableMetadata` (bool) - Disable automatic metadata tracking for this image
+
 ### Image resizing
 
 ```go
@@ -624,7 +655,7 @@ import (
 
 func main() {
     // Load with auto-orientation from EXIF
-    img, err := imgx.Load("photo.jpg", imgx.AutoOrient())
+    img, err := imgx.Load("photo.jpg", imgx.Options{AutoOrient: true})
     if err != nil {
         log.Fatal(err)
     }
@@ -734,7 +765,7 @@ There are three ways to disable metadata tracking:
 **1. Per-Image (at load time):**
 ```go
 // Disable metadata for a specific image
-img, _ := imgx.Load("photo.jpg", imgx.DisableMetadata())
+img, _ := imgx.Load("photo.jpg", imgx.Options{DisableMetadata: true})
 img.Resize(800, 0, imgx.Lanczos).Save("output.jpg")  // No metadata written
 ```
 
@@ -823,7 +854,7 @@ the image orientation is changed after decoding, according to the
 orientation tag (if present). Here's the example:
 
 ```go
-img, err := imgx.Load("test.jpg", imgx.AutoOrient())
+img, err := imgx.Load("test.jpg", imgx.Options{AutoOrient: true})
 ```
 
 ### What's the difference between `imaging` and `gift` packages?

@@ -11,12 +11,15 @@ import (
 func loadImage(cmd *cli.Command, path string) (*imgx.Image, error) {
 	autoOrient := cmd.Bool("auto-orient")
 
-	var opts []imgx.LoadOption
+	var img *imgx.Image
+	var err error
+
 	if autoOrient {
-		opts = append(opts, imgx.AutoOrient())
+		img, err = imgx.Load(path, imgx.Options{AutoOrient: true})
+	} else {
+		img, err = imgx.Load(path)
 	}
 
-	img, err := imgx.Load(path, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open image: %w", err)
 	}
