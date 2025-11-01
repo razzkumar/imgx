@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Author Override Examples ===\n")
+	fmt.Println("=== Author Override Examples ===")
+	fmt.Println()
 
 	// Example 1: Default author (razzkumar)
 	fmt.Println("1. Default author:")
@@ -17,7 +18,8 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("   Author: %s\n", img1.GetMetadata().Author)
-	fmt.Printf("   Software: %s v%s\n\n", img1.GetMetadata().Software, img1.GetMetadata().Version)
+	fmt.Printf("   Software: %s v%s\n", img1.GetMetadata().Software, img1.GetMetadata().Version)
+	fmt.Println()
 
 	// Example 2: Override author at load time
 	fmt.Println("2. Override at load time:")
@@ -26,7 +28,8 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("   Author: %s\n", img2.GetMetadata().Author)
-	fmt.Printf("   Software: %s v%s (unchanged)\n\n", img2.GetMetadata().Software, img2.GetMetadata().Version)
+	fmt.Printf("   Software: %s v%s (unchanged)\n", img2.GetMetadata().Software, img2.GetMetadata().Version)
+	fmt.Println()
 
 	// Example 3: Override author after loading
 	fmt.Println("3. Override after loading:")
@@ -36,7 +39,8 @@ func main() {
 	}
 	img3.SetAuthor("Jane Smith")
 	fmt.Printf("   Author: %s\n", img3.GetMetadata().Author)
-	fmt.Printf("   Software: %s v%s (unchanged)\n\n", img3.GetMetadata().Software, img3.GetMetadata().Version)
+	fmt.Printf("   Software: %s v%s (unchanged)\n", img3.GetMetadata().Software, img3.GetMetadata().Version)
+	fmt.Println()
 
 	// Example 4: Set global default author
 	fmt.Println("4. Set global default author:")
@@ -46,7 +50,8 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("   Author: %s\n", img4.GetMetadata().Author)
-	fmt.Printf("   Software: %s v%s (unchanged)\n\n", img4.GetMetadata().Software, img4.GetMetadata().Version)
+	fmt.Printf("   Software: %s v%s (unchanged)\n", img4.GetMetadata().Software, img4.GetMetadata().Version)
+	fmt.Println()
 
 	// Example 5: Per-image override takes precedence over global
 	fmt.Println("5. Per-image override > global:")
@@ -55,7 +60,8 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("   Author: %s\n", img5.GetMetadata().Author)
-	fmt.Printf("   Software: %s v%s (unchanged)\n\n", img5.GetMetadata().Software, img5.GetMetadata().Version)
+	fmt.Printf("   Software: %s v%s (unchanged)\n", img5.GetMetadata().Software, img5.GetMetadata().Version)
+	fmt.Println()
 
 	// Example 6: Using environment variable
 	fmt.Println("6. Environment variable (set IMGX_DEFAULT_AUTHOR=EnvArtist):")
