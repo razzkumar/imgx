@@ -1,0 +1,19 @@
+{
+  "labels": [
+    {
+      "name": "Dog",
+      "confidence": 0.95,
+      "categories": ["Animal", "Pet"]
+    },
+    {
+      "name": "Golden Retriever",
+      "confidence": 0.88,
+      "categories": ["Dog", "Breed"]
+    },
+    {
+      "name": "Pet",
+      "confidence": 0.92
+    }
+  ],
+  "description": "A golden retriever dog sitting on grass in a park"
+}
