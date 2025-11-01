@@ -15,10 +15,10 @@ type Image struct {
 type ProcessingMetadata struct {
 	SourcePath  string
 	Operations  []OperationRecord
-	Software    string
-	Version     string
-	Author      string
-	ProjectURL  string
+	Software    string // Fixed: "imgx"
+	Version     string // Fixed: version from load.go
+	Author      string // Customizable: artist/creator name
+	ProjectURL  string // Fixed: project URL
 	AddMetadata bool
 }
 
@@ -63,7 +63,14 @@ func (img *Image) Bounds() image.Rectangle {
 	return img.data.Bounds()
 }
 
-// Metadata returns the processing metadata
+// GetMetadata returns the processing metadata
 func (img *Image) GetMetadata() *ProcessingMetadata {
 	return img.metadata
+}
+
+// SetAuthor sets the artist/creator name for the image metadata
+// This overrides the default author but keeps creator_tool unchanged
+func (img *Image) SetAuthor(author string) *Image {
+	img.metadata.Author = author
+	return img
 }

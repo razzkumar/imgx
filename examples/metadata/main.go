@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	imagePath := "testdata/flower.jpg"
+	imagePath := "testdata/branch_flip_horizontal.jpg"
 
 	fmt.Println("=== Metadata Extraction and Tracking Example ===")
 	fmt.Println()

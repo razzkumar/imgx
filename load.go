@@ -21,6 +21,7 @@ type LoadOption func(*LoadConfig)
 type LoadConfig struct {
 	AutoOrientation bool
 	DisableMetadata bool
+	CustomAuthor    string
 }
 
 // DisableMetadata disables metadata tracking for this image instance
@@ -34,6 +35,14 @@ func DisableMetadata() LoadOption {
 func AutoOrient() LoadOption {
 	return func(c *LoadConfig) {
 		c.AutoOrientation = true
+	}
+}
+
+// WithAuthor sets a custom artist/creator name for the image metadata
+// This overrides the default author but keeps creator_tool unchanged
+func WithAuthor(author string) LoadOption {
+	return func(c *LoadConfig) {
+		c.CustomAuthor = author
 	}
 }
 
@@ -58,13 +67,21 @@ func Load(path string, opts ...LoadOption) (*Image, error) {
 		return nil, err
 	}
 
+	// Determine author - priority: per-image option > global config > default
+	author := Author
+	if config.CustomAuthor != "" {
+		author = config.CustomAuthor
+	} else if globalAuthor := GetDefaultAuthor(); globalAuthor != "" {
+		author = globalAuthor
+	}
+
 	return &Image{
 		data: toNRGBA(data),
 		metadata: &ProcessingMetadata{
 			SourcePath:  path,
 			Software:    "imgx",
 			Version:     Version,
-			Author:      Author,
+			Author:      author,
 			ProjectURL:  ProjectURL,
 			AddMetadata: !config.DisableMetadata && globalConfig.AddMetadata,
 		},
