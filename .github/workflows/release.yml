@@ -64,6 +64,8 @@ jobs:
             echo "No version changes to commit"
           else
             git commit -m "chore: bump version to v$VERSION [skip ci]"
+            git fetch origin main
+            git rebase origin/main
             git push origin HEAD:main
           fi
 
