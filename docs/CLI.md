@@ -752,7 +752,7 @@ imgx detect <input> [options]
 - `-m, --max-results int` - Maximum number of labels to return (default: 10)
 - `-c, --confidence float` - Minimum confidence threshold 0.0-1.0 (default: 0.5)
 - `--prompt string` - Custom prompt for Gemini/OpenAI (overrides --features)
-- `-j, --json` - Output results as JSON
+- `-j, --json` - Output results as JSON (includes colors, quality, moderation when available)
 - `--raw` - Include raw API response in output
 
 **Supported Providers:**
@@ -820,20 +820,45 @@ imgx detect photo.jpg --provider aws
 imgx detect photo.jpg --provider openai
 ```
 
-**Sample Output:**
+**Sample Output (pretty format):**
 
 ```
-Provider: gemini
-Processed: 2024-11-01 16:30:45
+=== Object Detection Results (aws) ===
 
 Labels:
-  - Dog (98.5% confidence)
-  - Golden Retriever (94.2% confidence)
-  - Pet (92.1% confidence)
-  - Animal (91.8% confidence)
-  - Canine (90.3% confidence)
+  1. Dog (99.0% confidence)
+  2. Pet (97.6% confidence)
+  3. Animal (96.3% confidence)
 
-Overall Confidence: 93.4%
+Detected Text:
+  1. "Backyard" (88.0% confidence)
+
+Properties:
+  brightness: 84.50
+  contrast: 76.20
+  foreground_color: Green
+
+Dominant Colors:
+  - Green (#8FB94B, rgb(143,185,75), 41.3%)
+  - Brown (#6B4E2E, rgb(107,78,46), 18.6%)
+
+Image Quality:
+  Brightness: 84.50
+  Contrast: 76.20
+  Sharpness: 80.10
+  Foreground:
+    Brightness: 81.20
+    Color: Green
+
+Moderation:
+  - Violence (severity: VERY_UNLIKELY, confidence: 0.5%)
+
+Safe Search Summary:
+  - Violence (VERY_UNLIKELY, 0.5%)
+
+Overall Confidence: 97.6%
+
+Processed at: 2024-11-01 16:30:45
 ```
 
 **JSON Output Example:**
