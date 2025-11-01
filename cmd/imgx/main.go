@@ -27,7 +27,7 @@ func main() {
 Examples:
   imgx resize photo.jpg -w 800 -o resized.jpg
   imgx thumbnail photo.jpg -s 150 -o thumb.jpg
-  imgx info photo.jpg`,
+  imgx metadata photo.jpg  # or: imgx info photo.jpg`,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "output",
@@ -37,13 +37,13 @@ Examples:
 			&cli.IntFlag{
 				Name:    "quality",
 				Aliases: []string{"q"},
-				Usage:   "JPEG quality 1-100",
-				Value:   95,
+				Usage:   "JPEG quality 1-100 (default: 90)",
+				Value:   90,
 			},
 			&cli.BoolFlag{
 				Name:  "auto-orient",
-				Usage: "auto-orient based on EXIF data",
-				Value: false,
+				Usage: "auto-orient based on EXIF data (default: true)",
+				Value: true,
 			},
 			&cli.StringFlag{
 				Name:  "format",
@@ -85,8 +85,7 @@ Examples:
 			// Watermark
 			commands.WatermarkCommand(),
 
-			// Info
-			commands.InfoCommand(),
+			// Info/Metadata
 			commands.MetadataCommand(),
 
 			// Completions

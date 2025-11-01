@@ -12,8 +12,9 @@ import (
 // MetadataCommand creates the metadata command
 func MetadataCommand() *cli.Command {
 	return &cli.Command{
-		Name:  "metadata",
-		Usage: "Extract and display image metadata",
+		Name:    "metadata",
+		Aliases: []string{"info"},
+		Usage:   "Display image information and metadata",
 		Description: `Extract comprehensive image metadata using exiftool when available.
 
 If exiftool is installed, displays detailed EXIF, IPTC, and XMP metadata including:
