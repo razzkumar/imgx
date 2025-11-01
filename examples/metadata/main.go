@@ -1,85 +1,180 @@
 package main
 
 import (
-	"image"
-	"image/color"
+	"fmt"
 	"log"
 
 	"github.com/razzkumar/imgx"
 )
 
 func main() {
-	// Open source images
-	flower, err := imgx.Open("../../testdata/flower.jpg")
+	imagePath := "testdata/flower.jpg"
+
+	fmt.Println("=== Metadata Extraction Example ===")
+	fmt.Println()
+
+	// Example 1: Extract all available metadata
+	fmt.Println("1. Extracting all available metadata...")
+	fmt.Println("   (uses exiftool if available, falls back to basic metadata)")
+	fmt.Println()
+
+	metadata, err := imgx.Metadata(imagePath)
 	if err != nil {
-		log.Fatalf("failed to open flower.jpg: %v", err)
+		log.Fatalf("Failed to extract metadata: %v", err)
 	}
 
-	branch, err := imgx.Open("../../testdata/branch.jpg")
-	if err != nil {
-		log.Fatalf("failed to open branch.jpg: %v", err)
+	// Display basic information (always available)
+	fmt.Printf("File: %s\n", metadata.FilePath)
+	fmt.Printf("Format: %s\n", metadata.Format)
+	fmt.Printf("Dimensions: %dx%d pixels\n", metadata.Width, metadata.Height)
+	fmt.Printf("Aspect Ratio: %.2f\n", metadata.AspectRatio)
+	fmt.Printf("Megapixels: %.2f MP\n", metadata.Megapixels)
+	fmt.Printf("File Size: %d bytes (%.2f KB)\n", metadata.FileSize, float64(metadata.FileSize)/1024)
+	fmt.Printf("Color Model: %s\n", metadata.ColorModel)
+	fmt.Println()
+
+	// Display extended metadata if available (requires exiftool)
+	if metadata.HasExtended {
+		fmt.Println("✓ Extended metadata available (exiftool is installed)")
+		fmt.Println()
+
+		// Camera information
+		if metadata.CameraMake != "" || metadata.CameraModel != "" {
+			fmt.Println("Camera Information:")
+			if metadata.CameraMake != "" {
+				fmt.Printf("  Make: %s\n", metadata.CameraMake)
+			}
+			if metadata.CameraModel != "" {
+				fmt.Printf("  Model: %s\n", metadata.CameraModel)
+			}
+			if metadata.LensModel != "" {
+				fmt.Printf("  Lens: %s\n", metadata.LensModel)
+			}
+			fmt.Println()
+		}
+
+		// Camera settings
+		if metadata.FocalLength != "" || metadata.FNumber != "" ||
+			metadata.ExposureTime != "" || metadata.ISO != "" {
+			fmt.Println("Camera Settings:")
+			if metadata.FocalLength != "" {
+				fmt.Printf("  Focal Length: %s\n", metadata.FocalLength)
+			}
+			if metadata.FNumber != "" {
+				fmt.Printf("  Aperture: %s\n", metadata.FNumber)
+			}
+			if metadata.ExposureTime != "" {
+				fmt.Printf("  Shutter Speed: %s\n", metadata.ExposureTime)
+			}
+			if metadata.ISO != "" {
+				fmt.Printf("  ISO: %s\n", metadata.ISO)
+			}
+			if metadata.Flash != "" {
+				fmt.Printf("  Flash: %s\n", metadata.Flash)
+			}
+			fmt.Println()
+		}
+
+		// Date/time information
+		if metadata.DateTimeOriginal != "" || metadata.DateTime != "" {
+			fmt.Println("Date/Time Information:")
+			if metadata.DateTimeOriginal != "" {
+				fmt.Printf("  Date Taken: %s\n", metadata.DateTimeOriginal)
+			}
+			if metadata.DateTime != "" {
+				fmt.Printf("  Last Modified: %s\n", metadata.DateTime)
+			}
+			fmt.Println()
+		}
+
+		// GPS information
+		if metadata.GPSLatitude != "" || metadata.GPSLongitude != "" {
+			fmt.Println("GPS Location:")
+			if metadata.GPSLatitude != "" {
+				fmt.Printf("  Latitude: %s\n", metadata.GPSLatitude)
+			}
+			if metadata.GPSLongitude != "" {
+				fmt.Printf("  Longitude: %s\n", metadata.GPSLongitude)
+			}
+			if metadata.GPSAltitude != "" {
+				fmt.Printf("  Altitude: %s\n", metadata.GPSAltitude)
+			}
+			fmt.Println()
+		}
+
+		// Additional information
+		if metadata.Software != "" || metadata.Artist != "" || metadata.Copyright != "" {
+			fmt.Println("Additional Information:")
+			if metadata.Software != "" {
+				fmt.Printf("  Software: %s\n", metadata.Software)
+			}
+			if metadata.Artist != "" {
+				fmt.Printf("  Artist: %s\n", metadata.Artist)
+			}
+			if metadata.Copyright != "" {
+				fmt.Printf("  Copyright: %s\n", metadata.Copyright)
+			}
+			fmt.Println()
+		}
+
+		// Access raw extended data
+		if len(metadata.Extended) > 0 {
+			fmt.Printf("Total metadata fields extracted: %d\n", len(metadata.Extended))
+			fmt.Println()
+		}
+	} else {
+		fmt.Println("⚠ Extended metadata not available")
+		fmt.Println("  Install exiftool for comprehensive metadata:")
+		fmt.Println()
+		fmt.Println("  macOS:    brew install exiftool")
+		fmt.Println("  Ubuntu:   sudo apt-get install libimage-exiftool-perl")
+		fmt.Println("  Windows:  https://exiftool.org")
+		fmt.Println()
 	}
 
-	// 1. Resize examples
-	log.Println("Creating resize examples...")
-	resized200 := imgx.Resize(flower, 200, 0, imgx.Lanczos)
-	imgx.Save(resized200, "../../testdata/flower_resized_200.jpg")
+	// Example 2: Extract basic metadata only (skip exiftool check)
+	fmt.Println("---")
+	fmt.Println()
+	fmt.Println("2. Extracting basic metadata only (WithBasicOnly option)...")
+	fmt.Println()
 
-	resized800 := imgx.Resize(flower, 800, 0, imgx.Lanczos)
-	imgx.Save(resized800, "../../testdata/flower_resized_800.jpg")
+	basicMetadata, err := imgx.Metadata(imagePath, imgx.WithBasicOnly())
+	if err != nil {
+		log.Fatalf("Failed to extract basic metadata: %v", err)
+	}
 
-	// 2. Fill/Thumbnail example
-	log.Println("Creating thumbnail example...")
-	thumbnail := imgx.Fill(flower, 300, 300, imgx.Center, imgx.Lanczos)
-	imgx.Save(thumbnail, "../../testdata/flower_thumbnail_300x300.jpg")
+	fmt.Printf("File: %s\n", basicMetadata.FileName)
+	fmt.Printf("Format: %s\n", basicMetadata.Format)
+	fmt.Printf("Size: %dx%d\n", basicMetadata.Width, basicMetadata.Height)
+	fmt.Printf("Has Extended: %v (forced to false with WithBasicOnly)\n", basicMetadata.HasExtended)
+	fmt.Println()
 
-	// 3. Rotate examples
-	log.Println("Creating rotate examples...")
-	rotated90 := imgx.Rotate90(branch)
-	imgx.Save(rotated90, "../../testdata/branch_rotated_90.jpg")
+	// Example 3: Using metadata for conditional processing
+	fmt.Println("---")
+	fmt.Println()
+	fmt.Println("3. Conditional processing based on metadata...")
+	fmt.Println()
 
-	rotated45 := imgx.Rotate(branch, 45, color.NRGBA{255, 255, 255, 255})
-	imgx.Save(rotated45, "../../testdata/branch_rotated_45.jpg")
+	// Check if image needs orientation correction
+	if metadata.Orientation != 0 && metadata.Orientation != 1 {
+		fmt.Printf("⚠ Image has orientation flag: %d (may need auto-orientation)\n", metadata.Orientation)
+	}
 
-	// 4. Blur examples
-	log.Println("Creating blur examples...")
-	blurred := imgx.Blur(flower, 2.0)
-	imgx.Save(blurred, "../../testdata/flower_blur_2.jpg")
+	// Check image size
+	if metadata.Width > 4000 || metadata.Height > 4000 {
+		fmt.Println("ℹ Large image detected - consider resizing for web use")
+	} else {
+		fmt.Println("✓ Image size is suitable for web use")
+	}
 
-	// 5. Sharpen example
-	log.Println("Creating sharpen example...")
-	sharpened := imgx.Sharpen(flower, 1.5)
-	imgx.Save(sharpened, "../../testdata/flower_sharpen_1.5.jpg")
+	// Check file size
+	maxFileSize := int64(5 * 1024 * 1024) // 5 MB
+	if metadata.FileSize > maxFileSize {
+		fmt.Printf("⚠ Large file size: %.2f MB (consider compression)\n", float64(metadata.FileSize)/(1024*1024))
+	} else {
+		fmt.Printf("✓ File size OK: %.2f KB\n", float64(metadata.FileSize)/1024)
+	}
+	fmt.Println()
 
-	// 6. Color adjustments
-	log.Println("Creating color adjustment examples...")
-	brightness := imgx.AdjustBrightness(flower, 30)
-	imgx.Save(brightness, "../../testdata/flower_brightness_30.jpg")
-
-	contrast := imgx.AdjustContrast(flower, 30)
-	imgx.Save(contrast, "../../testdata/flower_contrast_30.jpg")
-
-	saturation := imgx.AdjustSaturation(flower, 50)
-	imgx.Save(saturation, "../../testdata/flower_saturation_50.jpg")
-
-	grayscale := imgx.Grayscale(flower)
-	imgx.Save(grayscale, "../../testdata/flower_grayscale.jpg")
-
-	// 7. Flip examples
-	log.Println("Creating flip examples...")
-	flippedH := imgx.FlipH(branch)
-	imgx.Save(flippedH, "../../testdata/branch_flip_horizontal.jpg")
-
-	// 8. Watermark example (using branch as watermark on flower)
-	log.Println("Creating watermark example...")
-	// Resize branch to be smaller for watermark
-	watermark := imgx.Resize(branch, 150, 0, imgx.Lanczos)
-	// Position in bottom-right
-	flowerBounds := flower.Bounds()
-	wmBounds := watermark.Bounds()
-	pos := image.Pt(flowerBounds.Dx()-wmBounds.Dx()-20, flowerBounds.Dy()-wmBounds.Dy()-20)
-	watermarked := imgx.Overlay(flower, watermark, pos, 0.6)
-	imgx.Save(watermarked, "../../testdata/flower_watermarked.jpg")
-
-	log.Println("All example images generated successfully!")
+	fmt.Println("=== Metadata extraction complete! ===")
 }

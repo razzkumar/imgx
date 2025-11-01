@@ -167,3 +167,24 @@ func FormatBytes(bytes int64) string {
 	}
 	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
 }
+
+// gcd calculates the greatest common divisor using Euclidean algorithm
+func gcd(a, b int) int {
+	for b != 0 {
+		a, b = b, a%b
+	}
+	return a
+}
+
+// FormatAspectRatio formats width and height as a ratio string (e.g., "16:9", "4:3")
+func FormatAspectRatio(width, height int) string {
+	if width == 0 || height == 0 {
+		return "N/A"
+	}
+
+	divisor := gcd(width, height)
+	w := width / divisor
+	h := height / divisor
+
+	return fmt.Sprintf("%d:%d", w, h)
+}

@@ -109,7 +109,7 @@ func outputPretty(metadata *imgx.ImageMetadata) error {
 
 	fmt.Println("Image Properties:")
 	fmt.Printf("  Dimensions:  %dx%d\n", metadata.Width, metadata.Height)
-	fmt.Printf("  Aspect Ratio: %.2f\n", metadata.AspectRatio)
+	fmt.Printf("  Aspect Ratio: %s\n", FormatAspectRatio(metadata.Width, metadata.Height))
 	fmt.Printf("  Megapixels:  %.2f MP\n", metadata.Megapixels)
 	fmt.Printf("  Color Model: %s\n", metadata.ColorModel)
 
