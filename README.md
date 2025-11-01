@@ -2,7 +2,7 @@
 
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/razzkumar/imgx)](https://pkg.go.dev/github.com/razzkumar/imgx)
 
-Package imgx provides basic image processing functions (resize, rotate, crop, brightness/contrast adjustments, etc.).
+Package imgx provides comprehensive image processing functions (resize, rotate, crop, brightness/contrast adjustments, effects) and AI-powered object detection using Google Gemini, AWS Rekognition, and OpenAI Vision APIs.
 
 All the image processing functions provided by the package accept any image type that implements `image.Image` interface
 as an input, and return a new image of `*image.NRGBA` type (32bit RGBA colors, non-premultiplied alpha).
@@ -14,6 +14,7 @@ as an input, and return a new image of `*image.NRGBA` type (32bit RGBA colors, n
   - [As a CLI Tool](#as-a-cli-tool)
 - [Documentation](#documentation)
   - [CLI Documentation](./docs/CLI.md) - Complete CLI guide
+  - [Detection API](./docs/DETECTION.md) - AI-powered object detection
   - [Version Management](./docs/VERSIONING.md) - How versions are managed
   - [Release Process](./docs/RELEASING.md) - How to create releases
 - [Library Usage Examples](#library-usage-examples)
@@ -68,16 +69,20 @@ imgx adjust photo.jpg --brightness 10 --contrast 20 -o adjusted.jpg
 # Apply blur effect
 imgx blur photo.jpg --sigma 2.5 -o blurred.jpg
 
+# Detect objects using AI (requires provider setup)
+imgx detect photo.jpg --provider gemini
+
 # Extract image metadata (requires exiftool for extended data)
 imgx metadata photo.jpg
 ```
 
-For complete CLI documentation with all commands, options, and examples, see **[CLI Documentation](./CLI.md)**.
+For complete CLI documentation with all commands, options, and examples, see **[CLI Documentation](./docs/CLI.md)**.
 
 ## Documentation
 
 **Library API:** https://pkg.go.dev/github.com/razzkumar/imgx
-**CLI Tool:** [CLI.md](./CLI.md)
+**CLI Tool:** [CLI.md](./docs/CLI.md)
+**Object Detection:** [DETECTION.md](./docs/DETECTION.md) - AI vision with Google Gemini, AWS Rekognition, OpenAI
 
 ## Library Usage Examples
 
@@ -726,6 +731,56 @@ func main() {
 }
 ```
 
+### Example 8: AI Object Detection
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "log"
+    "github.com/razzkumar/imgx"
+    "github.com/razzkumar/imgx/detection"
+)
+
+func main() {
+    // Load image
+    img, err := imgx.Load("photo.jpg")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Detect objects using Google Gemini
+    ctx := context.Background()
+    result, err := img.Detect(ctx, "gemini")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Display detected labels
+    fmt.Println("Detected objects:")
+    for _, label := range result.Labels {
+        fmt.Printf("- %s (%.1f%% confidence)\n", label.Name, label.Confidence*100)
+    }
+
+    // Use AWS Rekognition for image properties
+    opts := &detection.DetectOptions{
+        Features: []detection.Feature{detection.FeatureProperties},
+    }
+    result, err = img.Detect(ctx, "aws", opts)
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    // Display image properties
+    fmt.Printf("\nBrightness: %s\n", result.Properties["brightness"])
+    fmt.Printf("Dominant colors: %s\n", result.Properties["dominant_colors"])
+}
+```
+
+For complete detection API documentation including all providers, features, and examples, see **[Detection Documentation](./docs/DETECTION.md)**.
+
 ## Automatic Processing Metadata Tracking
 
 imgx automatically tracks all processing operations applied to images and can embed this information as XMP metadata when saving. This feature provides full transparency about how images were processed.
@@ -966,6 +1021,16 @@ imgx provides a comprehensive set of image processing capabilities:
 - Format auto-detection from file extensions
 - Metadata extraction (EXIF, IPTC, XMP with exiftool)
 - Automatic processing metadata tracking and XMP embedding
+
+**AI Object Detection:**
+- Support for Google Gemini, AWS Rekognition, and OpenAI Vision
+- Label/object detection with confidence scores
+- Text extraction (OCR)
+- Face detection with attributes
+- Image quality analysis (brightness, sharpness, contrast)
+- Dominant color extraction
+- Natural language descriptions
+- See [Detection Documentation](./docs/DETECTION.md) for details
 
 **API Design:**
 - Instance-based API with method chaining for clean, readable code
