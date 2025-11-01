@@ -15,6 +15,7 @@ A powerful command-line tool for image processing operations including resizing,
   - [Effects](#effects)
   - [Watermarking](#watermarking)
   - [Image Information](#image-information)
+  - [Object Detection](#object-detection)
 - [Common Use Cases](#common-use-cases)
 - [Tips & Tricks](#tips--tricks)
 
@@ -734,6 +735,206 @@ sudo dnf install perl-Image-ExifTool
 # Verify installation
 exiftool -ver
 ```
+
+### Object Detection
+
+#### `detect` - AI-powered object detection
+
+Detect objects, text, faces, and image properties using AI vision APIs from Google Gemini, AWS Rekognition, and OpenAI Vision.
+
+```bash
+imgx detect <input> [options]
+```
+
+**Options:**
+- `-p, --provider string` - Detection provider: `gemini`, `google` (alias), `aws`, `openai` (default: `gemini`)
+- `-f, --features string` - Features to detect: `labels,text,faces,web,description,properties` (comma-separated, default: `labels`)
+- `-m, --max-results int` - Maximum number of labels to return (default: 10)
+- `-c, --confidence float` - Minimum confidence threshold 0.0-1.0 (default: 0.5)
+- `--prompt string` - Custom prompt for Gemini/OpenAI (overrides --features)
+- `-j, --json` - Output results as JSON
+- `--raw` - Include raw API response in output
+
+**Supported Providers:**
+- **gemini** (Google Gemini API) - Requires `GEMINI_API_KEY`
+- **aws** (AWS Rekognition) - Requires AWS credentials
+- **openai** (OpenAI Vision) - Requires `OPENAI_API_KEY`
+
+**Setup:**
+
+```bash
+# Gemini: Get API key from https://aistudio.google.com/
+export GEMINI_API_KEY="your-api-key"
+
+# AWS: Configure via AWS CLI or environment variables
+aws configure
+# OR
+export AWS_ACCESS_KEY_ID="your-key"
+export AWS_SECRET_ACCESS_KEY="your-secret"
+export AWS_REGION="us-east-1"
+
+# OpenAI: Get API key from https://platform.openai.com/
+export OPENAI_API_KEY="sk-..."
+```
+
+**Available Features:**
+- `labels` - Detect objects and labels
+- `text` - Extract text (OCR)
+- `faces` - Detect faces and attributes
+- `description` - Get natural language description (Gemini/OpenAI)
+- `web` - Web entities and similar images (Gemini only)
+- `landmarks` - Detect famous landmarks (Gemini only)
+- `properties` - Image quality, colors, sharpness (AWS only)
+- `safesearch` - Content moderation
+
+**Examples:**
+
+```bash
+# Basic detection with Gemini (simplest)
+imgx detect photo.jpg
+
+# Use specific provider
+imgx detect photo.jpg --provider aws
+
+# Multiple features
+imgx detect document.jpg --features labels,text,faces
+
+# AWS image properties (colors, quality)
+imgx detect photo.jpg --provider aws --features properties
+
+# AWS labels + properties (charged for both)
+imgx detect photo.jpg --provider aws --features labels,properties
+
+# Custom prompt with Gemini
+imgx detect dog.jpg --provider gemini --prompt "What breed is this dog?"
+
+# Higher confidence threshold
+imgx detect photo.jpg --confidence 0.8
+
+# JSON output
+imgx detect photo.jpg --json
+
+# Compare providers
+imgx detect photo.jpg --provider gemini
+imgx detect photo.jpg --provider aws
+imgx detect photo.jpg --provider openai
+```
+
+**Sample Output:**
+
+```
+Provider: gemini
+Processed: 2024-11-01 16:30:45
+
+Labels:
+  - Dog (98.5% confidence)
+  - Golden Retriever (94.2% confidence)
+  - Pet (92.1% confidence)
+  - Animal (91.8% confidence)
+  - Canine (90.3% confidence)
+
+Overall Confidence: 93.4%
+```
+
+**JSON Output Example:**
+
+```json
+{
+  "provider": "gemini",
+  "labels": [
+    {
+      "name": "Dog",
+      "confidence": 0.985,
+      "categories": ["Animal", "Pet"]
+    },
+    {
+      "name": "Golden Retriever",
+      "confidence": 0.942,
+      "categories": ["Dog", "Breed"]
+    }
+  ],
+  "confidence": 0.934,
+  "processed_at": "2024-11-01T16:30:45Z"
+}
+```
+
+**AWS Image Properties Output:**
+
+```bash
+imgx detect photo.jpg --provider aws --features properties
+
+# Output:
+Provider: aws
+Processed: 2024-11-01 16:30:45
+
+Image Properties:
+  brightness: 75.23
+  sharpness: 89.15
+  contrast: 62.45
+  dominant_colors: Black(45.2%), White(23.1%), Blue(15.7%)
+  color_1_hex: #0C0F12
+  color_1_rgb: rgb(12,15,18)
+  color_2_hex: #F5F5F5
+  color_2_rgb: rgb(245,245,245)
+  foreground_color: Black
+  background_color: White
+```
+
+**Text Extraction Example:**
+
+```bash
+imgx detect document.jpg --features text
+
+# Output:
+Provider: gemini
+Processed: 2024-11-01 16:30:45
+
+Text Detected:
+  - "Invoice" (confidence: 99.2%)
+  - "Total: $152.50" (confidence: 98.7%)
+  - "Date: 2024-10-15" (confidence: 97.5%)
+```
+
+**Face Detection Example:**
+
+```bash
+imgx detect group-photo.jpg --features faces
+
+# Output:
+Provider: aws
+Processed: 2024-11-01 16:30:45
+
+Faces Detected: 3
+  Face 1: confidence 99.8%, age 25-35, smiling
+  Face 2: confidence 99.5%, age 30-40, neutral
+  Face 3: confidence 98.9%, age 20-30, happy
+```
+
+**Pricing Notes:**
+
+- **Gemini**: Free tier available, then pay-as-you-go
+- **AWS Rekognition**:
+  - `--features labels` → Standard DetectLabels pricing (~$0.001/image)
+  - `--features properties` → Image Properties pricing only
+  - `--features labels,properties` → **Charged for BOTH APIs**
+- **OpenAI Vision**: Per-request pricing based on GPT-4o
+
+**Troubleshooting:**
+
+```bash
+# Test Gemini credentials
+echo $GEMINI_API_KEY
+
+# Test AWS credentials
+aws sts get-caller-identity
+
+# Test OpenAI credentials
+echo $OPENAI_API_KEY
+```
+
+**See Also:**
+- Detailed API documentation: [docs/DETECTION.md](./DETECTION.md)
+- Example code: [examples/detection/main.go](../examples/detection/main.go)
 
 ## Common Use Cases
 
