@@ -88,7 +88,7 @@ func (img *Image) SetAuthor(author string) *Image {
 //
 // Supported providers:
 //   - "gemini" or "google" - Google Gemini API (requires GEMINI_API_KEY)
-//   - "aws" - AWS Rekognition (requires AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+//   - "aws" - AWS Rekognition (uses AWS credential chain: env vars, ~/.aws/credentials, IAM roles, etc.)
 //   - "openai" - OpenAI Vision (requires OPENAI_API_KEY)
 //
 // Example:
