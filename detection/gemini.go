@@ -112,7 +112,7 @@ func (g *GeminiProvider) buildPrompt(opts *DetectOptions) string {
 	}
 
 	// Build prompt based on features
-	var prompts []string
+	prompts := []string{responseSchemaPrompt}
 
 	for _, feature := range opts.Features {
 		switch feature {
@@ -145,14 +145,14 @@ func (g *GeminiProvider) buildPrompt(opts *DetectOptions) string {
 		}
 	}
 
-	if len(prompts) == 0 {
-		// Default prompt
-		return fmt.Sprintf(
+	// If no feature-specific instructions were added, append a default overview
+	if len(prompts) == 1 {
+		prompts = append(prompts, fmt.Sprintf(
 			"Analyze this image and identify all visible objects. "+
 				"Return JSON: {\"labels\": [{\"name\": \"object\", \"confidence\": 0.95}], \"description\": \"...\"} "+
 				"with up to %d labels having confidence >= %.2f.",
 			opts.MaxResults, opts.MinConfidence,
-		)
+		))
 	}
 
 	return strings.Join(prompts, "\n\n")
@@ -250,6 +250,11 @@ func (g *GeminiProvider) parseJSONResponse(text string, result *DetectionResult)
 		result.Description = desc
 	}
 
+	// Extract properties map if provided
+	if propsVal, ok := parsed["properties"]; ok {
+		result.Properties = parsePropertiesFromInterface(result.Properties, propsVal)
+	}
+
 	// Extract text blocks
 	if textData, ok := parsed["text"].([]interface{}); ok {
 		for _, item := range textData {
@@ -266,6 +271,33 @@ func (g *GeminiProvider) parseJSONResponse(text string, result *DetectionResult)
 				}
 			}
 		}
+	}
+
+	// Extract dominant colors
+	if colors := parseColorsFromInterface(parsed["colors"]); len(colors) > 0 {
+		result.Colors = append(result.Colors, colors...)
+	}
+
+	// Extract image quality metrics
+	if quality := parseImageQualityFromInterface(parsed["image_quality"]); quality != nil {
+		result.ImageQuality = quality
+	}
+
+	// Extract moderation / safe search details
+	if moderation := parseModerationFromInterface(parsed["moderation"]); len(moderation) > 0 {
+		result.Moderation = moderation
+		if result.SafeSearch == nil {
+			result.SafeSearch = &SafeSearchSummary{Labels: moderation}
+		} else if len(result.SafeSearch.Labels) == 0 {
+			result.SafeSearch.Labels = moderation
+		}
+	}
+
+	if safe := parseSafeSearchFromInterface(parsed["safe_search"]); safe != nil {
+		if len(safe.Labels) == 0 && len(result.Moderation) > 0 {
+			safe.Labels = result.Moderation
+		}
+		result.SafeSearch = safe
 	}
 
 	return nil
@@ -314,23 +346,4 @@ func containsFeature(features []Feature, target Feature) bool {
 		}
 	}
 	return false
-}
-
-// extractJSONFromMarkdown extracts JSON from markdown code blocks
-func extractJSONFromMarkdown(text string) string {
-	// Remove markdown code fences if present
-	text = strings.TrimSpace(text)
-	if strings.HasPrefix(text, "```json") {
-		text = strings.TrimPrefix(text, "```json")
-		text = strings.TrimPrefix(text, "```")
-		if idx := strings.Index(text, "```"); idx != -1 {
-			text = text[:idx]
-		}
-	} else if strings.HasPrefix(text, "```") {
-		text = strings.TrimPrefix(text, "```")
-		if idx := strings.Index(text, "```"); idx != -1 {
-			text = text[:idx]
-		}
-	}
-	return strings.TrimSpace(text)
 }

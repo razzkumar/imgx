@@ -238,6 +238,23 @@ func CreateMockDetectionResult(provider string) *DetectionResult {
 		Faces: []Face{
 			{Confidence: 0.92, Gender: "Male", AgeRange: "25-35"},
 		},
+		Colors: []ColorInfo{
+			{Name: "blue", Hex: "#0000FF", RGB: "rgb(0,0,255)", Percentage: 62.5},
+		},
+		ImageQuality: &ImageQuality{
+			Brightness: 0.85,
+			Sharpness:  0.72,
+			Contrast:   0.91,
+		},
+		Moderation: []ModerationLabel{
+			{Name: "safe", Confidence: 0.05, Severity: "5.0%"},
+		},
+		SafeSearch: &SafeSearchSummary{
+			Labels: []ModerationLabel{
+				{Name: "safe", Confidence: 0.05, Severity: "5.0%"},
+			},
+			Notes: "No unsafe content detected",
+		},
 		Properties: map[string]string{
 			"brightness": "85.5",
 			"contrast":   "72.3",

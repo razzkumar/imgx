@@ -105,7 +105,7 @@ func (o *OpenAIProvider) buildPrompt(opts *DetectOptions) string {
 	}
 
 	// Build prompt based on features
-	var prompts []string
+	prompts := []string{responseSchemaPrompt}
 
 	for _, feature := range opts.Features {
 		switch feature {
@@ -138,14 +138,13 @@ func (o *OpenAIProvider) buildPrompt(opts *DetectOptions) string {
 		}
 	}
 
-	if len(prompts) == 0 {
-		// Default prompt
-		return fmt.Sprintf(
+	if len(prompts) == 1 {
+		prompts = append(prompts, fmt.Sprintf(
 			"Analyze this image and identify all visible objects. "+
 				"Return JSON: {\"labels\": [{\"name\": \"object\", \"confidence\": 0.95}], \"description\": \"...\"} "+
 				"with up to %d labels having confidence >= %.2f.",
 			opts.MaxResults, opts.MinConfidence,
-		)
+		))
 	}
 
 	return strings.Join(prompts, "\n\n")
@@ -229,6 +228,11 @@ func (o *OpenAIProvider) parseJSONResponse(text string, result *DetectionResult)
 		result.Description = desc
 	}
 
+	// Extract optional properties
+	if propsVal, ok := parsed["properties"]; ok {
+		result.Properties = parsePropertiesFromInterface(result.Properties, propsVal)
+	}
+
 	// Extract text blocks
 	if textData, ok := parsed["text"].([]interface{}); ok {
 		for _, item := range textData {
@@ -245,6 +249,33 @@ func (o *OpenAIProvider) parseJSONResponse(text string, result *DetectionResult)
 				}
 			}
 		}
+	}
+
+	// Extract colors
+	if colors := parseColorsFromInterface(parsed["colors"]); len(colors) > 0 {
+		result.Colors = append(result.Colors, colors...)
+	}
+
+	// Extract image quality
+	if quality := parseImageQualityFromInterface(parsed["image_quality"]); quality != nil {
+		result.ImageQuality = quality
+	}
+
+	// Extract moderation details
+	if moderation := parseModerationFromInterface(parsed["moderation"]); len(moderation) > 0 {
+		result.Moderation = moderation
+		if result.SafeSearch == nil {
+			result.SafeSearch = &SafeSearchSummary{Labels: moderation}
+		} else if len(result.SafeSearch.Labels) == 0 {
+			result.SafeSearch.Labels = moderation
+		}
+	}
+
+	if safe := parseSafeSearchFromInterface(parsed["safe_search"]); safe != nil {
+		if len(safe.Labels) == 0 && len(result.Moderation) > 0 {
+			safe.Labels = result.Moderation
+		}
+		result.SafeSearch = safe
 	}
 
 	return nil

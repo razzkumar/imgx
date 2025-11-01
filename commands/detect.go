@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/razzkumar/imgx/detection"
@@ -147,7 +148,7 @@ func detectAction(ctx context.Context, cmd *cli.Command) error {
 		return outputDetectionJSON(result)
 	}
 
-	return outputDetectionPretty(result)
+	return outputDetectionPretty(result, float32(cmd.Float64("confidence")))
 }
 
 // outputDetectionJSON outputs detection results as JSON
@@ -161,14 +162,26 @@ func outputDetectionJSON(result *detection.DetectionResult) error {
 }
 
 // outputDetectionPretty outputs detection results in a human-readable format
-func outputDetectionPretty(result *detection.DetectionResult) error {
+func outputDetectionPretty(result *detection.DetectionResult, minConfidence float32) error {
 	fmt.Printf("=== Object Detection Results (%s) ===\n\n", result.Provider)
 
 	// Labels
 	if len(result.Labels) > 0 {
 		fmt.Println("Labels:")
-		for i, label := range result.Labels {
-			fmt.Printf("  %d. %s (%.1f%% confidence)\n", i+1, label.Name, label.Confidence*100)
+		count := 0
+		for _, label := range result.Labels {
+			if label.Confidence > 0 && label.Confidence < minConfidence {
+				continue
+			}
+			count++
+			if label.Confidence > 0 {
+				fmt.Printf("  %d. %s (%.1f%% confidence)\n", count, label.Name, label.Confidence*100)
+			} else {
+				fmt.Printf("  %d. %s\n", count, label.Name)
+			}
+		}
+		if count == 0 {
+			fmt.Println("  (no labels above confidence threshold)")
 		}
 		fmt.Println()
 	}
@@ -261,7 +274,13 @@ func outputDetectionPretty(result *detection.DetectionResult) error {
 	// Properties
 	if len(result.Properties) > 0 {
 		fmt.Println("Properties:")
-		for key, value := range result.Properties {
+		keys := make([]string, 0, len(result.Properties))
+		for key := range result.Properties {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			value := result.Properties[key]
 			fmt.Printf("  %s: %s\n", key, value)
 		}
 		fmt.Println()
@@ -284,6 +303,139 @@ func outputDetectionPretty(result *detection.DetectionResult) error {
 	// Overall confidence
 	if result.Confidence > 0 {
 		fmt.Printf("Overall Confidence: %.1f%%\n", result.Confidence*100)
+	}
+
+	// Dominant colors
+	if len(result.Colors) > 0 {
+		fmt.Println("\nDominant Colors:")
+		colors := append([]detection.ColorInfo(nil), result.Colors...)
+		sort.SliceStable(colors, func(i, j int) bool {
+			return colors[i].Percentage > colors[j].Percentage
+		})
+		maxColors := len(colors)
+		if maxColors > 5 {
+			maxColors = 5
+		}
+		for i := 0; i < maxColors; i++ {
+			c := colors[i]
+			name := c.Name
+			if name == "" {
+				if c.Hex != "" {
+					name = c.Hex
+				} else if c.RGB != "" {
+					name = c.RGB
+				} else {
+					name = fmt.Sprintf("Color %d", i+1)
+				}
+			}
+			details := []string{}
+			if c.Hex != "" && !strings.EqualFold(name, c.Hex) {
+				details = append(details, c.Hex)
+			}
+			if c.RGB != "" && !strings.EqualFold(name, c.RGB) {
+				details = append(details, c.RGB)
+			}
+			if c.Percentage > 0 {
+				value := c.Percentage
+				if value <= 1 {
+					value = value * 100
+				}
+				details = append(details, fmt.Sprintf("%.1f%%", value))
+			}
+			if len(details) > 0 {
+				fmt.Printf("  - %s (%s)\n", name, strings.Join(details, ", "))
+			} else {
+				fmt.Printf("  - %s\n", name)
+			}
+		}
+	}
+
+	// Image quality
+	if result.ImageQuality != nil {
+		fmt.Println("\nImage Quality:")
+		q := result.ImageQuality
+		if q.Brightness != 0 {
+			fmt.Printf("  Brightness: %.2f\n", q.Brightness)
+		}
+		if q.Contrast != 0 {
+			fmt.Printf("  Contrast: %.2f\n", q.Contrast)
+		}
+		if q.Sharpness != 0 {
+			fmt.Printf("  Sharpness: %.2f\n", q.Sharpness)
+		}
+		if q.ForegroundBrightness != 0 || q.ForegroundSharpness != 0 || q.ForegroundColor != "" {
+			fmt.Println("  Foreground:")
+			if q.ForegroundBrightness != 0 {
+				fmt.Printf("    Brightness: %.2f\n", q.ForegroundBrightness)
+			}
+			if q.ForegroundSharpness != 0 {
+				fmt.Printf("    Sharpness: %.2f\n", q.ForegroundSharpness)
+			}
+			if q.ForegroundColor != "" {
+				fmt.Printf("    Color: %s\n", q.ForegroundColor)
+			}
+		}
+		if q.BackgroundBrightness != 0 || q.BackgroundSharpness != 0 || q.BackgroundColor != "" {
+			fmt.Println("  Background:")
+			if q.BackgroundBrightness != 0 {
+				fmt.Printf("    Brightness: %.2f\n", q.BackgroundBrightness)
+			}
+			if q.BackgroundSharpness != 0 {
+				fmt.Printf("    Sharpness: %.2f\n", q.BackgroundSharpness)
+			}
+			if q.BackgroundColor != "" {
+				fmt.Printf("    Color: %s\n", q.BackgroundColor)
+			}
+		}
+	}
+
+	// Moderation labels
+	if len(result.Moderation) > 0 {
+		fmt.Println("\nModeration:")
+		for _, label := range result.Moderation {
+			parts := []string{}
+			if label.Parent != "" {
+				parts = append(parts, fmt.Sprintf("parent: %s", label.Parent))
+			}
+			if label.Severity != "" {
+				parts = append(parts, fmt.Sprintf("severity: %s", label.Severity))
+			}
+			if label.Confidence > 0 {
+				parts = append(parts, fmt.Sprintf("confidence: %.1f%%", label.Confidence*100))
+			}
+			if len(parts) > 0 {
+				fmt.Printf("  - %s (%s)\n", label.Name, strings.Join(parts, ", "))
+			} else {
+				fmt.Printf("  - %s\n", label.Name)
+			}
+		}
+	}
+
+	// Safe search summary
+	if result.SafeSearch != nil {
+		fmt.Println("\nSafe Search Summary:")
+		if len(result.SafeSearch.Labels) > 0 {
+			for _, label := range result.SafeSearch.Labels {
+				parts := []string{}
+				if label.Severity != "" {
+					parts = append(parts, label.Severity)
+				}
+				if label.Confidence > 0 {
+					parts = append(parts, fmt.Sprintf("%.1f%%", label.Confidence*100))
+				}
+				if label.Parent != "" {
+					parts = append(parts, fmt.Sprintf("parent: %s", label.Parent))
+				}
+				if len(parts) > 0 {
+					fmt.Printf("  - %s (%s)\n", label.Name, strings.Join(parts, ", "))
+				} else {
+					fmt.Printf("  - %s\n", label.Name)
+				}
+			}
+		}
+		if note := strings.TrimSpace(result.SafeSearch.Notes); note != "" {
+			fmt.Printf("  Notes: %s\n", note)
+		}
 	}
 
 	// Raw response (if requested)

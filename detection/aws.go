@@ -137,7 +137,7 @@ func (a *AWSProvider) Detect(ctx context.Context, img *image.NRGBA, opts *Detect
 		case FeatureProperties:
 			// If properties requested without labels, still call detectLabels but with IMAGE_PROPERTIES only
 			if !labelsProcessed && !hasLabelsFeature {
-				if err := a.detectLabelsImagePropertiesOnly(ctx, imgBytes, result, opts); err != nil {
+				if err := a.detectLabelsImagePropertiesOnly(ctx, imgBytes, result); err != nil {
 					return nil, err
 				}
 				labelsProcessed = true
@@ -391,6 +391,20 @@ func (a *AWSProvider) detectModeration(ctx context.Context, imgBytes []byte, res
 			key := fmt.Sprintf("moderation_%s", *label.Name)
 			value := fmt.Sprintf("%.1f%%", *label.Confidence)
 			result.Properties[key] = value
+
+			conf := aws.ToFloat32(label.Confidence)
+			result.Moderation = append(result.Moderation, ModerationLabel{
+				Name:       *label.Name,
+				Parent:     aws.ToString(label.ParentName),
+				Confidence: conf / 100.0,
+				Severity:   fmt.Sprintf("%.1f%%", conf),
+			})
+		}
+	}
+
+	if len(result.Moderation) > 0 && result.SafeSearch == nil {
+		result.SafeSearch = &SafeSearchSummary{
+			Labels: result.Moderation,
 		}
 	}
 
@@ -400,7 +414,7 @@ func (a *AWSProvider) detectModeration(ctx context.Context, imgBytes []byte, res
 // detectLabelsImagePropertiesOnly calls DetectLabels with only IMAGE_PROPERTIES enabled
 // Used when user requests only properties without general labels
 // This charges only for Image Properties API, not for general label detection
-func (a *AWSProvider) detectLabelsImagePropertiesOnly(ctx context.Context, imgBytes []byte, result *DetectionResult, opts *DetectOptions) error {
+func (a *AWSProvider) detectLabelsImagePropertiesOnly(ctx context.Context, imgBytes []byte, result *DetectionResult) error {
 	input := &rekognition.DetectLabelsInput{
 		Image: &types.Image{
 			Bytes: imgBytes,
@@ -430,18 +444,32 @@ func (a *AWSProvider) detectLabelsImagePropertiesOnly(ctx context.Context, imgBy
 	return nil
 }
 
-// parseImageProperties parses AWS Rekognition image properties into our Properties map
+// parseImageProperties parses AWS Rekognition image properties into our DetectionResult
 func (a *AWSProvider) parseImageProperties(props *types.DetectLabelsImageProperties, result *DetectionResult) {
+	ensureQuality := func() *ImageQuality {
+		if result.ImageQuality == nil {
+			result.ImageQuality = &ImageQuality{}
+		}
+		return result.ImageQuality
+	}
+
 	// Quality information
 	if props.Quality != nil {
+		quality := ensureQuality()
 		if props.Quality.Brightness != nil {
-			result.Properties["brightness"] = fmt.Sprintf("%.2f", *props.Quality.Brightness)
+			value := float32(*props.Quality.Brightness)
+			result.Properties["brightness"] = fmt.Sprintf("%.2f", value)
+			quality.Brightness = value
 		}
 		if props.Quality.Sharpness != nil {
-			result.Properties["sharpness"] = fmt.Sprintf("%.2f", *props.Quality.Sharpness)
+			value := float32(*props.Quality.Sharpness)
+			result.Properties["sharpness"] = fmt.Sprintf("%.2f", value)
+			quality.Sharpness = value
 		}
 		if props.Quality.Contrast != nil {
-			result.Properties["contrast"] = fmt.Sprintf("%.2f", *props.Quality.Contrast)
+			value := float32(*props.Quality.Contrast)
+			result.Properties["contrast"] = fmt.Sprintf("%.2f", value)
+			quality.Contrast = value
 		}
 	}
 
@@ -452,22 +480,50 @@ func (a *AWSProvider) parseImageProperties(props *types.DetectLabelsImagePropert
 			if i >= 10 { // Limit to top 10 colors
 				break
 			}
-			if color.SimplifiedColor != nil && color.PixelPercent != nil {
-				colorInfo := fmt.Sprintf("%s(%.1f%%)", *color.SimplifiedColor, *color.PixelPercent)
+
+			var (
+				name       string
+				percentage float32
+				rgbValue   string
+				hexValue   string
+			)
+
+			if color.SimplifiedColor != nil {
+				name = *color.SimplifiedColor
+			}
+			if color.PixelPercent != nil {
+				percentage = float32(*color.PixelPercent)
+			}
+			if color.Red != nil && color.Green != nil && color.Blue != nil {
+				rgbValue = fmt.Sprintf("rgb(%d,%d,%d)", *color.Red, *color.Green, *color.Blue)
+			}
+			if color.CSSColor != nil {
+				hexValue = *color.CSSColor
+			}
+
+			if name != "" {
+				colorInfo := fmt.Sprintf("%s(%.1f%%)", name, percentage)
 				colors = append(colors, colorInfo)
+			}
 
-				// Also store individual RGB values if available
-				if color.Red != nil && color.Green != nil && color.Blue != nil {
-					rgbKey := fmt.Sprintf("color_%d_rgb", i+1)
-					result.Properties[rgbKey] = fmt.Sprintf("rgb(%d,%d,%d)",
-						*color.Red, *color.Green, *color.Blue)
-				}
+			// Populate structured colors slice
+			if name != "" || hexValue != "" || rgbValue != "" {
+				result.Colors = append(result.Colors, ColorInfo{
+					Name:       name,
+					Hex:        hexValue,
+					RGB:        rgbValue,
+					Percentage: percentage,
+				})
+			}
 
-				// Store CSS hex color if available
-				if color.CSSColor != nil {
-					hexKey := fmt.Sprintf("color_%d_hex", i+1)
-					result.Properties[hexKey] = *color.CSSColor
-				}
+			// Maintain legacy property keys
+			if rgbValue != "" {
+				rgbKey := fmt.Sprintf("color_%d_rgb", i+1)
+				result.Properties[rgbKey] = rgbValue
+			}
+			if hexValue != "" {
+				hexKey := fmt.Sprintf("color_%d_hex", i+1)
+				result.Properties[hexKey] = hexValue
 			}
 		}
 		if len(colors) > 0 {
@@ -476,34 +532,64 @@ func (a *AWSProvider) parseImageProperties(props *types.DetectLabelsImagePropert
 		}
 	}
 
-	// Foreground color
+	// Foreground color block
 	if props.Foreground != nil {
+		quality := ensureQuality()
 		if props.Foreground.Quality != nil {
 			if props.Foreground.Quality.Brightness != nil {
-				result.Properties["foreground_brightness"] = fmt.Sprintf("%.2f", *props.Foreground.Quality.Brightness)
+				value := float32(*props.Foreground.Quality.Brightness)
+				result.Properties["foreground_brightness"] = fmt.Sprintf("%.2f", value)
+				quality.ForegroundBrightness = value
 			}
 			if props.Foreground.Quality.Sharpness != nil {
-				result.Properties["foreground_sharpness"] = fmt.Sprintf("%.2f", *props.Foreground.Quality.Sharpness)
+				value := float32(*props.Foreground.Quality.Sharpness)
+				result.Properties["foreground_sharpness"] = fmt.Sprintf("%.2f", value)
+				quality.ForegroundSharpness = value
 			}
 		}
 		if len(props.Foreground.DominantColors) > 0 && props.Foreground.DominantColors[0].SimplifiedColor != nil {
-			result.Properties["foreground_color"] = *props.Foreground.DominantColors[0].SimplifiedColor
+			colorName := *props.Foreground.DominantColors[0].SimplifiedColor
+			result.Properties["foreground_color"] = colorName
+			quality.ForegroundColor = colorName
+			result.Colors = append(result.Colors, ColorInfo{Name: colorName})
 		}
 	}
 
-	// Background color
+	// Background color block
 	if props.Background != nil {
+		quality := ensureQuality()
 		if props.Background.Quality != nil {
 			if props.Background.Quality.Brightness != nil {
-				result.Properties["background_brightness"] = fmt.Sprintf("%.2f", *props.Background.Quality.Brightness)
+				value := float32(*props.Background.Quality.Brightness)
+				result.Properties["background_brightness"] = fmt.Sprintf("%.2f", value)
+				quality.BackgroundBrightness = value
 			}
 			if props.Background.Quality.Sharpness != nil {
-				result.Properties["background_sharpness"] = fmt.Sprintf("%.2f", *props.Background.Quality.Sharpness)
+				value := float32(*props.Background.Quality.Sharpness)
+				result.Properties["background_sharpness"] = fmt.Sprintf("%.2f", value)
+				quality.BackgroundSharpness = value
 			}
 		}
 		if len(props.Background.DominantColors) > 0 && props.Background.DominantColors[0].SimplifiedColor != nil {
-			result.Properties["background_color"] = *props.Background.DominantColors[0].SimplifiedColor
+			colorName := *props.Background.DominantColors[0].SimplifiedColor
+			result.Properties["background_color"] = colorName
+			quality.BackgroundColor = colorName
+			result.Colors = append(result.Colors, ColorInfo{Name: colorName})
 		}
+	}
+
+	// Ensure colors slice is deduplicated for readability
+	if len(result.Colors) > 1 {
+		unique := make([]ColorInfo, 0, len(result.Colors))
+		seen := make(map[string]bool)
+		for _, color := range result.Colors {
+			key := fmt.Sprintf("%s|%s|%s|%0.2f", color.Name, color.Hex, color.RGB, color.Percentage)
+			if !seen[key] {
+				seen[key] = true
+				unique = append(unique, color)
+			}
+		}
+		result.Colors = unique
 	}
 }
 
