@@ -1,0 +1,17 @@
+{
+  "labels": [
+    {
+      "name": "dog",
+      "confidence": 0.96
+    },
+    {
+      "name": "golden retriever",
+      "confidence": 0.89
+    },
+    {
+      "name": "pet",
+      "confidence": 0.93
+    }
+  ],
+  "description": "The image shows a golden retriever dog sitting outdoors on grass"
+}

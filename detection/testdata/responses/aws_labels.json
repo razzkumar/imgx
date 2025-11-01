@@ -1,0 +1,18 @@
+{
+  "labels": [
+    {
+      "name": "Dog",
+      "confidence": 99.5,
+      "categories": ["Animal"]
+    },
+    {
+      "name": "Pet",
+      "confidence": 98.2
+    },
+    {
+      "name": "Golden Retriever",
+      "confidence": 95.7,
+      "categories": ["Dog"]
+    }
+  ]
+}
