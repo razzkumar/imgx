@@ -87,6 +87,9 @@ Examples:
 			// Info/Metadata
 			commands.MetadataCommand(),
 
+			// Object Detection
+			commands.DetectCommand(),
+
 			// Completions
 			commands.CompletionsCommand(),
 		},
