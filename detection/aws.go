@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"image"
-	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -20,18 +19,35 @@ type AWSProvider struct {
 }
 
 // NewAWSProvider creates a new AWS Rekognition provider instance
+// It uses the default AWS credential chain which checks in order:
+// 1. Environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION)
+// 2. AWS credentials file (~/.aws/credentials)
+// 3. AWS config file (~/.aws/config)
+// 4. IAM roles for Amazon EC2, ECS, or Lambda
 func NewAWSProvider() (*AWSProvider, error) {
-	// Check for AWS credentials
-	if os.Getenv("AWS_ACCESS_KEY_ID") == "" || os.Getenv("AWS_SECRET_ACCESS_KEY") == "" {
-		return nil, fmt.Errorf("%w: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables not set", ErrProviderNotConfigured)
-	}
-
 	ctx := context.Background()
 
-	// Load AWS configuration
+	// Load AWS configuration using default config loader
+	// This automatically handles:
+	// - Environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, etc.)
+	// - Shared config/credentials files (~/.aws/config, ~/.aws/credentials)
+	// - IAM roles (EC2, ECS, Lambda, etc.)
+	// - SSO configurations
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return nil, NewDetectionError("aws", "failed to load AWS config", err)
+		return nil, fmt.Errorf("%w: failed to load AWS config. Ensure you have AWS credentials configured via environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION) or AWS CLI (aws configure)", ErrProviderNotConfigured)
+	}
+
+	// Verify credentials are available by retrieving them
+	// This ensures we fail fast if credentials are not properly configured
+	creds, err := cfg.Credentials.Retrieve(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("%w: failed to retrieve AWS credentials. Ensure you have AWS credentials configured via environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) or AWS CLI (aws configure)", ErrProviderNotConfigured)
+	}
+
+	// Check if credentials are empty
+	if creds.AccessKeyID == "" {
+		return nil, fmt.Errorf("%w: AWS credentials not found. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables or configure AWS CLI", ErrProviderNotConfigured)
 	}
 
 	// Create Rekognition client
@@ -50,7 +66,8 @@ func (a *AWSProvider) Name() string {
 
 // IsConfigured checks if the provider is properly configured
 func (a *AWSProvider) IsConfigured() bool {
-	return os.Getenv("AWS_ACCESS_KEY_ID") != "" && os.Getenv("AWS_SECRET_ACCESS_KEY") != ""
+	// If the provider was successfully initialized, it's configured
+	return a.client != nil
 }
 
 // Detect performs object detection using AWS Rekognition

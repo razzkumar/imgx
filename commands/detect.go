@@ -24,16 +24,21 @@ text detection (OCR), face detection, and more depending on the provider.
 Supported Providers:
   gemini          Google Gemini API (default, requires GEMINI_API_KEY)
   google          Alias for gemini
-  aws             AWS Rekognition (requires AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+  aws             AWS Rekognition (uses AWS credential chain)
   openai          OpenAI Vision API (requires OPENAI_API_KEY)
 
 Setup:
   Gemini:    Get API key from https://aistudio.google.com/
              export GEMINI_API_KEY="your-api-key"
 
-  AWS:       export AWS_ACCESS_KEY_ID="your-key"
-             export AWS_SECRET_ACCESS_KEY="your-secret"
-             export AWS_REGION="us-east-1"
+  AWS:       Uses standard AWS credential chain. Configure with any of:
+             - Environment variables:
+               export AWS_ACCESS_KEY_ID="your-key"
+               export AWS_SECRET_ACCESS_KEY="your-secret"
+               export AWS_REGION="us-east-1"
+             - AWS CLI configuration: aws configure
+             - IAM roles (for EC2, ECS, Lambda)
+             - Shared credentials file (~/.aws/credentials)
 
   OpenAI:    export OPENAI_API_KEY="sk-..."
 
