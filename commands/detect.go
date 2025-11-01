@@ -59,7 +59,13 @@ Examples:
   imgx detect --provider aws --json input.jpg
 
   # Higher confidence threshold
-  imgx detect --provider gemini --confidence 0.8 input.jpg`,
+  imgx detect --provider gemini --confidence 0.8 input.jpg
+
+  # AWS image properties (colors, quality, sharpness)
+  imgx detect --provider aws --features properties input.jpg
+
+  # AWS labels + image properties together
+  imgx detect --provider aws --features labels,properties --json input.jpg`,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:     "provider",
@@ -71,7 +77,7 @@ Examples:
 			&cli.StringFlag{
 				Name:    "features",
 				Aliases: []string{"f"},
-				Usage:   "Features to detect: labels,text,faces,web,description (comma-separated)",
+				Usage:   "Features to detect: labels,text,faces,web,description,properties (comma-separated)",
 				Value:   "labels",
 			},
 			&cli.IntFlag{
@@ -141,7 +147,7 @@ func detectAction(ctx context.Context, cmd *cli.Command) error {
 		return outputDetectionJSON(result)
 	}
 
-	return outputDetectionPretty(result, provider)
+	return outputDetectionPretty(result)
 }
 
 // outputDetectionJSON outputs detection results as JSON
@@ -155,7 +161,7 @@ func outputDetectionJSON(result *detection.DetectionResult) error {
 }
 
 // outputDetectionPretty outputs detection results in a human-readable format
-func outputDetectionPretty(result *detection.DetectionResult, provider string) error {
+func outputDetectionPretty(result *detection.DetectionResult) error {
 	fmt.Printf("=== Object Detection Results (%s) ===\n\n", result.Provider)
 
 	// Labels

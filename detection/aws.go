@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"image"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -14,8 +15,9 @@ import (
 
 // AWSProvider implements the Provider interface for AWS Rekognition
 type AWSProvider struct {
-	client *rekognition.Client
-	cfg    aws.Config
+	client     *rekognition.Client
+	cfg        aws.Config
+	credSource string // Source of credentials for debugging
 }
 
 // NewAWSProvider creates a new AWS Rekognition provider instance
@@ -35,14 +37,14 @@ func NewAWSProvider() (*AWSProvider, error) {
 	// - SSO configurations
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to load AWS config. Ensure you have AWS credentials configured via environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION) or AWS CLI (aws configure)", ErrProviderNotConfigured)
+		return nil, fmt.Errorf("%w: failed to load AWS config. Ensure you have AWS credentials configured via environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION) or AWS CLI (aws configure): %v", ErrProviderNotConfigured, err)
 	}
 
 	// Verify credentials are available by retrieving them
 	// This ensures we fail fast if credentials are not properly configured
 	creds, err := cfg.Credentials.Retrieve(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to retrieve AWS credentials. Ensure you have AWS credentials configured via environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) or AWS CLI (aws configure)", ErrProviderNotConfigured)
+		return nil, fmt.Errorf("%w: failed to retrieve AWS credentials. Ensure you have AWS credentials configured via environment variables (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY) or AWS CLI (aws configure): %v", ErrProviderNotConfigured, err)
 	}
 
 	// Check if credentials are empty
@@ -50,12 +52,24 @@ func NewAWSProvider() (*AWSProvider, error) {
 		return nil, fmt.Errorf("%w: AWS credentials not found. Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY environment variables or configure AWS CLI", ErrProviderNotConfigured)
 	}
 
+	// Validate region is set
+	if cfg.Region == "" {
+		return nil, fmt.Errorf("%w: AWS region not configured. Set AWS_REGION environment variable or configure it via AWS CLI (aws configure)", ErrProviderNotConfigured)
+	}
+
 	// Create Rekognition client
 	client := rekognition.NewFromConfig(cfg)
 
+	// Store credential source info for debugging
+	credSource := creds.Source
+	if credSource == "" {
+		credSource = "unknown"
+	}
+
 	return &AWSProvider{
-		client: client,
-		cfg:    cfg,
+		client:     client,
+		cfg:        cfg,
+		credSource: credSource,
 	}, nil
 }
 
@@ -93,12 +107,40 @@ func (a *AWSProvider) Detect(ctx context.Context, img *image.NRGBA, opts *Detect
 		ProcessedAt: startTime,
 	}
 
+	// Check if image properties are requested
+	enableImageProperties := false
+	hasLabelsFeature := false
+	for _, feature := range opts.Features {
+		if feature == FeatureProperties {
+			enableImageProperties = true
+		}
+		if feature == FeatureLabels || feature == FeatureObjects {
+			hasLabelsFeature = true
+		}
+	}
+
+	// If only properties are requested without labels, we still need to call detectLabels
+	// but with only IMAGE_PROPERTIES enabled (not GENERAL_LABELS)
+	labelsProcessed := false
+
 	// Perform detection based on requested features
 	for _, feature := range opts.Features {
 		switch feature {
 		case FeatureLabels, FeatureObjects:
-			if err := a.detectLabels(ctx, imgBytes, result, opts); err != nil {
-				return nil, err
+			if !labelsProcessed {
+				if err := a.detectLabels(ctx, imgBytes, result, opts, enableImageProperties); err != nil {
+					return nil, err
+				}
+				labelsProcessed = true
+			}
+
+		case FeatureProperties:
+			// If properties requested without labels, still call detectLabels but with IMAGE_PROPERTIES only
+			if !labelsProcessed && !hasLabelsFeature {
+				if err := a.detectLabelsImagePropertiesOnly(ctx, imgBytes, result, opts); err != nil {
+					return nil, err
+				}
+				labelsProcessed = true
 			}
 
 		case FeatureText:
@@ -130,8 +172,9 @@ func (a *AWSProvider) Detect(ctx context.Context, img *image.NRGBA, opts *Detect
 	return result, nil
 }
 
-// detectLabels performs label detection
-func (a *AWSProvider) detectLabels(ctx context.Context, imgBytes []byte, result *DetectionResult, opts *DetectOptions) error {
+// detectLabels performs label detection and optionally image properties detection
+// enableImageProperties: when true, also detects image properties (colors, quality, etc.)
+func (a *AWSProvider) detectLabels(ctx context.Context, imgBytes []byte, result *DetectionResult, opts *DetectOptions, enableImageProperties bool) error {
 	input := &rekognition.DetectLabelsInput{
 		Image: &types.Image{
 			Bytes: imgBytes,
@@ -140,11 +183,31 @@ func (a *AWSProvider) detectLabels(ctx context.Context, imgBytes []byte, result 
 		MinConfidence: aws.Float32(opts.MinConfidence * 100), // AWS uses 0-100 scale
 	}
 
-	output, err := a.client.DetectLabels(ctx, input)
-	if err != nil {
-		return NewDetectionError("aws", "label detection failed", err)
+	// Configure Features to enable GENERAL_LABELS and/or IMAGE_PROPERTIES
+	// According to AWS docs, use Features field to enable image properties
+	if enableImageProperties {
+		// Enable both GENERAL_LABELS and IMAGE_PROPERTIES
+		input.Features = []types.DetectLabelsFeatureName{
+			types.DetectLabelsFeatureNameGeneralLabels,
+			types.DetectLabelsFeatureNameImageProperties,
+		}
+		// Configure image properties settings
+		input.Settings = &types.DetectLabelsSettings{
+			ImageProperties: &types.DetectLabelsImagePropertiesSettings{
+				MaxDominantColors: 10, // Get up to 10 dominant colors
+			},
+		}
+	} else {
+		// Only GENERAL_LABELS (default behavior when Features is not set)
+		// We can omit Features field and it will default to GENERAL_LABELS
 	}
 
+	output, err := a.client.DetectLabels(ctx, input)
+	if err != nil {
+		return a.enhanceAWSError("label detection failed", err)
+	}
+
+	// Parse labels
 	for _, label := range output.Labels {
 		if label.Name != nil && label.Confidence != nil {
 			l := Label{
@@ -167,6 +230,11 @@ func (a *AWSProvider) detectLabels(ctx context.Context, imgBytes []byte, result 
 		}
 	}
 
+	// Parse image properties if available
+	if output.ImageProperties != nil {
+		a.parseImageProperties(output.ImageProperties, result)
+	}
+
 	return nil
 }
 
@@ -180,7 +248,7 @@ func (a *AWSProvider) detectText(ctx context.Context, imgBytes []byte, result *D
 
 	output, err := a.client.DetectText(ctx, input)
 	if err != nil {
-		return NewDetectionError("aws", "text detection failed", err)
+		return a.enhanceAWSError("text detection failed", err)
 	}
 
 	for _, detection := range output.TextDetections {
@@ -223,7 +291,7 @@ func (a *AWSProvider) detectFaces(ctx context.Context, imgBytes []byte, result *
 
 	output, err := a.client.DetectFaces(ctx, input)
 	if err != nil {
-		return NewDetectionError("aws", "face detection failed", err)
+		return a.enhanceAWSError("face detection failed", err)
 	}
 
 	for _, faceDetail := range output.FaceDetails {
@@ -314,7 +382,7 @@ func (a *AWSProvider) detectModeration(ctx context.Context, imgBytes []byte, res
 
 	output, err := a.client.DetectModerationLabels(ctx, input)
 	if err != nil {
-		return NewDetectionError("aws", "moderation detection failed", err)
+		return a.enhanceAWSError("moderation detection failed", err)
 	}
 
 	// Store moderation labels in properties
@@ -327,6 +395,159 @@ func (a *AWSProvider) detectModeration(ctx context.Context, imgBytes []byte, res
 	}
 
 	return nil
+}
+
+// detectLabelsImagePropertiesOnly calls DetectLabels with only IMAGE_PROPERTIES enabled
+// Used when user requests only properties without general labels
+// This charges only for Image Properties API, not for general label detection
+func (a *AWSProvider) detectLabelsImagePropertiesOnly(ctx context.Context, imgBytes []byte, result *DetectionResult, opts *DetectOptions) error {
+	input := &rekognition.DetectLabelsInput{
+		Image: &types.Image{
+			Bytes: imgBytes,
+		},
+		// Only enable IMAGE_PROPERTIES, not GENERAL_LABELS
+		// This way we're only charged for Image Properties API
+		Features: []types.DetectLabelsFeatureName{
+			types.DetectLabelsFeatureNameImageProperties,
+		},
+		Settings: &types.DetectLabelsSettings{
+			ImageProperties: &types.DetectLabelsImagePropertiesSettings{
+				MaxDominantColors: 10, // Get up to 10 dominant colors
+			},
+		},
+	}
+
+	output, err := a.client.DetectLabels(ctx, input)
+	if err != nil {
+		return a.enhanceAWSError("image properties detection failed", err)
+	}
+
+	// Parse image properties if available
+	if output.ImageProperties != nil {
+		a.parseImageProperties(output.ImageProperties, result)
+	}
+
+	return nil
+}
+
+// parseImageProperties parses AWS Rekognition image properties into our Properties map
+func (a *AWSProvider) parseImageProperties(props *types.DetectLabelsImageProperties, result *DetectionResult) {
+	// Quality information
+	if props.Quality != nil {
+		if props.Quality.Brightness != nil {
+			result.Properties["brightness"] = fmt.Sprintf("%.2f", *props.Quality.Brightness)
+		}
+		if props.Quality.Sharpness != nil {
+			result.Properties["sharpness"] = fmt.Sprintf("%.2f", *props.Quality.Sharpness)
+		}
+		if props.Quality.Contrast != nil {
+			result.Properties["contrast"] = fmt.Sprintf("%.2f", *props.Quality.Contrast)
+		}
+	}
+
+	// Dominant colors
+	if len(props.DominantColors) > 0 {
+		colors := make([]string, 0, len(props.DominantColors))
+		for i, color := range props.DominantColors {
+			if i >= 10 { // Limit to top 10 colors
+				break
+			}
+			if color.SimplifiedColor != nil && color.PixelPercent != nil {
+				colorInfo := fmt.Sprintf("%s(%.1f%%)", *color.SimplifiedColor, *color.PixelPercent)
+				colors = append(colors, colorInfo)
+
+				// Also store individual RGB values if available
+				if color.Red != nil && color.Green != nil && color.Blue != nil {
+					rgbKey := fmt.Sprintf("color_%d_rgb", i+1)
+					result.Properties[rgbKey] = fmt.Sprintf("rgb(%d,%d,%d)",
+						*color.Red, *color.Green, *color.Blue)
+				}
+
+				// Store CSS hex color if available
+				if color.CSSColor != nil {
+					hexKey := fmt.Sprintf("color_%d_hex", i+1)
+					result.Properties[hexKey] = *color.CSSColor
+				}
+			}
+		}
+		if len(colors) > 0 {
+			result.Properties["dominant_colors"] = strings.Join(colors, ", ")
+			result.Properties["dominant_colors_count"] = fmt.Sprintf("%d", len(colors))
+		}
+	}
+
+	// Foreground color
+	if props.Foreground != nil {
+		if props.Foreground.Quality != nil {
+			if props.Foreground.Quality.Brightness != nil {
+				result.Properties["foreground_brightness"] = fmt.Sprintf("%.2f", *props.Foreground.Quality.Brightness)
+			}
+			if props.Foreground.Quality.Sharpness != nil {
+				result.Properties["foreground_sharpness"] = fmt.Sprintf("%.2f", *props.Foreground.Quality.Sharpness)
+			}
+		}
+		if len(props.Foreground.DominantColors) > 0 && props.Foreground.DominantColors[0].SimplifiedColor != nil {
+			result.Properties["foreground_color"] = *props.Foreground.DominantColors[0].SimplifiedColor
+		}
+	}
+
+	// Background color
+	if props.Background != nil {
+		if props.Background.Quality != nil {
+			if props.Background.Quality.Brightness != nil {
+				result.Properties["background_brightness"] = fmt.Sprintf("%.2f", *props.Background.Quality.Brightness)
+			}
+			if props.Background.Quality.Sharpness != nil {
+				result.Properties["background_sharpness"] = fmt.Sprintf("%.2f", *props.Background.Quality.Sharpness)
+			}
+		}
+		if len(props.Background.DominantColors) > 0 && props.Background.DominantColors[0].SimplifiedColor != nil {
+			result.Properties["background_color"] = *props.Background.DominantColors[0].SimplifiedColor
+		}
+	}
+}
+
+// enhanceAWSError provides better error messages for common AWS errors
+func (a *AWSProvider) enhanceAWSError(operation string, err error) error {
+	errMsg := err.Error()
+
+	// Check for common AWS authentication errors
+	if strings.Contains(errMsg, "UnrecognizedClientException") ||
+		strings.Contains(errMsg, "security token") ||
+		strings.Contains(errMsg, "invalid") {
+		return NewDetectionError("aws", fmt.Sprintf("%s: Invalid AWS credentials. "+
+			"The credentials (from %s) are invalid, expired, or malformed. "+
+			"Please verify your AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are correct. "+
+			"If using temporary credentials, they may have expired. "+
+			"Region: %s", operation, a.credSource, a.cfg.Region), err)
+	}
+
+	if strings.Contains(errMsg, "InvalidSignatureException") {
+		return NewDetectionError("aws", fmt.Sprintf("%s: Invalid AWS signature. "+
+			"Your AWS_SECRET_ACCESS_KEY may be incorrect. "+
+			"Credential source: %s, Region: %s", operation, a.credSource, a.cfg.Region), err)
+	}
+
+	if strings.Contains(errMsg, "AccessDeniedException") ||
+		strings.Contains(errMsg, "not authorized") {
+		return NewDetectionError("aws", fmt.Sprintf("%s: Access denied. "+
+			"Your AWS credentials don't have permission to use AWS Rekognition. "+
+			"Ensure your IAM user/role has 'rekognition:DetectLabels', 'rekognition:DetectText', "+
+			"and 'rekognition:DetectFaces' permissions. "+
+			"Credential source: %s, Region: %s", operation, a.credSource, a.cfg.Region), err)
+	}
+
+	if strings.Contains(errMsg, "no such host") ||
+		strings.Contains(errMsg, "NoSuchBucket") {
+		return NewDetectionError("aws", fmt.Sprintf("%s: Network or endpoint error. "+
+			"Check your AWS_REGION (%s) is correct and supports Rekognition. "+
+			"Available regions: us-east-1, us-west-2, eu-west-1, ap-southeast-1, etc.",
+			operation, a.cfg.Region), err)
+	}
+
+	// Default error with region and credential info
+	return NewDetectionError("aws", fmt.Sprintf("%s (Region: %s, Credentials from: %s)",
+		operation, a.cfg.Region, a.credSource), err)
 }
 
 // Close closes the AWS client (no-op for AWS SDK v2)
