@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -27,7 +28,7 @@ func main() {
 	fmt.Printf("File: %s\n", metadata.FilePath)
 	fmt.Printf("Format: %s\n", metadata.Format)
 	fmt.Printf("Dimensions: %dx%d pixels\n", metadata.Width, metadata.Height)
-	fmt.Printf("Aspect Ratio: %.2f\n", metadata.AspectRatio)
+	fmt.Printf("Aspect Ratio: %s\n", metadata.AspectRatio)
 	fmt.Printf("Megapixels: %.2f MP\n", metadata.Megapixels)
 	fmt.Printf("File Size: %d bytes (%.2f KB)\n", metadata.FileSize, float64(metadata.FileSize)/1024)
 	fmt.Printf("Color Model: %s\n", metadata.ColorModel)
@@ -47,30 +48,51 @@ func main() {
 			if metadata.CameraModel != "" {
 				fmt.Printf("  Model: %s\n", metadata.CameraModel)
 			}
+			if metadata.CameraSerialNumber != "" {
+				fmt.Printf("  Serial Number: %s\n", metadata.CameraSerialNumber)
+			}
 			if metadata.LensModel != "" {
 				fmt.Printf("  Lens: %s\n", metadata.LensModel)
+			}
+			if metadata.LensSerialNumber != "" {
+				fmt.Printf("  Lens Serial: %s\n", metadata.LensSerialNumber)
+			}
+			if metadata.FirmwareVersion != "" {
+				fmt.Printf("  Firmware: %s\n", metadata.FirmwareVersion)
 			}
 			fmt.Println()
 		}
 
 		// Camera settings
-		if metadata.FocalLength != "" || metadata.FNumber != "" ||
-			metadata.ExposureTime != "" || metadata.ISO != "" {
+		if metadata.FocalLength != "" || metadata.Aperture != "" ||
+			metadata.ShutterSpeed != "" || metadata.ISO != "" {
 			fmt.Println("Camera Settings:")
 			if metadata.FocalLength != "" {
 				fmt.Printf("  Focal Length: %s\n", metadata.FocalLength)
 			}
-			if metadata.FNumber != "" {
-				fmt.Printf("  Aperture: %s\n", metadata.FNumber)
+			if metadata.Aperture != "" {
+				fmt.Printf("  Aperture: %s\n", metadata.Aperture)
 			}
-			if metadata.ExposureTime != "" {
-				fmt.Printf("  Shutter Speed: %s\n", metadata.ExposureTime)
+			if metadata.ShutterSpeed != "" {
+				fmt.Printf("  Shutter Speed: %s\n", metadata.ShutterSpeed)
 			}
 			if metadata.ISO != "" {
 				fmt.Printf("  ISO: %s\n", metadata.ISO)
 			}
+			if metadata.ExposureCompensation != "" {
+				fmt.Printf("  Exposure Compensation: %s\n", metadata.ExposureCompensation)
+			}
+			if metadata.ExposureMode != "" {
+				fmt.Printf("  Exposure Mode: %s\n", metadata.ExposureMode)
+			}
+			if metadata.WhiteBalance != "" {
+				fmt.Printf("  White Balance: %s\n", metadata.WhiteBalance)
+			}
 			if metadata.Flash != "" {
 				fmt.Printf("  Flash: %s\n", metadata.Flash)
+			}
+			if metadata.FocusMode != "" {
+				fmt.Printf("  Focus Mode: %s\n", metadata.FocusMode)
 			}
 			fmt.Println()
 		}
@@ -99,20 +121,53 @@ func main() {
 			if metadata.GPSAltitude != "" {
 				fmt.Printf("  Altitude: %s\n", metadata.GPSAltitude)
 			}
+			if metadata.GPSSpeed != "" {
+				fmt.Printf("  Speed: %s\n", metadata.GPSSpeed)
+			}
+			if metadata.GPSDirection != "" {
+				fmt.Printf("  Direction: %s\n", metadata.GPSDirection)
+			}
 			fmt.Println()
 		}
 
-		// Additional information
-		if metadata.Software != "" || metadata.Artist != "" || metadata.Copyright != "" {
-			fmt.Println("Additional Information:")
-			if metadata.Software != "" {
-				fmt.Printf("  Software: %s\n", metadata.Software)
+		// Content and authorship
+		if metadata.Title != "" || metadata.Artist != "" || metadata.Copyright != "" {
+			fmt.Println("Content & Authorship:")
+			if metadata.Title != "" {
+				fmt.Printf("  Title: %s\n", metadata.Title)
+			}
+			if metadata.Subject != "" {
+				fmt.Printf("  Subject: %s\n", metadata.Subject)
+			}
+			if metadata.Keywords != "" {
+				fmt.Printf("  Keywords: %s\n", metadata.Keywords)
+			}
+			if metadata.Rating > 0 {
+				fmt.Printf("  Rating: %d stars\n", metadata.Rating)
 			}
 			if metadata.Artist != "" {
 				fmt.Printf("  Artist: %s\n", metadata.Artist)
 			}
 			if metadata.Copyright != "" {
 				fmt.Printf("  Copyright: %s\n", metadata.Copyright)
+			}
+			if metadata.Software != "" {
+				fmt.Printf("  Software: %s\n", metadata.Software)
+			}
+			fmt.Println()
+		}
+
+		// Technical details
+		if metadata.ColorSpace != "" || metadata.BitDepth > 0 {
+			fmt.Println("Technical Details:")
+			if metadata.ColorSpace != "" {
+				fmt.Printf("  Color Space: %s\n", metadata.ColorSpace)
+			}
+			if metadata.BitDepth > 0 {
+				fmt.Printf("  Bit Depth: %d\n", metadata.BitDepth)
+			}
+			if metadata.Compression != "" {
+				fmt.Printf("  Compression: %s\n", metadata.Compression)
 			}
 			fmt.Println()
 		}
@@ -175,6 +230,14 @@ func main() {
 		fmt.Printf("✓ File size OK: %.2f KB\n", float64(metadata.FileSize)/1024)
 	}
 	fmt.Println()
+
+	jsonData, err := json.MarshalIndent(metadata, "", "  ")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	fmt.Println(string(jsonData))
 
 	fmt.Println("=== Metadata extraction complete! ===")
 }
