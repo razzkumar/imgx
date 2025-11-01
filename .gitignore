@@ -6,3 +6,4 @@
 examples/generator/generator
 examples/metadata/metadata
 metadata
+*.out
