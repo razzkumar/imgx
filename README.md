@@ -69,8 +69,8 @@ imgx adjust photo.jpg --brightness 10 --contrast 20 -o adjusted.jpg
 # Apply blur effect
 imgx blur photo.jpg --sigma 2.5 -o blurred.jpg
 
-# Detect objects using AI (requires provider setup)
-imgx detect photo.jpg --provider gemini
+# Detect objects using AI (local Ollama by default)
+imgx detect photo.jpg
 
 # Extract image metadata (requires exiftool for extended data)
 imgx metadata photo.jpg
@@ -82,7 +82,7 @@ For complete CLI documentation with all commands, options, and examples, see **[
 
 **Library API:** https://pkg.go.dev/github.com/razzkumar/imgx
 **CLI Tool:** [CLI.md](./docs/CLI.md)
-**Object Detection:** [DETECTION.md](./docs/DETECTION.md) - AI vision with Google Gemini, AWS Rekognition, OpenAI
+**Object Detection:** [DETECTION.md](./docs/DETECTION.md) - AI vision with Ollama, Google Gemini, AWS Rekognition, OpenAI
 
 ## Library Usage Examples
 
@@ -751,9 +751,9 @@ func main() {
         log.Fatal(err)
     }
 
-    // Detect objects using Google Gemini
+    // Detect objects using the local Ollama model
     ctx := context.Background()
-    result, err := img.Detect(ctx, "gemini")
+    result, err := img.Detect(ctx, "ollama")
     if err != nil {
         log.Fatal(err)
     }

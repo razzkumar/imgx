@@ -251,6 +251,12 @@ func ResolveProviderAlias(name string) string {
 	switch name {
 	case "google":
 		return "gemini" // Google AI Studio / Gemini API
+	case "local", "local-ollama":
+		return "ollama"
+	case "qwen", "qwen3", "qwen3-vl":
+		return "ollama"
+	case "gemma3", "gemma-3":
+		return "ollama"
 	default:
 		return name
 	}
@@ -263,12 +269,14 @@ func GetProvider(name string) (Provider, error) {
 	switch name {
 	case "gemini":
 		return NewGeminiProvider()
+	case "ollama":
+		return NewOllamaProvider()
 	case "aws", "rekognition":
 		return NewAWSProvider()
 	case "openai", "gpt4vision", "gpt-4-vision":
 		return NewOpenAIProvider()
 	default:
-		return nil, fmt.Errorf("unknown provider: %s (valid: gemini, google, aws, openai)", name)
+		return nil, fmt.Errorf("unknown provider: %s (valid: gemini, google, ollama, aws, openai)", name)
 	}
 }
 
