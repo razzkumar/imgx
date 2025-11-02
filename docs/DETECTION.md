@@ -1,6 +1,6 @@
 # Image Detection API Documentation
 
-Advanced AI-powered object detection for images using Google Gemini, AWS Rekognition, and OpenAI Vision APIs.
+Advanced AI-powered object detection for images using local Ollama models, Google Gemini, AWS Rekognition, and OpenAI Vision APIs.
 
 ## Table of Contents
 
@@ -31,11 +31,28 @@ All providers return results in a consistent format, making it easy to switch be
 
 | Provider | API Key Required | Features |
 |----------|------------------|----------|
+| **Ollama (default)** | None (local server) | Labels, Text, Faces, Description, Moderation |
 | **Google Gemini** | `GEMINI_API_KEY` | Labels, Text, Faces, Description, Web detection, Landmarks |
 | **AWS Rekognition** | AWS credentials | Labels, Text, Faces, Image Properties, Moderation |
 | **OpenAI Vision** | `OPENAI_API_KEY` | Labels, Description, Text, Faces (via GPT-4o) |
 
 ## Setup & Authentication
+
+### Ollama (Local)
+
+1. Install [Ollama](https://ollama.com/) and start the daemon:
+```bash
+ollama serve
+```
+2. Pull the default multimodal model:
+```bash
+ollama pull gemma3
+```
+3. (Optional) Override the host or model:
+```bash
+export OLLAMA_HOST="http://192.168.1.50:11434"
+export IMGX_OLLAMA_MODEL="llava"
+```
 
 ### Google Gemini
 
@@ -96,9 +113,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Detect objects using Gemini
+	// Detect objects using the default local Ollama model
 	ctx := context.Background()
-	result, err := img.Detect(ctx, "gemini")
+	result, err := img.Detect(ctx, "ollama")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -132,16 +149,16 @@ const (
 
 ### Feature Support Matrix
 
-| Feature | Gemini | AWS | OpenAI |
-|---------|--------|-----|--------|
-| Labels | ✅ | ✅ | ✅ |
-| Text (OCR) | ✅ | ✅ | ✅ |
-| Faces | ✅ | ✅ | ✅ |
-| Description | ✅ | ❌ | ✅ |
-| Web Detection | ✅ | ❌ | ❌ |
-| Landmarks | ✅ | ❌ | ❌ |
-| Properties | ❌ | ✅ | ❌ |
-| SafeSearch/Moderation | ✅ | ✅ | ✅ |
+| Feature | Ollama | Gemini | AWS | OpenAI |
+|---------|--------|--------|-----|--------|
+| Labels | ✅ | ✅ | ✅ | ✅ |
+| Text (OCR) | ✅ | ✅ | ✅ | ✅ |
+| Faces | ✅ | ✅ | ✅ | ✅ |
+| Description | ✅ | ✅ | ❌ | ✅ |
+| Web Detection | ❌ | ✅ | ❌ | ❌ |
+| Landmarks | ❌ | ✅ | ❌ | ❌ |
+| Properties | ✅ | ❌ | ✅ | ❌ |
+| SafeSearch/Moderation | ✅ | ✅ | ✅ | ✅ |
 
 ## API Reference
 
@@ -151,7 +168,7 @@ const (
 
 ```go
 type DetectionResult struct {
-	Provider      string                 // Provider used (gemini, aws, openai)
+	Provider      string                 // Provider used (ollama, gemini, aws, openai)
 	Labels        []Label                // Detected objects/labels
 	Description   string                 // Natural language description
 	Text          []TextBlock            // Extracted text
@@ -234,7 +251,7 @@ High-level method on `*imgx.Image` instances.
 
 **Parameters:**
 - `ctx`: Context for cancellation and timeouts
-- `provider`: Provider name ("gemini", "google", "aws", "rekognition", "openai")
+- `provider`: Provider name ("ollama", "gemma3", "qwen3-vl", "gemini", "google", "aws", "rekognition", "openai")
 - `opts`: Optional detection options
 
 **Returns:**
@@ -255,7 +272,7 @@ type Provider interface {
 Direct provider access for advanced use cases:
 
 ```go
-provider, err := detection.GetProvider("gemini")
+provider, err := detection.GetProvider("ollama")
 if err != nil {
 	log.Fatal(err)
 }
@@ -271,7 +288,7 @@ result, err := provider.Detect(ctx, img.ToNRGBA(), opts)
 img, _ := imgx.Load("photo.jpg")
 ctx := context.Background()
 
-result, err := img.Detect(ctx, "gemini")
+result, err := img.Detect(ctx, "ollama")
 if err != nil {
 	log.Fatal(err)
 }

@@ -740,22 +740,23 @@ exiftool -ver
 
 #### `detect` - AI-powered object detection
 
-Detect objects, text, faces, and image properties using AI vision APIs from Google Gemini, AWS Rekognition, and OpenAI Vision.
+Detect objects, text, faces, and image properties using local Ollama models or cloud AI vision APIs (Google Gemini, AWS Rekognition, OpenAI Vision).
 
 ```bash
 imgx detect <input> [options]
 ```
 
 **Options:**
-- `-p, --provider string` - Detection provider: `gemini`, `google` (alias), `aws`, `openai` (default: `gemini`)
+- `-p, --provider string` - Detection provider: `ollama`, `gemini`, `google` (alias), `aws`, `openai` (default: `ollama`)
 - `-f, --features string` - Features to detect: `labels,text,faces,web,description,properties` (comma-separated, default: `labels`)
 - `-m, --max-results int` - Maximum number of labels to return (default: 10)
 - `-c, --confidence float` - Minimum confidence threshold 0.0-1.0 (default: 0.5)
-- `--prompt string` - Custom prompt for Gemini/OpenAI (overrides --features)
+- `--prompt string` - Custom prompt for Ollama/Gemini/OpenAI (overrides --features)
 - `-j, --json` - Output results as JSON (includes colors, quality, moderation when available)
 - `--raw` - Include raw API response in output
 
 **Supported Providers:**
+- **ollama** (local multimodal models) - Requires `ollama serve` plus local model (default `gemma3`)
 - **gemini** (Google Gemini API) - Requires `GEMINI_API_KEY`
 - **aws** (AWS Rekognition) - Requires AWS credentials
 - **openai** (OpenAI Vision) - Requires `OPENAI_API_KEY`
@@ -763,6 +764,13 @@ imgx detect <input> [options]
 **Setup:**
 
 ```bash
+# Ollama: run the local server and pull a model
+ollama serve &
+ollama pull gemma3
+# Optional overrides
+export OLLAMA_HOST="http://127.0.0.1:11434"
+export IMGX_OLLAMA_MODEL="llava"
+
 # Gemini: Get API key from https://aistudio.google.com/
 export GEMINI_API_KEY="your-api-key"
 
@@ -781,16 +789,16 @@ export OPENAI_API_KEY="sk-..."
 - `labels` - Detect objects and labels
 - `text` - Extract text (OCR)
 - `faces` - Detect faces and attributes
-- `description` - Get natural language description (Gemini/OpenAI)
+- `description` - Get natural language description (Ollama/Gemini/OpenAI)
 - `web` - Web entities and similar images (Gemini only)
 - `landmarks` - Detect famous landmarks (Gemini only)
-- `properties` - Image quality, colors, sharpness (AWS only)
+- `properties` - Image quality, colors, sharpness (Ollama/AWS)
 - `safesearch` - Content moderation
 
 **Examples:**
 
 ```bash
-# Basic detection with Gemini (simplest)
+# Basic detection with the local Ollama model (default)
 imgx detect photo.jpg
 
 # Use specific provider
@@ -805,8 +813,8 @@ imgx detect photo.jpg --provider aws --features properties
 # AWS labels + properties (charged for both)
 imgx detect photo.jpg --provider aws --features labels,properties
 
-# Custom prompt with Gemini
-imgx detect dog.jpg --provider gemini --prompt "What breed is this dog?"
+# Custom prompt with Ollama or Gemini
+imgx detect dog.jpg --prompt "What breed is this dog?"
 
 # Higher confidence threshold
 imgx detect photo.jpg --confidence 0.8
@@ -815,6 +823,7 @@ imgx detect photo.jpg --confidence 0.8
 imgx detect photo.jpg --json
 
 # Compare providers
+imgx detect photo.jpg --provider ollama
 imgx detect photo.jpg --provider gemini
 imgx detect photo.jpg --provider aws
 imgx detect photo.jpg --provider openai

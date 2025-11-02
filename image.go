@@ -87,6 +87,7 @@ func (img *Image) SetAuthor(author string) *Image {
 // and returns detection results.
 //
 // Supported providers:
+//   - "ollama" or "gemma3" - Local Ollama server (default, uses gemma3 model)
 //   - "gemini" or "google" - Google Gemini API (requires GEMINI_API_KEY)
 //   - "aws" - AWS Rekognition (uses AWS credential chain: env vars, ~/.aws/credentials, IAM roles, etc.)
 //   - "openai" - OpenAI Vision (requires OPENAI_API_KEY)
@@ -99,7 +100,7 @@ func (img *Image) SetAuthor(author string) *Image {
 //	}
 //
 //	ctx := context.Background()
-//	result, err := img.Detect(ctx, "gemini")
+//	result, err := img.Detect(ctx, "ollama")
 //	if err != nil {
 //		log.Fatal(err)
 //	}
@@ -117,7 +118,7 @@ func (img *Image) SetAuthor(author string) *Image {
 //		MinConfidence: 0.7,
 //		CustomPrompt:  "Is there a dog in this image?",
 //	}
-//	result, err := img.Detect(ctx, "gemini", opts)
+//	result, err := img.Detect(ctx, "ollama", opts)
 func (img *Image) Detect(ctx context.Context, provider string, opts ...*detection.DetectOptions) (*detection.DetectionResult, error) {
 	// Use default options if none provided
 	var opt *detection.DetectOptions

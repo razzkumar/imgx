@@ -16,19 +16,26 @@ func DetectCommand() *cli.Command {
 	return &cli.Command{
 		Name:  "detect",
 		Usage: "Detect objects in images using AI vision APIs",
-		Description: `Perform object detection using Google Gemini, AWS Rekognition,
-or OpenAI Vision APIs.
+		Description: `Perform object detection using local Ollama models, Google Gemini,
+AWS Rekognition, or OpenAI Vision APIs.
 
 The detection results include labels, confidence scores, and can optionally include
 text detection (OCR), face detection, and more depending on the provider.
 
-Supported Providers:
-  gemini          Google Gemini API (default, requires GEMINI_API_KEY)
+	Supported Providers:
+	  ollama          Local Ollama server (default, run "ollama serve"; default model gemma3)
+  gemini          Google Gemini API (requires GEMINI_API_KEY)
   google          Alias for gemini
   aws             AWS Rekognition (uses AWS credential chain)
   openai          OpenAI Vision API (requires OPENAI_API_KEY)
 
 Setup:
+	  Ollama:    Install Ollama (https://ollama.com/), run "ollama serve", then:
+	             ollama pull gemma3
+             Optional overrides:
+               export OLLAMA_HOST="http://127.0.0.1:11434"  # custom host/port
+               export IMGX_OLLAMA_MODEL="llava"             # pick another local model
+
   Gemini:    Get API key from https://aistudio.google.com/
              export GEMINI_API_KEY="your-api-key"
 
@@ -44,7 +51,10 @@ Setup:
   OpenAI:    export OPENAI_API_KEY="sk-..."
 
 Examples:
-  # Detect objects using Gemini (simplest setup)
+  # Detect objects using the default local Ollama model
+  imgx detect input.jpg
+
+  # Detect with Google Gemini (cloud)
   imgx detect --provider gemini input.jpg
 
   # Using "google" alias (same as gemini)
@@ -60,7 +70,7 @@ Examples:
   imgx detect --provider aws --json input.jpg
 
   # Higher confidence threshold
-  imgx detect --provider gemini --confidence 0.8 input.jpg
+  imgx detect --confidence 0.8 input.jpg
 
   # AWS image properties (colors, quality, sharpness)
   imgx detect --provider aws --features properties input.jpg
@@ -71,8 +81,8 @@ Examples:
 			&cli.StringFlag{
 				Name:     "provider",
 				Aliases:  []string{"p"},
-				Usage:    "Detection provider: gemini, google (alias), aws, openai",
-				Value:    "gemini",
+				Usage:    "Detection provider: ollama, gemini, google (alias), aws, openai",
+				Value:    detection.GetDefaultProvider(),
 				Required: false,
 			},
 			&cli.StringFlag{
@@ -95,7 +105,7 @@ Examples:
 			},
 			&cli.StringFlag{
 				Name:  "prompt",
-				Usage: "Custom prompt for Gemini/OpenAI (overrides --features)",
+				Usage: "Custom prompt for Ollama/Gemini/OpenAI (overrides --features)",
 			},
 			&cli.BoolFlag{
 				Name:    "json",

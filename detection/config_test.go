@@ -30,6 +30,7 @@ func TestSetDefaultProvider(t *testing.T) {
 		name     string
 		provider string
 	}{
+		{"ollama", "ollama"},
 		{"gemini", "gemini"},
 		{"aws", "aws"},
 		{"openai", "openai"},
@@ -162,7 +163,7 @@ func TestConcurrentProviderAccess(t *testing.T) {
 	}
 
 	// Start writers
-	providers := []string{"gemini", "aws", "openai"}
+	providers := []string{"ollama", "gemini", "aws", "openai"}
 	for i := 0; i < numGoroutines; i++ {
 		go func(idx int) {
 			defer wg.Done()
@@ -287,7 +288,7 @@ func TestConcurrentMixedAccess(t *testing.T) {
 	for i := 0; i < numGoroutines; i++ {
 		go func(idx int) {
 			defer wg.Done()
-			providers := []string{"gemini", "aws", "openai"}
+			providers := []string{"ollama", "gemini", "aws", "openai"}
 			for j := 0; j < numOperations; j++ {
 				if j%2 == 0 {
 					SetDefaultProvider(providers[j%len(providers)])

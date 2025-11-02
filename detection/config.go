@@ -27,7 +27,7 @@ type Config struct {
 }
 
 var globalConfig = &Config{
-	DefaultProvider:       "gemini",
+	DefaultProvider:       "ollama",
 	DefaultConfidence:     0.5,
 	MaxConcurrentRequests: 10,
 	CacheResults:          false,

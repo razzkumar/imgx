@@ -60,8 +60,8 @@ func TestParseFeatures(t *testing.T) {
 			expected: []Feature{},
 		},
 		{
-			name:     "all feature types",
-			input:    "labels,text,faces,web,description,properties,objects,landmarks,logos,safesearch",
+			name:  "all feature types",
+			input: "labels,text,faces,web,description,properties,objects,landmarks,logos,safesearch",
 			expected: []Feature{
 				FeatureLabels,
 				FeatureText,
@@ -130,6 +130,41 @@ func TestResolveProviderAlias(t *testing.T) {
 			expected: "aws",
 		},
 		{
+			name:     "local resolves to ollama",
+			input:    "local",
+			expected: "ollama",
+		},
+		{
+			name:     "local-ollama resolves to ollama",
+			input:    "local-ollama",
+			expected: "ollama",
+		},
+		{
+			name:     "qwen alias resolves to ollama",
+			input:    "qwen",
+			expected: "ollama",
+		},
+		{
+			name:     "qwen3 alias resolves to ollama",
+			input:    "qwen3",
+			expected: "ollama",
+		},
+		{
+			name:     "qwen3-vl alias resolves to ollama",
+			input:    "qwen3-vl",
+			expected: "ollama",
+		},
+		{
+			name:     "gemma3 alias resolves to ollama",
+			input:    "gemma3",
+			expected: "ollama",
+		},
+		{
+			name:     "gemma-3 alias resolves to ollama",
+			input:    "gemma-3",
+			expected: "ollama",
+		},
+		{
 			name:     "openai stays openai",
 			input:    "openai",
 			expected: "openai",
@@ -164,10 +199,10 @@ func TestResolveProviderAlias(t *testing.T) {
 // TestGetProvider tests provider factory function
 func TestGetProvider(t *testing.T) {
 	tests := []struct {
-		name          string
-		input         string
-		wantName      string
-		wantError     bool
+		name             string
+		input            string
+		wantName         string
+		wantError        bool
 		skipIfNoCredsFor string // Skip test if this provider's credentials aren't available
 	}{
 		{
@@ -178,16 +213,24 @@ func TestGetProvider(t *testing.T) {
 			skipIfNoCredsFor: "gemini",
 		},
 		{
-			name:      "aws provider",
-			input:     "aws",
-			wantName:  "aws",
+			name:      "ollama provider",
+			input:     "ollama",
+			wantName:  "ollama",
 			wantError: false,
 		},
 		{
-			name:      "rekognition alias",
-			input:     "rekognition",
-			wantName:  "aws",
-			wantError: false,
+			name:             "aws provider",
+			input:            "aws",
+			wantName:         "aws",
+			wantError:        false,
+			skipIfNoCredsFor: "aws",
+		},
+		{
+			name:             "rekognition alias",
+			input:            "rekognition",
+			wantName:         "aws",
+			wantError:        false,
+			skipIfNoCredsFor: "aws",
 		},
 		{
 			name:             "openai provider",
@@ -218,10 +261,11 @@ func TestGetProvider(t *testing.T) {
 			skipIfNoCredsFor: "gemini",
 		},
 		{
-			name:      "provider with spaces",
-			input:     "  aws  ",
-			wantName:  "aws",
-			wantError: false,
+			name:             "provider with spaces",
+			input:            "  aws  ",
+			wantName:         "aws",
+			wantError:        false,
+			skipIfNoCredsFor: "aws",
 		},
 		{
 			name:      "unknown provider returns error",
