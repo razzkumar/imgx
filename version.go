@@ -3,7 +3,7 @@ package imgx
 // Version is the current version of imgx
 // This is the single source of truth for versioning
 // Update this when releasing new versions
-const Version = "1.2.0"
+const Version = "1.2.1"
 
 // Author is the default author for imgx
 const Author = "razzkumar"
