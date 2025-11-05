@@ -13,7 +13,7 @@ as an input, and return a new image of `*image.NRGBA` type (32bit RGBA colors, n
   - [As a Library](#as-a-library)
   - [As a CLI Tool](#as-a-cli-tool)
 - [Documentation](#documentation)
-  - [CLI Documentation](./docs/CLI.md) - Complete CLI guide
+- [CLI Documentation](./docs/CLI.md) - Complete CLI guide
   - [Detection API](./docs/DETECTION.md) - AI-powered object detection
   - [Version Management](./docs/VERSIONING.md) - How versions are managed
   - [Release Process](./docs/RELEASING.md) - How to create releases
@@ -1030,7 +1030,7 @@ imgx provides a comprehensive set of image processing capabilities:
 - Image quality analysis (brightness, sharpness, contrast)
 - Dominant color extraction
 - Natural language descriptions
-- See [Detection Documentation](./docs/DETECTION.md) for details
+- See [Detection Documentation](DETECTION.md) for details
 
 **API Design:**
 - Instance-based API with method chaining for clean, readable code
