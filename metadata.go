@@ -13,10 +13,11 @@ import (
 // ImageMetadata contains comprehensive image metadata information
 type ImageMetadata struct {
 	// File Information
-	FilePath string `json:"file_path"`
-	FileName string `json:"file_name"`
-	Format   string `json:"format"`
-	FileSize int64  `json:"file_size"`
+	FilePath    string `json:"file_path"`
+	FileName    string `json:"file_name"`
+	Format      string `json:"format"`
+	ContentType string `json:"content_type"` // MIME type (e.g., "image/jpeg", "image/png")
+	FileSize    int64  `json:"file_size"`
 
 	// Image Properties
 	Width       int     `json:"width"`
@@ -44,6 +45,7 @@ type ImageMetadata struct {
 	CameraMake          string `json:"camera_make,omitempty"`
 	CameraModel         string `json:"camera_model,omitempty"`
 	CameraSerialNumber  string `json:"camera_serial_number,omitempty"`
+	LensMake            string `json:"lens_make,omitempty"`
 	LensModel           string `json:"lens_model,omitempty"`
 	LensSerialNumber    string `json:"lens_serial_number,omitempty"`
 	LensFocalLengthMin  string `json:"lens_focal_length_min,omitempty"`
@@ -238,6 +240,7 @@ func extractBasicMetadata(src string) (*ImageMetadata, error) {
 		FilePath:    src,
 		FileName:    filepath.Base(src),
 		Format:      formatToString(format),
+		ContentType: mimeFromFormat(format),
 		Width:       width,
 		Height:      height,
 		AspectRatio: formatAspectRatio(width, height),
@@ -330,6 +333,10 @@ func parseCommonFields(metadata *ImageMetadata, data map[string]any) {
 	metadata.CameraSerialNumber = getString("EXIF:SerialNumber")
 	if metadata.CameraSerialNumber == "" {
 		metadata.CameraSerialNumber = getString("EXIF:InternalSerialNumber")
+	}
+	metadata.LensMake = getString("EXIF:LensMake")
+	if metadata.LensMake == "" {
+		metadata.LensMake = getString("MakerNotes:LensMake")
 	}
 	metadata.LensModel = getString("EXIF:LensModel")
 	if metadata.LensModel == "" {
@@ -476,5 +483,23 @@ func formatToString(format Format) string {
 		return "BMP"
 	default:
 		return "Unknown"
+	}
+}
+
+// mimeFromFormat converts Format enum to MIME type string
+func mimeFromFormat(format Format) string {
+	switch format {
+	case PNG:
+		return "image/png"
+	case GIF:
+		return "image/gif"
+	case TIFF:
+		return "image/tiff"
+	case BMP:
+		return "image/bmp"
+	case JPEG:
+		return "image/jpeg"
+	default:
+		return "image/jpeg"
 	}
 }

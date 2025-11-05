@@ -104,6 +104,9 @@ func outputPretty(metadata *imgx.ImageMetadata) error {
 	fmt.Println("File Information:")
 	fmt.Printf("  Path:           %s\n", metadata.FilePath)
 	fmt.Printf("  Format:         %s\n", metadata.Format)
+	if metadata.ContentType != "" {
+		fmt.Printf("  Content Type:   %s\n", metadata.ContentType)
+	}
 	fmt.Printf("  Size:           %s\n", FormatBytes(metadata.FileSize))
 	fmt.Println()
 
@@ -153,6 +156,9 @@ func outputPretty(metadata *imgx.ImageMetadata) error {
 			}
 			if metadata.CameraSerialNumber != "" {
 				fmt.Printf("  Serial Number:  %s\n", metadata.CameraSerialNumber)
+			}
+			if metadata.LensMake != "" {
+				fmt.Printf("  Lens Make:      %s\n", metadata.LensMake)
 			}
 			if metadata.LensModel != "" {
 				fmt.Printf("  Lens:           %s\n", metadata.LensModel)
