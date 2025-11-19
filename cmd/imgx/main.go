@@ -56,42 +56,27 @@ Examples:
 			},
 		},
 		Commands: []*cli.Command{
-			// Resize operations
-			commands.ResizeCommand(),
-			commands.FitCommand(),
-			commands.FillCommand(),
-			commands.ThumbnailCommand(),
-
-			// Transform operations
-			commands.RotateCommand(),
-			commands.Rotate90Command(),
-			commands.Rotate180Command(),
-			commands.Rotate270Command(),
-			commands.FlipCommand(),
-			commands.CropCommand(),
-			commands.TransposeCommand(),
-			commands.TransverseCommand(),
-
-			// Color adjustments
 			commands.AdjustCommand(),
+			commands.BlurCommand(),
+			commands.CompletionsCommand(),
+			commands.CropCommand(),
+			commands.DetectCommand(),
+			commands.FillCommand(),
+			commands.FitCommand(),
+			commands.FlipCommand(),
 			commands.GrayscaleCommand(),
 			commands.InvertCommand(),
-
-			// Effects
-			commands.BlurCommand(),
-			commands.SharpenCommand(),
-
-			// Watermark
-			commands.WatermarkCommand(),
-
-			// Info/Metadata
 			commands.MetadataCommand(),
-
-			// Object Detection
-			commands.DetectCommand(),
-
-			// Completions
-			commands.CompletionsCommand(),
+			commands.ResizeCommand(),
+			commands.RotateCommand(),
+			commands.Rotate180Command(),
+			commands.Rotate270Command(),
+			commands.Rotate90Command(),
+			commands.SharpenCommand(),
+			commands.ThumbnailCommand(),
+			commands.TransposeCommand(),
+			commands.TransverseCommand(),
+			commands.WatermarkCommand(),
 		},
 	}
 
