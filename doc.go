@@ -3,5 +3,11 @@ Package imgx provides basic image processing functions (resize, rotate, crop, br
 
 All the image processing functions provided by the package accept any image type that implements image.Image interface
 as an input, and return a new image of *image.NRGBA type (32bit RGBA colors, non-premultiplied alpha).
+
+Installation
+
+To install the CLI tool:
+
+	go install github.com/razzkumar/imgx/cmd/imgx@latest
 */
 package imgx
