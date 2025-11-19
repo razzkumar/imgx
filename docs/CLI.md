@@ -22,11 +22,11 @@ A powerful command-line tool for image processing operations including resizing,
 ## Installation
 
 ```bash
-# Build from source
-go build -o imgx ./cmd/imgx
-
-# Or install
+# Install via go install (Recommended)
 go install github.com/razzkumar/imgx/cmd/imgx@latest
+
+# Or build from source
+go build -o imgx ./cmd/imgx
 ```
 
 ## Shell Completion

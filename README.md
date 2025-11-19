@@ -47,11 +47,11 @@ go get -u github.com/razzkumar/imgx
 ### As a CLI Tool
 
 ```bash
-# Build from source
-go build -o imgx ./cmd/imgx
-
-# Or install
+# Install via go install (Recommended)
 go install github.com/razzkumar/imgx/cmd/imgx@latest
+
+# Or build from source
+go build -o imgx ./cmd/imgx
 ```
 
 **Quick CLI Examples:**
