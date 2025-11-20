@@ -260,5 +260,5 @@ git push origin v1.1.0
 ## See Also
 
 - [VERSIONING.md](VERSIONING.md) - Version management details
-- [.github/workflows/release.yml](.github/workflows/release.yml) - Release workflow
-- [.goreleaser.yml](.goreleaser.yml) - Build configuration
+- [.github/workflows/release.yml](https://github.com/razzkumar/imgx/blob/main/.github/workflows/release.yml) - Release workflow
+- [.goreleaser.yml](https://github.com/razzkumar/imgx/blob/main/.goreleaser.yml) - Build configuration

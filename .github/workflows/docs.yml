@@ -6,6 +6,7 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      - 'VERSION'
 permissions:
   contents: write
 jobs:
@@ -28,4 +29,6 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: pip install -r docs/requirements.txt
-      - run: mkdocs gh-deploy --force
+      - name: Get Version
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+      - run: mike deploy --push --update-aliases ${{ env.VERSION }} latest
