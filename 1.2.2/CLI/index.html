@@ -1,0 +1,2285 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Comprehensive image processing functions and AI-powered object detection">
+      
+      
+      
+        <link rel="canonical" href="https://razzkumar.github.io/imgx/1.2.2/CLI/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../DETECTION/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>CLI Documentation - imgx</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#imgx-cli-documentation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="imgx" class="md-header__button md-logo" aria-label="imgx" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            imgx
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              CLI Documentation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6m0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4M7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/razzkumar/imgx" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  CLI Documentation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../DETECTION/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  AI Detection
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../VERSIONING/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Version Management
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../RELEASING/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Release Process
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="imgx" class="md-nav__button md-logo" aria-label="imgx" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    imgx
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/razzkumar/imgx" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Documentation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Documentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#shell-completion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell Completion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Shell Completion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bash
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zsh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zsh
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fish
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#powershell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PowerShell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-completions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Completions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-completions-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Completions Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#important-shell-completion-quirk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠️ Important: Shell Completion Quirk
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#global-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Global Options
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commands
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resize-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resize Operations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resize Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resize-resize-to-specific-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        resize - Resize to specific dimensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fit-scale-to-fit-within-bounds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fit - Scale to fit within bounds
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fill-crop-and-resize-to-exact-dimensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fill - Crop and resize to exact dimensions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thumbnail-create-square-thumbnail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        thumbnail - Create square thumbnail
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transform-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transform Operations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Transform Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rotate-rotate-by-angle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        rotate - Rotate by angle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-rotation-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Rotation Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flip-flip-horizontally-or-vertically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        flip - Flip horizontally or vertically
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crop-crop-to-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        crop - Crop to region
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transpose-transverse-advanced-transforms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        transpose / transverse - Advanced transforms
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#color-adjustments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Color Adjustments
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Color Adjustments">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adjust-adjust-colors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        adjust - Adjust colors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grayscale-convert-to-grayscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        grayscale - Convert to grayscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#invert-invert-colors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        invert - Invert colors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Effects
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Effects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blur-gaussian-blur" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        blur - Gaussian blur
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sharpen-sharpen-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        sharpen - Sharpen image
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watermarking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watermarking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Watermarking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#watermark-add-text-watermark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        watermark - Add text watermark
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#image-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Image Information
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Image Information">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#info-display-image-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        info - Display image information
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metadata-extract-comprehensive-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        metadata - Extract comprehensive metadata
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#object-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object Detection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object Detection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#detect-ai-powered-object-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        detect - AI-powered object detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Use Cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#web-optimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Optimization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#social-media" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Social Media
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#photo-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Photo Enhancement
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thumbnails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thumbnails
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watermarking_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Watermarking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creative-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creative Effects
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tips-tricks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tips &amp; Tricks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tips &amp; Tricks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#auto-generated-output-names" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auto-generated Output Names
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#format-conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format Conversion
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preserving-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preserving Quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chaining-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chaining Operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verbose-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verbose Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resampling-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resampling Filters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Help
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Help">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Help
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-specific-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-Specific Help
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shell-completion-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Shell Completion Scripts
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exit-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exit Codes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-formats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Formats
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DETECTION/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VERSIONING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RELEASING/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Process
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="imgx-cli-documentation">imgx CLI Documentation<a class="headerlink" href="#imgx-cli-documentation" title="Permanent link">&para;</a></h1>
+<p>A powerful command-line tool for image processing operations including resizing, transformations, color adjustments, effects, and watermarking.</p>
+<h2 id="table-of-contents">Table of Contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#shell-completion">Shell Completion</a></li>
+<li><a href="#quick-start">Quick Start</a></li>
+<li><a href="#global-options">Global Options</a></li>
+<li><a href="#commands">Commands</a></li>
+<li><a href="#resize-operations">Resize Operations</a></li>
+<li><a href="#transform-operations">Transform Operations</a></li>
+<li><a href="#color-adjustments">Color Adjustments</a></li>
+<li><a href="#effects">Effects</a></li>
+<li><a href="#watermarking">Watermarking</a></li>
+<li><a href="#image-information">Image Information</a></li>
+<li><a href="#object-detection">Object Detection</a></li>
+<li><a href="#common-use-cases">Common Use Cases</a></li>
+<li><a href="#tips-tricks">Tips &amp; Tricks</a></li>
+</ul>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Install via go install (Recommended)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>go<span class="w"> </span>install<span class="w"> </span>github.com/razzkumar/imgx/cmd/imgx@latest
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Or build from source</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>go<span class="w"> </span>build<span class="w"> </span>-o<span class="w"> </span>imgx<span class="w"> </span>./cmd/imgx
+</code></pre></div>
+<h2 id="shell-completion">Shell Completion<a class="headerlink" href="#shell-completion" title="Permanent link">&para;</a></h2>
+<p>imgx supports shell completion for Bash, Zsh, Fish, and PowerShell. This enables tab completion for commands, flags, and options.</p>
+<h3 id="bash">Bash<a class="headerlink" href="#bash" title="Permanent link">&para;</a></h3>
+<p><strong>Temporary (current session only):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">source</span><span class="w"> </span>&lt;<span class="o">(</span>imgx<span class="w"> </span>completion<span class="w"> </span>bash<span class="o">)</span>
+</code></pre></div></p>
+<p><strong>Permanent:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Save to completion directory</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>imgx<span class="w"> </span>completion<span class="w"> </span>bash<span class="w"> </span>&gt;<span class="w"> </span>~/.bash_completion.d/imgx
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">source</span><span class="w"> </span>~/.bash_completion.d/imgx
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># Or add to .bashrc</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;source &lt;(imgx completion bash)&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.bashrc
+</code></pre></div></p>
+<h3 id="zsh">Zsh<a class="headerlink" href="#zsh" title="Permanent link">&para;</a></h3>
+<p><strong>Add to <code>.zshrc</code>:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Enable completions if not already enabled</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>autoload<span class="w"> </span>-Uz<span class="w"> </span>compinit
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>compinit
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># Load imgx completions</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nb">source</span><span class="w"> </span>&lt;<span class="o">(</span>imgx<span class="w"> </span>completion<span class="w"> </span>zsh<span class="o">)</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1"># Or add this line to .zshrc</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;source &lt;(imgx completion zsh)&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
+</code></pre></div></p>
+<p><strong>Alternative (using completion directory):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Save to zsh completion directory</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>imgx<span class="w"> </span>completion<span class="w"> </span>zsh<span class="w"> </span>&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">fpath</span><span class="p">[1]</span><span class="si">}</span><span class="s2">/_imgx&quot;</span>
+</code></pre></div></p>
+<h3 id="fish">Fish<a class="headerlink" href="#fish" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Save to fish completion directory</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>imgx<span class="w"> </span>completion<span class="w"> </span>fish<span class="w"> </span>&gt;<span class="w"> </span>~/.config/fish/completions/imgx.fish
+</code></pre></div>
+<h3 id="powershell">PowerShell<a class="headerlink" href="#powershell" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c"># Generate completion script</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">imgx</span> <span class="n">completion</span> <span class="n">pwsh</span> <span class="p">&gt;</span> <span class="n">imgx</span><span class="p">.</span><span class="n">ps1</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c"># Load completions (add to your PowerShell profile)</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="p">&amp;</span> <span class="n">path</span><span class="p">\</span><span class="n">to</span><span class="p">\</span><span class="n">imgx</span><span class="p">.</span><span class="n">ps1</span>
+</code></pre></div>
+<p><strong>To find your PowerShell profile location:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">echo </span><span class="nv">$PROFILE</span>
+</code></pre></div></p>
+<h3 id="testing-completions">Testing Completions<a class="headerlink" href="#testing-completions" title="Permanent link">&para;</a></h3>
+<p>After setting up completions, test them by typing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>imgx<span class="w"> </span>&lt;TAB&gt;<span class="w">          </span><span class="c1"># Shows all available commands</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>&lt;TAB&gt;<span class="w">   </span><span class="c1"># Shows subcommands and help</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>imgx<span class="w"> </span>--&lt;TAB&gt;<span class="w">        </span><span class="c1"># Shows global flags (--output, --quality, etc.)</span>
+</code></pre></div>
+<h3 id="what-completions-support">What Completions Support<a class="headerlink" href="#what-completions-support" title="Permanent link">&para;</a></h3>
+<p>The shell completions currently support:</p>
+<p>✅ <strong>Command completion</strong> - Complete command names (resize, adjust, blur, etc.)
+✅ <strong>Subcommand completion</strong> - Navigate through command hierarchy
+✅ <strong>Global flag completion</strong> - Complete global flags at the root level (--output, --quality, --verbose)
+⚠️ <strong>Subcommand flags</strong> - Limited support for flags within subcommands (use <code>imgx &lt;command&gt; --help</code> to see available flags)</p>
+<h3 id="important-shell-completion-quirk">⚠️ Important: Shell Completion Quirk<a class="headerlink" href="#important-shell-completion-quirk" title="Permanent link">&para;</a></h3>
+<p>When you type <code>imgx &lt;command&gt; &lt;TAB&gt;</code>, the completion will suggest <code>help</code> as an option. However:</p>
+<ul>
+<li><strong>DON'T use:</strong> <code>imgx thumbnail help</code> ❌ (will fail with "Required flag not set" error)</li>
+<li><strong>DO use instead:</strong> <code>imgx help thumbnail</code> ✅ or <code>imgx thumbnail --help</code> ✅</li>
+</ul>
+<p>The completion system suggests <code>help</code> because it's technically a subcommand, but it doesn't work correctly with commands that have required flags. Always use one of the correct help syntaxes shown above.</p>
+<p><strong>Note:</strong> To see all available flags for a specific command, use the help system:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>--help<span class="w">     </span><span class="c1"># Shows all adjust command flags</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>--help<span class="w">     </span><span class="c1"># Shows all resize command flags</span>
+</code></pre></div></p>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Resize an image</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-o<span class="w"> </span>resized.jpg
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Create a thumbnail</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>imgx<span class="w"> </span>thumbnail<span class="w"> </span>photo.jpg<span class="w"> </span>-s<span class="w"> </span><span class="m">150</span><span class="w"> </span>-o<span class="w"> </span>thumb.jpg
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Adjust colors</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--brightness<span class="w"> </span><span class="m">10</span><span class="w"> </span>--contrast<span class="w"> </span><span class="m">20</span><span class="w"> </span>-o<span class="w"> </span>adjusted.jpg
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="c1"># Get image info</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>imgx<span class="w"> </span>info<span class="w"> </span>photo.jpg
+</code></pre></div>
+<h2 id="global-options">Global Options<a class="headerlink" href="#global-options" title="Permanent link">&para;</a></h2>
+<p>Global options can be used with any command:</p>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-o, --output &lt;path&gt;</code></td>
+<td>Output file path</td>
+<td>Auto-generated</td>
+</tr>
+<tr>
+<td><code>-q, --quality &lt;1-100&gt;</code></td>
+<td>JPEG quality</td>
+<td>95</td>
+</tr>
+<tr>
+<td><code>--auto-orient</code></td>
+<td>Auto-orient based on EXIF data</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>--format &lt;fmt&gt;</code></td>
+<td>Force output format (jpg, png, gif, tiff, bmp)</td>
+<td>Detected from filename</td>
+</tr>
+<tr>
+<td><code>-v, --verbose</code></td>
+<td>Verbose output</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>--help, -h</code></td>
+<td>Show help</td>
+<td></td>
+</tr>
+<tr>
+<td><code>--version</code></td>
+<td>Show version</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Save as JPEG with quality 90</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.png<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-o<span class="w"> </span>output.jpg<span class="w"> </span>--quality<span class="w"> </span><span class="m">90</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Force PNG format with verbose output</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>imgx<span class="w"> </span>grayscale<span class="w"> </span>photo.jpg<span class="w"> </span>--format<span class="w"> </span>png<span class="w"> </span>-v<span class="w"> </span>-o<span class="w"> </span>output.png
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Auto-orient image based on EXIF before processing</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>--auto-orient<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
+<h3 id="resize-operations">Resize Operations<a class="headerlink" href="#resize-operations" title="Permanent link">&para;</a></h3>
+<h4 id="resize-resize-to-specific-dimensions"><code>resize</code> - Resize to specific dimensions<a class="headerlink" href="#resize-resize-to-specific-dimensions" title="Permanent link">&para;</a></h4>
+<p>Resize an image to the specified width and height. If one dimension is 0, the aspect ratio is preserved.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>imgx<span class="w"> </span>resize<span class="w"> </span>&lt;input&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-w, --width &lt;int&gt;</code> - Target width (0 to preserve aspect ratio)
+- <code>-h, --height &lt;int&gt;</code> - Target height (0 to preserve aspect ratio)
+- <code>-f, --filter &lt;name&gt;</code> - Resampling filter (default: lanczos)</p>
+<p><strong>Available Filters:</strong>
+<code>lanczos</code>, <code>catmullrom</code>, <code>mitchellnetravali</code>, <code>linear</code>, <code>box</code>, <code>nearest</code>, <code>hermite</code>, <code>bspline</code>, <code>gaussian</code>, <code>hann</code>, <code>hamming</code>, <code>blackman</code>, <code>bartlett</code>, <code>welch</code>, <code>cosine</code></p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Resize to 800x600</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-h<span class="w"> </span><span class="m">600</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Resize to width 800, preserve aspect ratio</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="c1"># Resize with different filter</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-f<span class="w"> </span>catmullrom<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="fit-scale-to-fit-within-bounds"><code>fit</code> - Scale to fit within bounds<a class="headerlink" href="#fit-scale-to-fit-within-bounds" title="Permanent link">&para;</a></h4>
+<p>Scale the image to fit within the specified dimensions while preserving aspect ratio.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>imgx<span class="w"> </span>fit<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-w<span class="w"> </span>&lt;width&gt;<span class="w"> </span>-h<span class="w"> </span>&lt;height&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-w, --width &lt;int&gt;</code> - Maximum width (required)
+- <code>-h, --height &lt;int&gt;</code> - Maximum height (required)
+- <code>-f, --filter &lt;name&gt;</code> - Resampling filter (default: lanczos)</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Fit image within 800x600 bounding box</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>imgx<span class="w"> </span>fit<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-h<span class="w"> </span><span class="m">600</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="fill-crop-and-resize-to-exact-dimensions"><code>fill</code> - Crop and resize to exact dimensions<a class="headerlink" href="#fill-crop-and-resize-to-exact-dimensions" title="Permanent link">&para;</a></h4>
+<p>Resize and crop the image to fill the specified dimensions exactly. The image is scaled to cover the target size, then cropped to fit.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>imgx<span class="w"> </span>fill<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-w<span class="w"> </span>&lt;width&gt;<span class="w"> </span>-h<span class="w"> </span>&lt;height&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-w, --width &lt;int&gt;</code> - Target width (required)
+- <code>-h, --height &lt;int&gt;</code> - Target height (required)
+- <code>-a, --anchor &lt;pos&gt;</code> - Anchor position (default: center)
+- <code>-f, --filter &lt;name&gt;</code> - Resampling filter (default: lanczos)</p>
+<p><strong>Anchor Positions:</strong>
+<code>center</code>, <code>topleft</code>, <code>top</code>, <code>topright</code>, <code>left</code>, <code>right</code>, <code>bottomleft</code>, <code>bottom</code>, <code>bottomright</code></p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Fill 800x600 with center crop</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>imgx<span class="w"> </span>fill<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-h<span class="w"> </span><span class="m">600</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Fill with top-left anchor</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>imgx<span class="w"> </span>fill<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-h<span class="w"> </span><span class="m">600</span><span class="w"> </span>--anchor<span class="w"> </span>topleft<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="thumbnail-create-square-thumbnail"><code>thumbnail</code> - Create square thumbnail<a class="headerlink" href="#thumbnail-create-square-thumbnail" title="Permanent link">&para;</a></h4>
+<p>Create a square thumbnail by cropping and resizing.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>imgx<span class="w"> </span>thumbnail<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-s<span class="w"> </span>&lt;size&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-s, --size &lt;int&gt;</code> - Thumbnail size (width and height) (required)
+- <code>-f, --filter &lt;name&gt;</code> - Resampling filter (default: lanczos)</p>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>imgx<span class="w"> </span>thumbnail<span class="w"> </span>photo.jpg<span class="w"> </span>-s<span class="w"> </span><span class="m">150</span><span class="w"> </span>-o<span class="w"> </span>thumb.jpg
+</code></pre></div>
+<h3 id="transform-operations">Transform Operations<a class="headerlink" href="#transform-operations" title="Permanent link">&para;</a></h3>
+<h4 id="rotate-rotate-by-angle"><code>rotate</code> - Rotate by angle<a class="headerlink" href="#rotate-rotate-by-angle" title="Permanent link">&para;</a></h4>
+<p>Rotate an image by the specified angle in degrees. Positive angles rotate counter-clockwise, negative angles rotate clockwise. Rotations of 90, 180, and 270 degrees are lossless.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>imgx<span class="w"> </span>rotate<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-a<span class="w"> </span>&lt;angle&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-a, --angle &lt;float&gt;</code> - Rotation angle in degrees (required)
+- <code>--bg &lt;color&gt;</code> - Background color for empty areas (default: 00000000 = transparent)</p>
+<p><strong>Color Format:</strong> RGB hex (<code>ffffff</code>) or RGBA hex (<code>ff0000ff</code>)</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Rotate 90 degrees counter-clockwise</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>imgx<span class="w"> </span>rotate<span class="w"> </span>photo.jpg<span class="w"> </span>-a<span class="w"> </span><span class="m">90</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># Rotate 45 degrees with white background</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>imgx<span class="w"> </span>rotate<span class="w"> </span>photo.jpg<span class="w"> </span>-a<span class="w"> </span><span class="m">45</span><span class="w"> </span>--bg<span class="w"> </span>ffffff<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="c1"># Rotate 30 degrees clockwise (negative angle)</span>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>imgx<span class="w"> </span>rotate<span class="w"> </span>photo.jpg<span class="w"> </span>-a<span class="w"> </span>-30<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="quick-rotation-commands">Quick Rotation Commands<a class="headerlink" href="#quick-rotation-commands" title="Permanent link">&para;</a></h4>
+<p>For common rotations, use these shortcuts:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># 90 degrees counter-clockwise</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>imgx<span class="w"> </span>rotate90<span class="w"> </span>photo.jpg<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1"># 180 degrees</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>imgx<span class="w"> </span>rotate180<span class="w"> </span>photo.jpg<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="c1"># 270 degrees counter-clockwise (90 clockwise)</span>
+<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>imgx<span class="w"> </span>rotate270<span class="w"> </span>photo.jpg<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="flip-flip-horizontally-or-vertically"><code>flip</code> - Flip horizontally or vertically<a class="headerlink" href="#flip-flip-horizontally-or-vertically" title="Permanent link">&para;</a></h4>
+<p>Flip an image horizontally (left-right), vertically (top-bottom), or both.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>imgx<span class="w"> </span>flip<span class="w"> </span>&lt;input&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>--horizontal, -H</code> - Flip horizontally (left-right)
+- <code>--vertical, -V</code> - Flip vertically (top-bottom)</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="c1"># Flip horizontally</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>imgx<span class="w"> </span>flip<span class="w"> </span>photo.jpg<span class="w"> </span>--horizontal<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="c1"># Flip vertically</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>imgx<span class="w"> </span>flip<span class="w"> </span>photo.jpg<span class="w"> </span>--vertical<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="c1"># Flip both (same as rotate 180)</span>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>imgx<span class="w"> </span>flip<span class="w"> </span>photo.jpg<span class="w"> </span>--horizontal<span class="w"> </span>--vertical<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="crop-crop-to-region"><code>crop</code> - Crop to region<a class="headerlink" href="#crop-crop-to-region" title="Permanent link">&para;</a></h4>
+<p>Crop an image to a specific region using either anchor positioning or exact coordinates.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>imgx<span class="w"> </span>crop<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-w<span class="w"> </span>&lt;width&gt;<span class="w"> </span>-h<span class="w"> </span>&lt;height&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-w, --width &lt;int&gt;</code> - Crop width (required)
+- <code>-h, --height &lt;int&gt;</code> - Crop height (required)
+- <code>-a, --anchor &lt;pos&gt;</code> - Anchor position (default: center)
+- <code>-x &lt;int&gt;</code> - X coordinate (left edge, exclusive with --anchor)
+- <code>-y &lt;int&gt;</code> - Y coordinate (top edge, exclusive with --anchor)</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># Crop 500x400 from center</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>imgx<span class="w"> </span>crop<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">500</span><span class="w"> </span>-h<span class="w"> </span><span class="m">400</span><span class="w"> </span>--anchor<span class="w"> </span>center<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="c1"># Crop from specific coordinates</span>
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>imgx<span class="w"> </span>crop<span class="w"> </span>photo.jpg<span class="w"> </span>-x<span class="w"> </span><span class="m">100</span><span class="w"> </span>-y<span class="w"> </span><span class="m">100</span><span class="w"> </span>-w<span class="w"> </span><span class="m">500</span><span class="w"> </span>-h<span class="w"> </span><span class="m">400</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>
+<a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="c1"># Crop from top-left</span>
+<a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>imgx<span class="w"> </span>crop<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">500</span><span class="w"> </span>-h<span class="w"> </span><span class="m">400</span><span class="w"> </span>--anchor<span class="w"> </span>topleft<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="transpose-transverse-advanced-transforms"><code>transpose</code> / <code>transverse</code> - Advanced transforms<a class="headerlink" href="#transpose-transverse-advanced-transforms" title="Permanent link">&para;</a></h4>
+<p>Special transformation operations:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># Transpose: flip horizontally + rotate 90° CCW</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>imgx<span class="w"> </span>transpose<span class="w"> </span>photo.jpg<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="c1"># Transverse: flip vertically + rotate 90° CCW</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>imgx<span class="w"> </span>transverse<span class="w"> </span>photo.jpg<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h3 id="color-adjustments">Color Adjustments<a class="headerlink" href="#color-adjustments" title="Permanent link">&para;</a></h3>
+<h4 id="adjust-adjust-colors"><code>adjust</code> - Adjust colors<a class="headerlink" href="#adjust-adjust-colors" title="Permanent link">&para;</a></h4>
+<p>Adjust various color properties of an image. Multiple adjustments can be applied at once and are processed in order: brightness → contrast → gamma → saturation → hue.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>&lt;input&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>--brightness &lt;float&gt;</code> - Brightness adjustment (-100 to 100, 0 = no change)
+- <code>--contrast &lt;float&gt;</code> - Contrast adjustment (-100 to 100, 0 = no change)
+- <code>--gamma &lt;float&gt;</code> - Gamma correction (positive number, 1.0 = no change)
+- <code>--saturation &lt;float&gt;</code> - Saturation adjustment (-100 to 100, 0 = no change)
+- <code>--hue &lt;float&gt;</code> - Hue shift in degrees (-180 to 180, 0 = no change)</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># Increase brightness and contrast</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--brightness<span class="w"> </span><span class="m">10</span><span class="w"> </span>--contrast<span class="w"> </span><span class="m">20</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="c1"># Adjust saturation and hue</span>
+<a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--saturation<span class="w"> </span>-30<span class="w"> </span>--hue<span class="w"> </span><span class="m">60</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>
+<a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="c1"># Apply gamma correction</span>
+<a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--gamma<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>
+<a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a><span class="c1"># Multiple adjustments at once</span>
+<a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--brightness<span class="w"> </span><span class="m">10</span><span class="w"> </span>--contrast<span class="w"> </span><span class="m">15</span><span class="w"> </span>--saturation<span class="w"> </span><span class="m">20</span><span class="w"> </span>--gamma<span class="w"> </span><span class="m">1</span>.2<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="grayscale-convert-to-grayscale"><code>grayscale</code> - Convert to grayscale<a class="headerlink" href="#grayscale-convert-to-grayscale" title="Permanent link">&para;</a></h4>
+<p>Convert an image to grayscale using ITU-R BT.601 luminance weights.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>imgx<span class="w"> </span>grayscale<span class="w"> </span>&lt;input&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>imgx<span class="w"> </span>grayscale<span class="w"> </span>photo.jpg<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="invert-invert-colors"><code>invert</code> - Invert colors<a class="headerlink" href="#invert-invert-colors" title="Permanent link">&para;</a></h4>
+<p>Invert (negate) all colors in the image to create a negative effect.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>imgx<span class="w"> </span>invert<span class="w"> </span>&lt;input&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>imgx<span class="w"> </span>invert<span class="w"> </span>photo.jpg<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h3 id="effects">Effects<a class="headerlink" href="#effects" title="Permanent link">&para;</a></h3>
+<h4 id="blur-gaussian-blur"><code>blur</code> - Gaussian blur<a class="headerlink" href="#blur-gaussian-blur" title="Permanent link">&para;</a></h4>
+<p>Apply a Gaussian blur effect to the image. Higher sigma values produce stronger blur.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>imgx<span class="w"> </span>blur<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-s<span class="w"> </span>&lt;sigma&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-s, --sigma &lt;float&gt;</code> - Blur strength (required, positive number, typical: 0.5-10)</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="c1"># Subtle blur</span>
+<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>imgx<span class="w"> </span>blur<span class="w"> </span>photo.jpg<span class="w"> </span>--sigma<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>
+<a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a><span class="c1"># Strong blur</span>
+<a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a>imgx<span class="w"> </span>blur<span class="w"> </span>photo.jpg<span class="w"> </span>-s<span class="w"> </span><span class="m">5</span>.0<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h4 id="sharpen-sharpen-image"><code>sharpen</code> - Sharpen image<a class="headerlink" href="#sharpen-sharpen-image" title="Permanent link">&para;</a></h4>
+<p>Sharpen the image using unsharp masking. Higher sigma values produce stronger sharpening.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>imgx<span class="w"> </span>sharpen<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-s<span class="w"> </span>&lt;sigma&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-s, --sigma &lt;float&gt;</code> - Sharpening strength (required, positive number, typical: 0.5-5)</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1"># Moderate sharpening</span>
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>imgx<span class="w"> </span>sharpen<span class="w"> </span>photo.jpg<span class="w"> </span>--sigma<span class="w"> </span><span class="m">1</span>.5<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="c1"># Strong sharpening</span>
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>imgx<span class="w"> </span>sharpen<span class="w"> </span>photo.jpg<span class="w"> </span>-s<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h3 id="watermarking">Watermarking<a class="headerlink" href="#watermarking" title="Permanent link">&para;</a></h3>
+<h4 id="watermark-add-text-watermark"><code>watermark</code> - Add text watermark<a class="headerlink" href="#watermark-add-text-watermark" title="Permanent link">&para;</a></h4>
+<p>Add a text watermark to an image with configurable position, opacity, color, and padding.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>imgx<span class="w"> </span>watermark<span class="w"> </span>&lt;input&gt;<span class="w"> </span>-t<span class="w"> </span>&lt;text&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-t, --text &lt;string&gt;</code> - Watermark text (required)
+- <code>--opacity &lt;float&gt;</code> - Opacity (0.0 to 1.0, default: 0.5)
+- <code>-a, --anchor &lt;pos&gt;</code> - Position (default: bottomright)
+- <code>--color &lt;color&gt;</code> - Text color in hex (default: ffffff = white)
+- <code>--padding &lt;int&gt;</code> - Padding from edges in pixels (default: 10)</p>
+<p><strong>Color Format:</strong> RGB hex (<code>ffffff</code>) or RGBA hex (<code>ff0000ff</code>)</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="c1"># Simple copyright watermark</span>
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>imgx<span class="w"> </span>watermark<span class="w"> </span>photo.jpg<span class="w"> </span>--text<span class="w"> </span><span class="s2">&quot;Copyright 2025&quot;</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>
+<a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a><span class="c1"># Draft watermark in center with red color</span>
+<a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>imgx<span class="w"> </span>watermark<span class="w"> </span>photo.jpg<span class="w"> </span>--text<span class="w"> </span><span class="s2">&quot;DRAFT&quot;</span><span class="w"> </span>--opacity<span class="w"> </span><span class="m">0</span>.3<span class="w"> </span>--anchor<span class="w"> </span>center<span class="w"> </span>--color<span class="w"> </span>ff0000<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a>
+<a id="__codelineno-39-7" name="__codelineno-39-7" href="#__codelineno-39-7"></a><span class="c1"># Top-left watermark with custom padding</span>
+<a id="__codelineno-39-8" name="__codelineno-39-8" href="#__codelineno-39-8"></a>imgx<span class="w"> </span>watermark<span class="w"> </span>photo.jpg<span class="w"> </span>--text<span class="w"> </span><span class="s2">&quot;Sample&quot;</span><span class="w"> </span>--anchor<span class="w"> </span>topleft<span class="w"> </span>--padding<span class="w"> </span><span class="m">20</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-39-9" name="__codelineno-39-9" href="#__codelineno-39-9"></a>
+<a id="__codelineno-39-10" name="__codelineno-39-10" href="#__codelineno-39-10"></a><span class="c1"># Semi-transparent watermark with RGBA color</span>
+<a id="__codelineno-39-11" name="__codelineno-39-11" href="#__codelineno-39-11"></a>imgx<span class="w"> </span>watermark<span class="w"> </span>photo.jpg<span class="w"> </span>--text<span class="w"> </span><span class="s2">&quot;Watermark&quot;</span><span class="w"> </span>--color<span class="w"> </span>ff000080<span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h3 id="image-information">Image Information<a class="headerlink" href="#image-information" title="Permanent link">&para;</a></h3>
+<h4 id="info-display-image-information"><code>info</code> - Display image information<a class="headerlink" href="#info-display-image-information" title="Permanent link">&para;</a></h4>
+<p>Display detailed information about an image file.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>imgx<span class="w"> </span>info<span class="w"> </span>&lt;input&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-e, --extended</code> - Show extended metadata (requires exiftool)</p>
+<p><strong>Output includes:</strong>
+- File path
+- Image format (JPEG, PNG, GIF, TIFF, BMP)
+- Dimensions (width × height)
+- File size
+- Color model</p>
+<p><strong>With <code>--extended</code> flag (requires exiftool):</strong>
+- Camera information and settings
+- GPS location data
+- Date/time metadata
+- Copyright and authorship</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1"># Basic info</span>
+<a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>imgx<span class="w"> </span>info<span class="w"> </span>photo.jpg
+<a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>
+<a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="c1"># Extended metadata</span>
+<a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a>imgx<span class="w"> </span>info<span class="w"> </span>photo.jpg<span class="w"> </span>--extended
+</code></pre></div>
+<p><strong>Sample basic output:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>File: photo.jpg
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>Format: JPEG
+<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>Dimensions: 1920x1080
+<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>Size: 245.3 KB
+<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>Color Model: *color.modelFunc
+</code></pre></div>
+<p><strong>Sample extended output:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>File: photo.jpg
+<a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>Format: JPEG
+<a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>Dimensions: 1920x1080
+<a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>Size: 245.3 KB
+<a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a>Color Model: *color.modelFunc
+<a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a>
+<a id="__codelineno-43-7" name="__codelineno-43-7" href="#__codelineno-43-7"></a>Camera:
+<a id="__codelineno-43-8" name="__codelineno-43-8" href="#__codelineno-43-8"></a>  Make: Canon
+<a id="__codelineno-43-9" name="__codelineno-43-9" href="#__codelineno-43-9"></a>  Model: Canon EOS 5D Mark IV
+<a id="__codelineno-43-10" name="__codelineno-43-10" href="#__codelineno-43-10"></a>
+<a id="__codelineno-43-11" name="__codelineno-43-11" href="#__codelineno-43-11"></a>Date Taken: 2024:10:15 14:23:45
+<a id="__codelineno-43-12" name="__codelineno-43-12" href="#__codelineno-43-12"></a>
+<a id="__codelineno-43-13" name="__codelineno-43-13" href="#__codelineno-43-13"></a>Settings:
+<a id="__codelineno-43-14" name="__codelineno-43-14" href="#__codelineno-43-14"></a>  Focal Length: 50.0 mm
+<a id="__codelineno-43-15" name="__codelineno-43-15" href="#__codelineno-43-15"></a>  Aperture: f/1.8
+<a id="__codelineno-43-16" name="__codelineno-43-16" href="#__codelineno-43-16"></a>  ISO: 400
+</code></pre></div>
+<h4 id="metadata-extract-comprehensive-metadata"><code>metadata</code> - Extract comprehensive metadata<a class="headerlink" href="#metadata-extract-comprehensive-metadata" title="Permanent link">&para;</a></h4>
+<p>Extract and display comprehensive image metadata including EXIF, IPTC, and XMP data.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>imgx<span class="w"> </span>metadata<span class="w"> </span>&lt;input&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-b, --basic</code> - Show basic metadata only (skip exiftool)
+- <code>-j, --json</code> - Output metadata as JSON</p>
+<p><strong>Features:</strong></p>
+<p>When <strong>exiftool is installed</strong>, displays:
+- <strong>Camera Information:</strong> Make, model, lens
+- <strong>Camera Settings:</strong> ISO, aperture (f-number), shutter speed, focal length, flash
+- <strong>GPS Location:</strong> Latitude, longitude, altitude
+- <strong>Date/Time:</strong> Original capture date, modification date
+- <strong>Additional Info:</strong> Software, artist, copyright
+- <strong>File Details:</strong> Format, dimensions, aspect ratio, megapixels, file size, color model</p>
+<p>When <strong>exiftool is NOT installed</strong>, displays basic metadata:
+- File path, format, and size
+- Image dimensions and aspect ratio
+- Megapixels and color model
+- Warning message with installation instructions</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="c1"># Display all available metadata</span>
+<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>imgx<span class="w"> </span>metadata<span class="w"> </span>photo.jpg
+<a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a>
+<a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a><span class="c1"># Show basic metadata only (skip exiftool)</span>
+<a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a>imgx<span class="w"> </span>metadata<span class="w"> </span>photo.jpg<span class="w"> </span>--basic
+<a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a>
+<a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a><span class="c1"># Output as JSON for parsing</span>
+<a id="__codelineno-45-8" name="__codelineno-45-8" href="#__codelineno-45-8"></a>imgx<span class="w"> </span>metadata<span class="w"> </span>photo.jpg<span class="w"> </span>--json<span class="w"> </span>&gt;<span class="w"> </span>metadata.json
+</code></pre></div>
+<p><strong>Sample output (with exiftool):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>=== Image Metadata ===
+<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>
+<a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>File Information:
+<a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a>  Path:        photo.jpg
+<a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>  Format:      JPEG
+<a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a>  Size:        2.3 MB
+<a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a>
+<a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a>Image Properties:
+<a id="__codelineno-46-9" name="__codelineno-46-9" href="#__codelineno-46-9"></a>  Dimensions:  4000x3000
+<a id="__codelineno-46-10" name="__codelineno-46-10" href="#__codelineno-46-10"></a>  Aspect Ratio: 1.33
+<a id="__codelineno-46-11" name="__codelineno-46-11" href="#__codelineno-46-11"></a>  Megapixels:  12.00 MP
+<a id="__codelineno-46-12" name="__codelineno-46-12" href="#__codelineno-46-12"></a>  Color Model: *color.modelFunc
+<a id="__codelineno-46-13" name="__codelineno-46-13" href="#__codelineno-46-13"></a>
+<a id="__codelineno-46-14" name="__codelineno-46-14" href="#__codelineno-46-14"></a>Camera Information:
+<a id="__codelineno-46-15" name="__codelineno-46-15" href="#__codelineno-46-15"></a>  Make:        Canon
+<a id="__codelineno-46-16" name="__codelineno-46-16" href="#__codelineno-46-16"></a>  Model:       Canon EOS 5D Mark IV
+<a id="__codelineno-46-17" name="__codelineno-46-17" href="#__codelineno-46-17"></a>  Lens:        EF50mm f/1.8 STM
+<a id="__codelineno-46-18" name="__codelineno-46-18" href="#__codelineno-46-18"></a>
+<a id="__codelineno-46-19" name="__codelineno-46-19" href="#__codelineno-46-19"></a>Camera Settings:
+<a id="__codelineno-46-20" name="__codelineno-46-20" href="#__codelineno-46-20"></a>  Focal Length: 50.0 mm
+<a id="__codelineno-46-21" name="__codelineno-46-21" href="#__codelineno-46-21"></a>  Aperture:    f/1.8
+<a id="__codelineno-46-22" name="__codelineno-46-22" href="#__codelineno-46-22"></a>  Shutter:     1/250
+<a id="__codelineno-46-23" name="__codelineno-46-23" href="#__codelineno-46-23"></a>  ISO:         400
+<a id="__codelineno-46-24" name="__codelineno-46-24" href="#__codelineno-46-24"></a>  Flash:       No Flash
+<a id="__codelineno-46-25" name="__codelineno-46-25" href="#__codelineno-46-25"></a>
+<a id="__codelineno-46-26" name="__codelineno-46-26" href="#__codelineno-46-26"></a>Date/Time:
+<a id="__codelineno-46-27" name="__codelineno-46-27" href="#__codelineno-46-27"></a>  Original:    2024:10:15 14:23:45
+<a id="__codelineno-46-28" name="__codelineno-46-28" href="#__codelineno-46-28"></a>  Modified:    2024:10:20 09:15:30
+<a id="__codelineno-46-29" name="__codelineno-46-29" href="#__codelineno-46-29"></a>
+<a id="__codelineno-46-30" name="__codelineno-46-30" href="#__codelineno-46-30"></a>GPS Location:
+<a id="__codelineno-46-31" name="__codelineno-46-31" href="#__codelineno-46-31"></a>  Latitude:    37.7749 N
+<a id="__codelineno-46-32" name="__codelineno-46-32" href="#__codelineno-46-32"></a>  Longitude:   122.4194 W
+<a id="__codelineno-46-33" name="__codelineno-46-33" href="#__codelineno-46-33"></a>  Altitude:    15.0 m
+<a id="__codelineno-46-34" name="__codelineno-46-34" href="#__codelineno-46-34"></a>
+<a id="__codelineno-46-35" name="__codelineno-46-35" href="#__codelineno-46-35"></a>Additional Information:
+<a id="__codelineno-46-36" name="__codelineno-46-36" href="#__codelineno-46-36"></a>  Software:    Adobe Photoshop CC 2024
+<a id="__codelineno-46-37" name="__codelineno-46-37" href="#__codelineno-46-37"></a>  Copyright:   © 2024 John Doe
+</code></pre></div>
+<p><strong>Sample output (without exiftool):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>=== Image Metadata ===
+<a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>
+<a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a>File Information:
+<a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a>  Path:        photo.jpg
+<a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a>  Format:      JPEG
+<a id="__codelineno-47-6" name="__codelineno-47-6" href="#__codelineno-47-6"></a>  Size:        2.3 MB
+<a id="__codelineno-47-7" name="__codelineno-47-7" href="#__codelineno-47-7"></a>
+<a id="__codelineno-47-8" name="__codelineno-47-8" href="#__codelineno-47-8"></a>Image Properties:
+<a id="__codelineno-47-9" name="__codelineno-47-9" href="#__codelineno-47-9"></a>  Dimensions:  4000x3000
+<a id="__codelineno-47-10" name="__codelineno-47-10" href="#__codelineno-47-10"></a>  Aspect Ratio: 1.33
+<a id="__codelineno-47-11" name="__codelineno-47-11" href="#__codelineno-47-11"></a>  Megapixels:  12.00 MP
+<a id="__codelineno-47-12" name="__codelineno-47-12" href="#__codelineno-47-12"></a>  Color Model: *color.modelFunc
+<a id="__codelineno-47-13" name="__codelineno-47-13" href="#__codelineno-47-13"></a>
+<a id="__codelineno-47-14" name="__codelineno-47-14" href="#__codelineno-47-14"></a>---
+<a id="__codelineno-47-15" name="__codelineno-47-15" href="#__codelineno-47-15"></a>
+<a id="__codelineno-47-16" name="__codelineno-47-16" href="#__codelineno-47-16"></a>exiftool not found. Install exiftool for comprehensive metadata.
+<a id="__codelineno-47-17" name="__codelineno-47-17" href="#__codelineno-47-17"></a>
+<a id="__codelineno-47-18" name="__codelineno-47-18" href="#__codelineno-47-18"></a>Installation:
+<a id="__codelineno-47-19" name="__codelineno-47-19" href="#__codelineno-47-19"></a>  macOS:    brew install exiftool
+<a id="__codelineno-47-20" name="__codelineno-47-20" href="#__codelineno-47-20"></a>  Ubuntu:   sudo apt-get install libimage-exiftool-perl
+<a id="__codelineno-47-21" name="__codelineno-47-21" href="#__codelineno-47-21"></a>  Windows:  https://exiftool.org
+</code></pre></div>
+<p><strong>JSON Output Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>imgx<span class="w"> </span>metadata<span class="w"> </span>photo.jpg<span class="w"> </span>--json
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="p">{</span>
+<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a><span class="w">  </span><span class="nt">&quot;FilePath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;photo.jpg&quot;</span><span class="p">,</span>
+<a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a><span class="w">  </span><span class="nt">&quot;Format&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;JPEG&quot;</span><span class="p">,</span>
+<a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a><span class="w">  </span><span class="nt">&quot;Width&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4000</span><span class="p">,</span>
+<a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a><span class="w">  </span><span class="nt">&quot;Height&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3000</span><span class="p">,</span>
+<a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a><span class="w">  </span><span class="nt">&quot;FileSize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2415919</span><span class="p">,</span>
+<a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a><span class="w">  </span><span class="nt">&quot;Megapixels&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">12.00</span><span class="p">,</span>
+<a id="__codelineno-49-8" name="__codelineno-49-8" href="#__codelineno-49-8"></a><span class="w">  </span><span class="nt">&quot;AspectRatio&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.33</span><span class="p">,</span>
+<a id="__codelineno-49-9" name="__codelineno-49-9" href="#__codelineno-49-9"></a><span class="w">  </span><span class="nt">&quot;HasExtended&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<a id="__codelineno-49-10" name="__codelineno-49-10" href="#__codelineno-49-10"></a><span class="w">  </span><span class="nt">&quot;CameraMake&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Canon&quot;</span><span class="p">,</span>
+<a id="__codelineno-49-11" name="__codelineno-49-11" href="#__codelineno-49-11"></a><span class="w">  </span><span class="nt">&quot;CameraModel&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Canon EOS 5D Mark IV&quot;</span><span class="p">,</span>
+<a id="__codelineno-49-12" name="__codelineno-49-12" href="#__codelineno-49-12"></a><span class="w">  </span><span class="nt">&quot;ISO&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;400&quot;</span><span class="p">,</span>
+<a id="__codelineno-49-13" name="__codelineno-49-13" href="#__codelineno-49-13"></a><span class="w">  </span><span class="nt">&quot;FocalLength&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;50.0 mm&quot;</span><span class="p">,</span>
+<a id="__codelineno-49-14" name="__codelineno-49-14" href="#__codelineno-49-14"></a><span class="w">  </span><span class="nt">&quot;DateTimeOriginal&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024:10:15 14:23:45&quot;</span>
+<a id="__codelineno-49-15" name="__codelineno-49-15" href="#__codelineno-49-15"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Installing exiftool:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="c1"># macOS</span>
+<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a>brew<span class="w"> </span>install<span class="w"> </span>exiftool
+<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a>
+<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a><span class="c1"># Ubuntu/Debian</span>
+<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>libimage-exiftool-perl
+<a id="__codelineno-50-6" name="__codelineno-50-6" href="#__codelineno-50-6"></a>
+<a id="__codelineno-50-7" name="__codelineno-50-7" href="#__codelineno-50-7"></a><span class="c1"># Fedora/RHEL</span>
+<a id="__codelineno-50-8" name="__codelineno-50-8" href="#__codelineno-50-8"></a>sudo<span class="w"> </span>dnf<span class="w"> </span>install<span class="w"> </span>perl-Image-ExifTool
+<a id="__codelineno-50-9" name="__codelineno-50-9" href="#__codelineno-50-9"></a>
+<a id="__codelineno-50-10" name="__codelineno-50-10" href="#__codelineno-50-10"></a><span class="c1"># Windows</span>
+<a id="__codelineno-50-11" name="__codelineno-50-11" href="#__codelineno-50-11"></a><span class="c1"># Download from https://exiftool.org and add to PATH</span>
+<a id="__codelineno-50-12" name="__codelineno-50-12" href="#__codelineno-50-12"></a>
+<a id="__codelineno-50-13" name="__codelineno-50-13" href="#__codelineno-50-13"></a><span class="c1"># Verify installation</span>
+<a id="__codelineno-50-14" name="__codelineno-50-14" href="#__codelineno-50-14"></a>exiftool<span class="w"> </span>-ver
+</code></pre></div>
+<h3 id="object-detection">Object Detection<a class="headerlink" href="#object-detection" title="Permanent link">&para;</a></h3>
+<h4 id="detect-ai-powered-object-detection"><code>detect</code> - AI-powered object detection<a class="headerlink" href="#detect-ai-powered-object-detection" title="Permanent link">&para;</a></h4>
+<p>Detect objects, text, faces, and image properties using local Ollama models or cloud AI vision APIs (Google Gemini, AWS Rekognition, OpenAI Vision).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>imgx<span class="w"> </span>detect<span class="w"> </span>&lt;input&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
+</code></pre></div>
+<p><strong>Options:</strong>
+- <code>-p, --provider string</code> - Detection provider: <code>ollama</code>, <code>gemini</code>, <code>google</code> (alias), <code>aws</code>, <code>openai</code> (default: <code>ollama</code>)
+- <code>-f, --features string</code> - Features to detect: <code>labels,text,faces,web,description,properties</code> (comma-separated, default: <code>labels</code>)
+- <code>-m, --max-results int</code> - Maximum number of labels to return (default: 10)
+- <code>-c, --confidence float</code> - Minimum confidence threshold 0.0-1.0 (default: 0.5)
+- <code>--prompt string</code> - Custom prompt for Ollama/Gemini/OpenAI (overrides --features)
+- <code>-j, --json</code> - Output results as JSON (includes colors, quality, moderation when available)
+- <code>--raw</code> - Include raw API response in output</p>
+<p><strong>Supported Providers:</strong>
+- <strong>ollama</strong> (local multimodal models) - Requires <code>ollama serve</code> plus local model (default <code>gemma3</code>)
+- <strong>gemini</strong> (Google Gemini API) - Requires <code>GEMINI_API_KEY</code>
+- <strong>aws</strong> (AWS Rekognition) - Requires AWS credentials
+- <strong>openai</strong> (OpenAI Vision) - Requires <code>OPENAI_API_KEY</code></p>
+<p><strong>Setup:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="c1"># Ollama: run the local server and pull a model</span>
+<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>ollama<span class="w"> </span>serve<span class="w"> </span><span class="p">&amp;</span>
+<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>ollama<span class="w"> </span>pull<span class="w"> </span>gemma3
+<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="c1"># Optional overrides</span>
+<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OLLAMA_HOST</span><span class="o">=</span><span class="s2">&quot;http://127.0.0.1:11434&quot;</span>
+<a id="__codelineno-52-6" name="__codelineno-52-6" href="#__codelineno-52-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">IMGX_OLLAMA_MODEL</span><span class="o">=</span><span class="s2">&quot;llava&quot;</span>
+<a id="__codelineno-52-7" name="__codelineno-52-7" href="#__codelineno-52-7"></a>
+<a id="__codelineno-52-8" name="__codelineno-52-8" href="#__codelineno-52-8"></a><span class="c1"># Gemini: Get API key from https://aistudio.google.com/</span>
+<a id="__codelineno-52-9" name="__codelineno-52-9" href="#__codelineno-52-9"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_API_KEY</span><span class="o">=</span><span class="s2">&quot;your-api-key&quot;</span>
+<a id="__codelineno-52-10" name="__codelineno-52-10" href="#__codelineno-52-10"></a>
+<a id="__codelineno-52-11" name="__codelineno-52-11" href="#__codelineno-52-11"></a><span class="c1"># AWS: Configure via AWS CLI or environment variables</span>
+<a id="__codelineno-52-12" name="__codelineno-52-12" href="#__codelineno-52-12"></a>aws<span class="w"> </span>configure
+<a id="__codelineno-52-13" name="__codelineno-52-13" href="#__codelineno-52-13"></a><span class="c1"># OR</span>
+<a id="__codelineno-52-14" name="__codelineno-52-14" href="#__codelineno-52-14"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span><span class="s2">&quot;your-key&quot;</span>
+<a id="__codelineno-52-15" name="__codelineno-52-15" href="#__codelineno-52-15"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span><span class="s2">&quot;your-secret&quot;</span>
+<a id="__codelineno-52-16" name="__codelineno-52-16" href="#__codelineno-52-16"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_REGION</span><span class="o">=</span><span class="s2">&quot;us-east-1&quot;</span>
+<a id="__codelineno-52-17" name="__codelineno-52-17" href="#__codelineno-52-17"></a>
+<a id="__codelineno-52-18" name="__codelineno-52-18" href="#__codelineno-52-18"></a><span class="c1"># OpenAI: Get API key from https://platform.openai.com/</span>
+<a id="__codelineno-52-19" name="__codelineno-52-19" href="#__codelineno-52-19"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENAI_API_KEY</span><span class="o">=</span><span class="s2">&quot;sk-...&quot;</span>
+</code></pre></div>
+<p><strong>Available Features:</strong>
+- <code>labels</code> - Detect objects and labels
+- <code>text</code> - Extract text (OCR)
+- <code>faces</code> - Detect faces and attributes
+- <code>description</code> - Get natural language description (Ollama/Gemini/OpenAI)
+- <code>web</code> - Web entities and similar images (Gemini only)
+- <code>landmarks</code> - Detect famous landmarks (Gemini only)
+- <code>properties</code> - Image quality, colors, sharpness (Ollama/AWS)
+- <code>safesearch</code> - Content moderation</p>
+<p><strong>Examples:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="c1"># Basic detection with the local Ollama model (default)</span>
+<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg
+<a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a>
+<a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a><span class="c1"># Use specific provider</span>
+<a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--provider<span class="w"> </span>aws
+<a id="__codelineno-53-6" name="__codelineno-53-6" href="#__codelineno-53-6"></a>
+<a id="__codelineno-53-7" name="__codelineno-53-7" href="#__codelineno-53-7"></a><span class="c1"># Multiple features</span>
+<a id="__codelineno-53-8" name="__codelineno-53-8" href="#__codelineno-53-8"></a>imgx<span class="w"> </span>detect<span class="w"> </span>document.jpg<span class="w"> </span>--features<span class="w"> </span>labels,text,faces
+<a id="__codelineno-53-9" name="__codelineno-53-9" href="#__codelineno-53-9"></a>
+<a id="__codelineno-53-10" name="__codelineno-53-10" href="#__codelineno-53-10"></a><span class="c1"># AWS image properties (colors, quality)</span>
+<a id="__codelineno-53-11" name="__codelineno-53-11" href="#__codelineno-53-11"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--provider<span class="w"> </span>aws<span class="w"> </span>--features<span class="w"> </span>properties
+<a id="__codelineno-53-12" name="__codelineno-53-12" href="#__codelineno-53-12"></a>
+<a id="__codelineno-53-13" name="__codelineno-53-13" href="#__codelineno-53-13"></a><span class="c1"># AWS labels + properties (charged for both)</span>
+<a id="__codelineno-53-14" name="__codelineno-53-14" href="#__codelineno-53-14"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--provider<span class="w"> </span>aws<span class="w"> </span>--features<span class="w"> </span>labels,properties
+<a id="__codelineno-53-15" name="__codelineno-53-15" href="#__codelineno-53-15"></a>
+<a id="__codelineno-53-16" name="__codelineno-53-16" href="#__codelineno-53-16"></a><span class="c1"># Custom prompt with Ollama or Gemini</span>
+<a id="__codelineno-53-17" name="__codelineno-53-17" href="#__codelineno-53-17"></a>imgx<span class="w"> </span>detect<span class="w"> </span>dog.jpg<span class="w"> </span>--prompt<span class="w"> </span><span class="s2">&quot;What breed is this dog?&quot;</span>
+<a id="__codelineno-53-18" name="__codelineno-53-18" href="#__codelineno-53-18"></a>
+<a id="__codelineno-53-19" name="__codelineno-53-19" href="#__codelineno-53-19"></a><span class="c1"># Higher confidence threshold</span>
+<a id="__codelineno-53-20" name="__codelineno-53-20" href="#__codelineno-53-20"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--confidence<span class="w"> </span><span class="m">0</span>.8
+<a id="__codelineno-53-21" name="__codelineno-53-21" href="#__codelineno-53-21"></a>
+<a id="__codelineno-53-22" name="__codelineno-53-22" href="#__codelineno-53-22"></a><span class="c1"># JSON output</span>
+<a id="__codelineno-53-23" name="__codelineno-53-23" href="#__codelineno-53-23"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--json
+<a id="__codelineno-53-24" name="__codelineno-53-24" href="#__codelineno-53-24"></a>
+<a id="__codelineno-53-25" name="__codelineno-53-25" href="#__codelineno-53-25"></a><span class="c1"># Compare providers</span>
+<a id="__codelineno-53-26" name="__codelineno-53-26" href="#__codelineno-53-26"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--provider<span class="w"> </span>ollama
+<a id="__codelineno-53-27" name="__codelineno-53-27" href="#__codelineno-53-27"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--provider<span class="w"> </span>gemini
+<a id="__codelineno-53-28" name="__codelineno-53-28" href="#__codelineno-53-28"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--provider<span class="w"> </span>aws
+<a id="__codelineno-53-29" name="__codelineno-53-29" href="#__codelineno-53-29"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--provider<span class="w"> </span>openai
+</code></pre></div>
+<p><strong>Sample Output (pretty format):</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>=== Object Detection Results (aws) ===
+<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>
+<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>Labels:
+<a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a>  1. Dog (99.0% confidence)
+<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>  2. Pet (97.6% confidence)
+<a id="__codelineno-54-6" name="__codelineno-54-6" href="#__codelineno-54-6"></a>  3. Animal (96.3% confidence)
+<a id="__codelineno-54-7" name="__codelineno-54-7" href="#__codelineno-54-7"></a>
+<a id="__codelineno-54-8" name="__codelineno-54-8" href="#__codelineno-54-8"></a>Detected Text:
+<a id="__codelineno-54-9" name="__codelineno-54-9" href="#__codelineno-54-9"></a>  1. &quot;Backyard&quot; (88.0% confidence)
+<a id="__codelineno-54-10" name="__codelineno-54-10" href="#__codelineno-54-10"></a>
+<a id="__codelineno-54-11" name="__codelineno-54-11" href="#__codelineno-54-11"></a>Properties:
+<a id="__codelineno-54-12" name="__codelineno-54-12" href="#__codelineno-54-12"></a>  brightness: 84.50
+<a id="__codelineno-54-13" name="__codelineno-54-13" href="#__codelineno-54-13"></a>  contrast: 76.20
+<a id="__codelineno-54-14" name="__codelineno-54-14" href="#__codelineno-54-14"></a>  foreground_color: Green
+<a id="__codelineno-54-15" name="__codelineno-54-15" href="#__codelineno-54-15"></a>
+<a id="__codelineno-54-16" name="__codelineno-54-16" href="#__codelineno-54-16"></a>Dominant Colors:
+<a id="__codelineno-54-17" name="__codelineno-54-17" href="#__codelineno-54-17"></a>  - Green (#8FB94B, rgb(143,185,75), 41.3%)
+<a id="__codelineno-54-18" name="__codelineno-54-18" href="#__codelineno-54-18"></a>  - Brown (#6B4E2E, rgb(107,78,46), 18.6%)
+<a id="__codelineno-54-19" name="__codelineno-54-19" href="#__codelineno-54-19"></a>
+<a id="__codelineno-54-20" name="__codelineno-54-20" href="#__codelineno-54-20"></a>Image Quality:
+<a id="__codelineno-54-21" name="__codelineno-54-21" href="#__codelineno-54-21"></a>  Brightness: 84.50
+<a id="__codelineno-54-22" name="__codelineno-54-22" href="#__codelineno-54-22"></a>  Contrast: 76.20
+<a id="__codelineno-54-23" name="__codelineno-54-23" href="#__codelineno-54-23"></a>  Sharpness: 80.10
+<a id="__codelineno-54-24" name="__codelineno-54-24" href="#__codelineno-54-24"></a>  Foreground:
+<a id="__codelineno-54-25" name="__codelineno-54-25" href="#__codelineno-54-25"></a>    Brightness: 81.20
+<a id="__codelineno-54-26" name="__codelineno-54-26" href="#__codelineno-54-26"></a>    Color: Green
+<a id="__codelineno-54-27" name="__codelineno-54-27" href="#__codelineno-54-27"></a>
+<a id="__codelineno-54-28" name="__codelineno-54-28" href="#__codelineno-54-28"></a>Moderation:
+<a id="__codelineno-54-29" name="__codelineno-54-29" href="#__codelineno-54-29"></a>  - Violence (severity: VERY_UNLIKELY, confidence: 0.5%)
+<a id="__codelineno-54-30" name="__codelineno-54-30" href="#__codelineno-54-30"></a>
+<a id="__codelineno-54-31" name="__codelineno-54-31" href="#__codelineno-54-31"></a>Safe Search Summary:
+<a id="__codelineno-54-32" name="__codelineno-54-32" href="#__codelineno-54-32"></a>  - Violence (VERY_UNLIKELY, 0.5%)
+<a id="__codelineno-54-33" name="__codelineno-54-33" href="#__codelineno-54-33"></a>
+<a id="__codelineno-54-34" name="__codelineno-54-34" href="#__codelineno-54-34"></a>Overall Confidence: 97.6%
+<a id="__codelineno-54-35" name="__codelineno-54-35" href="#__codelineno-54-35"></a>
+<a id="__codelineno-54-36" name="__codelineno-54-36" href="#__codelineno-54-36"></a>Processed at: 2024-11-01 16:30:45
+</code></pre></div>
+<p><strong>JSON Output Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a><span class="p">{</span>
+<a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a><span class="w">  </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gemini&quot;</span><span class="p">,</span>
+<a id="__codelineno-55-3" name="__codelineno-55-3" href="#__codelineno-55-3"></a><span class="w">  </span><span class="nt">&quot;labels&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-55-4" name="__codelineno-55-4" href="#__codelineno-55-4"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-55-5" name="__codelineno-55-5" href="#__codelineno-55-5"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Dog&quot;</span><span class="p">,</span>
+<a id="__codelineno-55-6" name="__codelineno-55-6" href="#__codelineno-55-6"></a><span class="w">      </span><span class="nt">&quot;confidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.985</span><span class="p">,</span>
+<a id="__codelineno-55-7" name="__codelineno-55-7" href="#__codelineno-55-7"></a><span class="w">      </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Animal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Pet&quot;</span><span class="p">]</span>
+<a id="__codelineno-55-8" name="__codelineno-55-8" href="#__codelineno-55-8"></a><span class="w">    </span><span class="p">},</span>
+<a id="__codelineno-55-9" name="__codelineno-55-9" href="#__codelineno-55-9"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-55-10" name="__codelineno-55-10" href="#__codelineno-55-10"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Golden Retriever&quot;</span><span class="p">,</span>
+<a id="__codelineno-55-11" name="__codelineno-55-11" href="#__codelineno-55-11"></a><span class="w">      </span><span class="nt">&quot;confidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.942</span><span class="p">,</span>
+<a id="__codelineno-55-12" name="__codelineno-55-12" href="#__codelineno-55-12"></a><span class="w">      </span><span class="nt">&quot;categories&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Dog&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Breed&quot;</span><span class="p">]</span>
+<a id="__codelineno-55-13" name="__codelineno-55-13" href="#__codelineno-55-13"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-55-14" name="__codelineno-55-14" href="#__codelineno-55-14"></a><span class="w">  </span><span class="p">],</span>
+<a id="__codelineno-55-15" name="__codelineno-55-15" href="#__codelineno-55-15"></a><span class="w">  </span><span class="nt">&quot;confidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.934</span><span class="p">,</span>
+<a id="__codelineno-55-16" name="__codelineno-55-16" href="#__codelineno-55-16"></a><span class="w">  </span><span class="nt">&quot;processed_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-11-01T16:30:45Z&quot;</span>
+<a id="__codelineno-55-17" name="__codelineno-55-17" href="#__codelineno-55-17"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>AWS Image Properties Output:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>imgx<span class="w"> </span>detect<span class="w"> </span>photo.jpg<span class="w"> </span>--provider<span class="w"> </span>aws<span class="w"> </span>--features<span class="w"> </span>properties
+<a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>
+<a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a><span class="c1"># Output:</span>
+<a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a>Provider:<span class="w"> </span>aws
+<a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a>Processed:<span class="w"> </span><span class="m">2024</span>-11-01<span class="w"> </span><span class="m">16</span>:30:45
+<a id="__codelineno-56-6" name="__codelineno-56-6" href="#__codelineno-56-6"></a>
+<a id="__codelineno-56-7" name="__codelineno-56-7" href="#__codelineno-56-7"></a>Image<span class="w"> </span>Properties:
+<a id="__codelineno-56-8" name="__codelineno-56-8" href="#__codelineno-56-8"></a><span class="w">  </span>brightness:<span class="w"> </span><span class="m">75</span>.23
+<a id="__codelineno-56-9" name="__codelineno-56-9" href="#__codelineno-56-9"></a><span class="w">  </span>sharpness:<span class="w"> </span><span class="m">89</span>.15
+<a id="__codelineno-56-10" name="__codelineno-56-10" href="#__codelineno-56-10"></a><span class="w">  </span>contrast:<span class="w"> </span><span class="m">62</span>.45
+<a id="__codelineno-56-11" name="__codelineno-56-11" href="#__codelineno-56-11"></a><span class="w">  </span>dominant_colors:<span class="w"> </span>Black<span class="o">(</span><span class="m">45</span>.2%<span class="o">)</span>,<span class="w"> </span>White<span class="o">(</span><span class="m">23</span>.1%<span class="o">)</span>,<span class="w"> </span>Blue<span class="o">(</span><span class="m">15</span>.7%<span class="o">)</span>
+<a id="__codelineno-56-12" name="__codelineno-56-12" href="#__codelineno-56-12"></a><span class="w">  </span>color_1_hex:<span class="w"> </span><span class="c1">#0C0F12</span>
+<a id="__codelineno-56-13" name="__codelineno-56-13" href="#__codelineno-56-13"></a><span class="w">  </span>color_1_rgb:<span class="w"> </span>rgb<span class="o">(</span><span class="m">12</span>,15,18<span class="o">)</span>
+<a id="__codelineno-56-14" name="__codelineno-56-14" href="#__codelineno-56-14"></a><span class="w">  </span>color_2_hex:<span class="w"> </span><span class="c1">#F5F5F5</span>
+<a id="__codelineno-56-15" name="__codelineno-56-15" href="#__codelineno-56-15"></a><span class="w">  </span>color_2_rgb:<span class="w"> </span>rgb<span class="o">(</span><span class="m">245</span>,245,245<span class="o">)</span>
+<a id="__codelineno-56-16" name="__codelineno-56-16" href="#__codelineno-56-16"></a><span class="w">  </span>foreground_color:<span class="w"> </span>Black
+<a id="__codelineno-56-17" name="__codelineno-56-17" href="#__codelineno-56-17"></a><span class="w">  </span>background_color:<span class="w"> </span>White
+</code></pre></div>
+<p><strong>Text Extraction Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a>imgx<span class="w"> </span>detect<span class="w"> </span>document.jpg<span class="w"> </span>--features<span class="w"> </span>text
+<a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a>
+<a id="__codelineno-57-3" name="__codelineno-57-3" href="#__codelineno-57-3"></a><span class="c1"># Output:</span>
+<a id="__codelineno-57-4" name="__codelineno-57-4" href="#__codelineno-57-4"></a>Provider:<span class="w"> </span>gemini
+<a id="__codelineno-57-5" name="__codelineno-57-5" href="#__codelineno-57-5"></a>Processed:<span class="w"> </span><span class="m">2024</span>-11-01<span class="w"> </span><span class="m">16</span>:30:45
+<a id="__codelineno-57-6" name="__codelineno-57-6" href="#__codelineno-57-6"></a>
+<a id="__codelineno-57-7" name="__codelineno-57-7" href="#__codelineno-57-7"></a>Text<span class="w"> </span>Detected:
+<a id="__codelineno-57-8" name="__codelineno-57-8" href="#__codelineno-57-8"></a><span class="w">  </span>-<span class="w"> </span><span class="s2">&quot;Invoice&quot;</span><span class="w"> </span><span class="o">(</span>confidence:<span class="w"> </span><span class="m">99</span>.2%<span class="o">)</span>
+<a id="__codelineno-57-9" name="__codelineno-57-9" href="#__codelineno-57-9"></a><span class="w">  </span>-<span class="w"> </span><span class="s2">&quot;Total: </span><span class="nv">$152</span><span class="s2">.50&quot;</span><span class="w"> </span><span class="o">(</span>confidence:<span class="w"> </span><span class="m">98</span>.7%<span class="o">)</span>
+<a id="__codelineno-57-10" name="__codelineno-57-10" href="#__codelineno-57-10"></a><span class="w">  </span>-<span class="w"> </span><span class="s2">&quot;Date: 2024-10-15&quot;</span><span class="w"> </span><span class="o">(</span>confidence:<span class="w"> </span><span class="m">97</span>.5%<span class="o">)</span>
+</code></pre></div>
+<p><strong>Face Detection Example:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a>imgx<span class="w"> </span>detect<span class="w"> </span>group-photo.jpg<span class="w"> </span>--features<span class="w"> </span>faces
+<a id="__codelineno-58-2" name="__codelineno-58-2" href="#__codelineno-58-2"></a>
+<a id="__codelineno-58-3" name="__codelineno-58-3" href="#__codelineno-58-3"></a><span class="c1"># Output:</span>
+<a id="__codelineno-58-4" name="__codelineno-58-4" href="#__codelineno-58-4"></a>Provider:<span class="w"> </span>aws
+<a id="__codelineno-58-5" name="__codelineno-58-5" href="#__codelineno-58-5"></a>Processed:<span class="w"> </span><span class="m">2024</span>-11-01<span class="w"> </span><span class="m">16</span>:30:45
+<a id="__codelineno-58-6" name="__codelineno-58-6" href="#__codelineno-58-6"></a>
+<a id="__codelineno-58-7" name="__codelineno-58-7" href="#__codelineno-58-7"></a>Faces<span class="w"> </span>Detected:<span class="w"> </span><span class="m">3</span>
+<a id="__codelineno-58-8" name="__codelineno-58-8" href="#__codelineno-58-8"></a><span class="w">  </span>Face<span class="w"> </span><span class="m">1</span>:<span class="w"> </span>confidence<span class="w"> </span><span class="m">99</span>.8%,<span class="w"> </span>age<span class="w"> </span><span class="m">25</span>-35,<span class="w"> </span>smiling
+<a id="__codelineno-58-9" name="__codelineno-58-9" href="#__codelineno-58-9"></a><span class="w">  </span>Face<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>confidence<span class="w"> </span><span class="m">99</span>.5%,<span class="w"> </span>age<span class="w"> </span><span class="m">30</span>-40,<span class="w"> </span>neutral
+<a id="__codelineno-58-10" name="__codelineno-58-10" href="#__codelineno-58-10"></a><span class="w">  </span>Face<span class="w"> </span><span class="m">3</span>:<span class="w"> </span>confidence<span class="w"> </span><span class="m">98</span>.9%,<span class="w"> </span>age<span class="w"> </span><span class="m">20</span>-30,<span class="w"> </span>happy
+</code></pre></div>
+<p><strong>Pricing Notes:</strong></p>
+<ul>
+<li><strong>Gemini</strong>: Free tier available, then pay-as-you-go</li>
+<li><strong>AWS Rekognition</strong>:</li>
+<li><code>--features labels</code> → Standard DetectLabels pricing (~$0.001/image)</li>
+<li><code>--features properties</code> → Image Properties pricing only</li>
+<li><code>--features labels,properties</code> → <strong>Charged for BOTH APIs</strong></li>
+<li><strong>OpenAI Vision</strong>: Per-request pricing based on GPT-4o</li>
+</ul>
+<p><strong>Troubleshooting:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="c1"># Test Gemini credentials</span>
+<a id="__codelineno-59-2" name="__codelineno-59-2" href="#__codelineno-59-2"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$GEMINI_API_KEY</span>
+<a id="__codelineno-59-3" name="__codelineno-59-3" href="#__codelineno-59-3"></a>
+<a id="__codelineno-59-4" name="__codelineno-59-4" href="#__codelineno-59-4"></a><span class="c1"># Test AWS credentials</span>
+<a id="__codelineno-59-5" name="__codelineno-59-5" href="#__codelineno-59-5"></a>aws<span class="w"> </span>sts<span class="w"> </span>get-caller-identity
+<a id="__codelineno-59-6" name="__codelineno-59-6" href="#__codelineno-59-6"></a>
+<a id="__codelineno-59-7" name="__codelineno-59-7" href="#__codelineno-59-7"></a><span class="c1"># Test OpenAI credentials</span>
+<a id="__codelineno-59-8" name="__codelineno-59-8" href="#__codelineno-59-8"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$OPENAI_API_KEY</span>
+</code></pre></div>
+<p><strong>See Also:</strong>
+- Detailed API documentation: <a href="../DETECTION/">docs/DETECTION.md</a>
+- <a href="https://github.com/razzkumar/imgx/blob/main/examples/detection/main.go">Example Code</a></p>
+<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
+<h3 id="web-optimization">Web Optimization<a class="headerlink" href="#web-optimization" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a><span class="c1"># Resize for web and optimize JPEG quality</span>
+<a id="__codelineno-60-2" name="__codelineno-60-2" href="#__codelineno-60-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">1200</span><span class="w"> </span>--quality<span class="w"> </span><span class="m">85</span><span class="w"> </span>-o<span class="w"> </span>web.jpg
+<a id="__codelineno-60-3" name="__codelineno-60-3" href="#__codelineno-60-3"></a>
+<a id="__codelineno-60-4" name="__codelineno-60-4" href="#__codelineno-60-4"></a><span class="c1"># Create responsive image set</span>
+<a id="__codelineno-60-5" name="__codelineno-60-5" href="#__codelineno-60-5"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">1920</span><span class="w"> </span>-o<span class="w"> </span>photo-large.jpg
+<a id="__codelineno-60-6" name="__codelineno-60-6" href="#__codelineno-60-6"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">1200</span><span class="w"> </span>-o<span class="w"> </span>photo-medium.jpg
+<a id="__codelineno-60-7" name="__codelineno-60-7" href="#__codelineno-60-7"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-o<span class="w"> </span>photo-small.jpg
+</code></pre></div>
+<h3 id="social-media">Social Media<a class="headerlink" href="#social-media" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a><span class="c1"># Instagram post (1080x1080)</span>
+<a id="__codelineno-61-2" name="__codelineno-61-2" href="#__codelineno-61-2"></a>imgx<span class="w"> </span>fill<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">1080</span><span class="w"> </span>-h<span class="w"> </span><span class="m">1080</span><span class="w"> </span>-o<span class="w"> </span>instagram.jpg
+<a id="__codelineno-61-3" name="__codelineno-61-3" href="#__codelineno-61-3"></a>
+<a id="__codelineno-61-4" name="__codelineno-61-4" href="#__codelineno-61-4"></a><span class="c1"># Facebook cover (1200x630)</span>
+<a id="__codelineno-61-5" name="__codelineno-61-5" href="#__codelineno-61-5"></a>imgx<span class="w"> </span>fill<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">1200</span><span class="w"> </span>-h<span class="w"> </span><span class="m">630</span><span class="w"> </span>-o<span class="w"> </span>facebook-cover.jpg
+<a id="__codelineno-61-6" name="__codelineno-61-6" href="#__codelineno-61-6"></a>
+<a id="__codelineno-61-7" name="__codelineno-61-7" href="#__codelineno-61-7"></a><span class="c1"># Twitter header (1500x500)</span>
+<a id="__codelineno-61-8" name="__codelineno-61-8" href="#__codelineno-61-8"></a>imgx<span class="w"> </span>fill<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">1500</span><span class="w"> </span>-h<span class="w"> </span><span class="m">500</span><span class="w"> </span>-o<span class="w"> </span>twitter-header.jpg
+</code></pre></div>
+<h3 id="photo-enhancement">Photo Enhancement<a class="headerlink" href="#photo-enhancement" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a><span class="c1"># Quick enhancement</span>
+<a id="__codelineno-62-2" name="__codelineno-62-2" href="#__codelineno-62-2"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--brightness<span class="w"> </span><span class="m">5</span><span class="w"> </span>--contrast<span class="w"> </span><span class="m">10</span><span class="w"> </span>--saturation<span class="w"> </span><span class="m">15</span><span class="w"> </span>-o<span class="w"> </span>enhanced.jpg
+<a id="__codelineno-62-3" name="__codelineno-62-3" href="#__codelineno-62-3"></a>
+<a id="__codelineno-62-4" name="__codelineno-62-4" href="#__codelineno-62-4"></a><span class="c1"># Fix dark photo</span>
+<a id="__codelineno-62-5" name="__codelineno-62-5" href="#__codelineno-62-5"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--brightness<span class="w"> </span><span class="m">20</span><span class="w"> </span>--gamma<span class="w"> </span><span class="m">1</span>.3<span class="w"> </span>-o<span class="w"> </span>brightened.jpg
+<a id="__codelineno-62-6" name="__codelineno-62-6" href="#__codelineno-62-6"></a>
+<a id="__codelineno-62-7" name="__codelineno-62-7" href="#__codelineno-62-7"></a><span class="c1"># Boost colors</span>
+<a id="__codelineno-62-8" name="__codelineno-62-8" href="#__codelineno-62-8"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--saturation<span class="w"> </span><span class="m">25</span><span class="w"> </span>--contrast<span class="w"> </span><span class="m">10</span><span class="w"> </span>-o<span class="w"> </span>vibrant.jpg
+</code></pre></div>
+<h3 id="thumbnails">Thumbnails<a class="headerlink" href="#thumbnails" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="c1"># Square thumbnails</span>
+<a id="__codelineno-63-2" name="__codelineno-63-2" href="#__codelineno-63-2"></a>imgx<span class="w"> </span>thumbnail<span class="w"> </span>photo.jpg<span class="w"> </span>-s<span class="w"> </span><span class="m">150</span><span class="w"> </span>-o<span class="w"> </span>thumb-150.jpg
+<a id="__codelineno-63-3" name="__codelineno-63-3" href="#__codelineno-63-3"></a>imgx<span class="w"> </span>thumbnail<span class="w"> </span>photo.jpg<span class="w"> </span>-s<span class="w"> </span><span class="m">300</span><span class="w"> </span>-o<span class="w"> </span>thumb-300.jpg
+<a id="__codelineno-63-4" name="__codelineno-63-4" href="#__codelineno-63-4"></a>
+<a id="__codelineno-63-5" name="__codelineno-63-5" href="#__codelineno-63-5"></a><span class="c1"># Preserve aspect ratio thumbnails</span>
+<a id="__codelineno-63-6" name="__codelineno-63-6" href="#__codelineno-63-6"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">300</span><span class="w"> </span>-o<span class="w"> </span>thumb.jpg
+</code></pre></div>
+<h3 id="watermarking_1">Watermarking<a class="headerlink" href="#watermarking_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="c1"># Copyright watermark</span>
+<a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>imgx<span class="w"> </span>watermark<span class="w"> </span>photo.jpg<span class="w"> </span>--text<span class="w"> </span><span class="s2">&quot;© 2025 Your Name&quot;</span><span class="w"> </span>--opacity<span class="w"> </span><span class="m">0</span>.4<span class="w"> </span>-o<span class="w"> </span>watermarked.jpg
+<a id="__codelineno-64-3" name="__codelineno-64-3" href="#__codelineno-64-3"></a>
+<a id="__codelineno-64-4" name="__codelineno-64-4" href="#__codelineno-64-4"></a><span class="c1"># Draft stamp</span>
+<a id="__codelineno-64-5" name="__codelineno-64-5" href="#__codelineno-64-5"></a>imgx<span class="w"> </span>watermark<span class="w"> </span>document.jpg<span class="w"> </span>--text<span class="w"> </span><span class="s2">&quot;DRAFT&quot;</span><span class="w"> </span>--anchor<span class="w"> </span>center<span class="w"> </span>--opacity<span class="w"> </span><span class="m">0</span>.3<span class="w"> </span>--color<span class="w"> </span>ff0000<span class="w"> </span>-o<span class="w"> </span>draft.jpg
+<a id="__codelineno-64-6" name="__codelineno-64-6" href="#__codelineno-64-6"></a>
+<a id="__codelineno-64-7" name="__codelineno-64-7" href="#__codelineno-64-7"></a><span class="c1"># Bottom-left attribution</span>
+<a id="__codelineno-64-8" name="__codelineno-64-8" href="#__codelineno-64-8"></a>imgx<span class="w"> </span>watermark<span class="w"> </span>photo.jpg<span class="w"> </span>--text<span class="w"> </span><span class="s2">&quot;Photo by You&quot;</span><span class="w"> </span>--anchor<span class="w"> </span>bottomleft<span class="w"> </span>--padding<span class="w"> </span><span class="m">15</span><span class="w"> </span>-o<span class="w"> </span>attributed.jpg
+</code></pre></div>
+<h3 id="creative-effects">Creative Effects<a class="headerlink" href="#creative-effects" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="c1"># Soft focus effect</span>
+<a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a>imgx<span class="w"> </span>blur<span class="w"> </span>photo.jpg<span class="w"> </span>--sigma<span class="w"> </span><span class="m">3</span>.0<span class="w"> </span>-o<span class="w"> </span>soft-focus.jpg
+<a id="__codelineno-65-3" name="__codelineno-65-3" href="#__codelineno-65-3"></a>
+<a id="__codelineno-65-4" name="__codelineno-65-4" href="#__codelineno-65-4"></a><span class="c1"># High contrast black and white</span>
+<a id="__codelineno-65-5" name="__codelineno-65-5" href="#__codelineno-65-5"></a>imgx<span class="w"> </span>grayscale<span class="w"> </span>photo.jpg<span class="w"> </span>-o<span class="w"> </span>bw.jpg
+<a id="__codelineno-65-6" name="__codelineno-65-6" href="#__codelineno-65-6"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>bw.jpg<span class="w"> </span>--contrast<span class="w"> </span><span class="m">30</span><span class="w"> </span>-o<span class="w"> </span>high-contrast-bw.jpg
+<a id="__codelineno-65-7" name="__codelineno-65-7" href="#__codelineno-65-7"></a>
+<a id="__codelineno-65-8" name="__codelineno-65-8" href="#__codelineno-65-8"></a><span class="c1"># Vintage look</span>
+<a id="__codelineno-65-9" name="__codelineno-65-9" href="#__codelineno-65-9"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--saturation<span class="w"> </span>-20<span class="w"> </span>--contrast<span class="w"> </span>-10<span class="w"> </span>--gamma<span class="w"> </span><span class="m">1</span>.2<span class="w"> </span>-o<span class="w"> </span>vintage.jpg
+<a id="__codelineno-65-10" name="__codelineno-65-10" href="#__codelineno-65-10"></a>
+<a id="__codelineno-65-11" name="__codelineno-65-11" href="#__codelineno-65-11"></a><span class="c1"># Inverted colors (negative)</span>
+<a id="__codelineno-65-12" name="__codelineno-65-12" href="#__codelineno-65-12"></a>imgx<span class="w"> </span>invert<span class="w"> </span>photo.jpg<span class="w"> </span>-o<span class="w"> </span>negative.jpg
+</code></pre></div>
+<h2 id="tips-tricks">Tips &amp; Tricks<a class="headerlink" href="#tips-tricks" title="Permanent link">&para;</a></h2>
+<h3 id="auto-generated-output-names">Auto-generated Output Names<a class="headerlink" href="#auto-generated-output-names" title="Permanent link">&para;</a></h3>
+<p>If you don't specify an output file with <code>-o</code>, imgx automatically generates one by adding a suffix:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span>
+<a id="__codelineno-66-2" name="__codelineno-66-2" href="#__codelineno-66-2"></a><span class="c1"># Creates: photo-resized.jpg</span>
+<a id="__codelineno-66-3" name="__codelineno-66-3" href="#__codelineno-66-3"></a>
+<a id="__codelineno-66-4" name="__codelineno-66-4" href="#__codelineno-66-4"></a>imgx<span class="w"> </span>thumbnail<span class="w"> </span>photo.jpg<span class="w"> </span>-s<span class="w"> </span><span class="m">150</span>
+<a id="__codelineno-66-5" name="__codelineno-66-5" href="#__codelineno-66-5"></a><span class="c1"># Creates: photo-thumb.jpg</span>
+<a id="__codelineno-66-6" name="__codelineno-66-6" href="#__codelineno-66-6"></a>
+<a id="__codelineno-66-7" name="__codelineno-66-7" href="#__codelineno-66-7"></a>imgx<span class="w"> </span>grayscale<span class="w"> </span>photo.jpg
+<a id="__codelineno-66-8" name="__codelineno-66-8" href="#__codelineno-66-8"></a><span class="c1"># Creates: photo-grayscale.jpg</span>
+</code></pre></div>
+<h3 id="format-conversion">Format Conversion<a class="headerlink" href="#format-conversion" title="Permanent link">&para;</a></h3>
+<p>Convert between formats using the <code>--format</code> flag:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-67-1" name="__codelineno-67-1" href="#__codelineno-67-1"></a><span class="c1"># PNG to JPEG</span>
+<a id="__codelineno-67-2" name="__codelineno-67-2" href="#__codelineno-67-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.png<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>--format<span class="w"> </span>jpg<span class="w"> </span>--quality<span class="w"> </span><span class="m">90</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-67-3" name="__codelineno-67-3" href="#__codelineno-67-3"></a>
+<a id="__codelineno-67-4" name="__codelineno-67-4" href="#__codelineno-67-4"></a><span class="c1"># JPEG to PNG</span>
+<a id="__codelineno-67-5" name="__codelineno-67-5" href="#__codelineno-67-5"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>--format<span class="w"> </span>png<span class="w"> </span>-o<span class="w"> </span>output.png
+</code></pre></div>
+<h3 id="preserving-quality">Preserving Quality<a class="headerlink" href="#preserving-quality" title="Permanent link">&para;</a></h3>
+<p>For JPEG output, use high quality settings to preserve detail:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-68-1" name="__codelineno-68-1" href="#__codelineno-68-1"></a><span class="c1"># High quality (larger file)</span>
+<a id="__codelineno-68-2" name="__codelineno-68-2" href="#__codelineno-68-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">1920</span><span class="w"> </span>--quality<span class="w"> </span><span class="m">95</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-68-3" name="__codelineno-68-3" href="#__codelineno-68-3"></a>
+<a id="__codelineno-68-4" name="__codelineno-68-4" href="#__codelineno-68-4"></a><span class="c1"># Balanced quality</span>
+<a id="__codelineno-68-5" name="__codelineno-68-5" href="#__codelineno-68-5"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">1920</span><span class="w"> </span>--quality<span class="w"> </span><span class="m">85</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-68-6" name="__codelineno-68-6" href="#__codelineno-68-6"></a>
+<a id="__codelineno-68-7" name="__codelineno-68-7" href="#__codelineno-68-7"></a><span class="c1"># Web optimized</span>
+<a id="__codelineno-68-8" name="__codelineno-68-8" href="#__codelineno-68-8"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">1920</span><span class="w"> </span>--quality<span class="w"> </span><span class="m">75</span><span class="w"> </span>-o<span class="w"> </span>output.jpg
+</code></pre></div>
+<h3 id="chaining-operations">Chaining Operations<a class="headerlink" href="#chaining-operations" title="Permanent link">&para;</a></h3>
+<p>While command chaining is planned for a future release, you can currently chain operations using shell pipes or by saving intermediate files:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-69-1" name="__codelineno-69-1" href="#__codelineno-69-1"></a><span class="c1"># Method 1: Multiple commands</span>
+<a id="__codelineno-69-2" name="__codelineno-69-2" href="#__codelineno-69-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-o<span class="w"> </span>temp.jpg
+<a id="__codelineno-69-3" name="__codelineno-69-3" href="#__codelineno-69-3"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>temp.jpg<span class="w"> </span>--brightness<span class="w"> </span><span class="m">10</span><span class="w"> </span>--contrast<span class="w"> </span><span class="m">20</span><span class="w"> </span>-o<span class="w"> </span>final.jpg
+<a id="__codelineno-69-4" name="__codelineno-69-4" href="#__codelineno-69-4"></a>rm<span class="w"> </span>temp.jpg
+<a id="__codelineno-69-5" name="__codelineno-69-5" href="#__codelineno-69-5"></a>
+<a id="__codelineno-69-6" name="__codelineno-69-6" href="#__codelineno-69-6"></a><span class="c1"># Method 2: Multiple adjustments in one command</span>
+<a id="__codelineno-69-7" name="__codelineno-69-7" href="#__codelineno-69-7"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--brightness<span class="w"> </span><span class="m">10</span><span class="w"> </span>--contrast<span class="w"> </span><span class="m">20</span><span class="w"> </span>--saturation<span class="w"> </span><span class="m">15</span><span class="w"> </span>-o<span class="w"> </span>adjusted.jpg
+</code></pre></div>
+<h3 id="verbose-mode">Verbose Mode<a class="headerlink" href="#verbose-mode" title="Permanent link">&para;</a></h3>
+<p>Use verbose mode (<code>-v</code>) to see what operations are being performed:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-70-1" name="__codelineno-70-1" href="#__codelineno-70-1"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>photo.jpg<span class="w"> </span>--brightness<span class="w"> </span><span class="m">10</span><span class="w"> </span>--contrast<span class="w"> </span><span class="m">20</span><span class="w"> </span>-v<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-70-2" name="__codelineno-70-2" href="#__codelineno-70-2"></a><span class="c1"># Output:</span>
+<a id="__codelineno-70-3" name="__codelineno-70-3" href="#__codelineno-70-3"></a><span class="c1"># Loaded: photo.jpg (1920x1080)</span>
+<a id="__codelineno-70-4" name="__codelineno-70-4" href="#__codelineno-70-4"></a><span class="c1"># Applying brightness: 10.0</span>
+<a id="__codelineno-70-5" name="__codelineno-70-5" href="#__codelineno-70-5"></a><span class="c1"># Applying contrast: 20.0</span>
+<a id="__codelineno-70-6" name="__codelineno-70-6" href="#__codelineno-70-6"></a><span class="c1"># Saving: output.jpg (1920x1080)</span>
+<a id="__codelineno-70-7" name="__codelineno-70-7" href="#__codelineno-70-7"></a><span class="c1"># Saved: output.jpg</span>
+</code></pre></div>
+<h3 id="resampling-filters">Resampling Filters<a class="headerlink" href="#resampling-filters" title="Permanent link">&para;</a></h3>
+<p>Choose the right filter for your use case:</p>
+<ul>
+<li><strong>Lanczos</strong> (default): Best quality for most photographic images</li>
+<li><strong>CatmullRom</strong>: Fast, sharp results similar to Lanczos</li>
+<li><strong>MitchellNetravali</strong>: Smoother results with less ringing</li>
+<li><strong>Linear</strong>: Fast bilinear resampling, good for quick previews</li>
+<li><strong>Box</strong>: Fast averaging, good for downscaling</li>
+<li><strong>Nearest</strong>: Fastest, no antialiasing (pixelated for photos)</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-71-1" name="__codelineno-71-1" href="#__codelineno-71-1"></a><span class="c1"># High quality photographic resize</span>
+<a id="__codelineno-71-2" name="__codelineno-71-2" href="#__codelineno-71-2"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-f<span class="w"> </span>lanczos<span class="w"> </span>-o<span class="w"> </span>output.jpg
+<a id="__codelineno-71-3" name="__codelineno-71-3" href="#__codelineno-71-3"></a>
+<a id="__codelineno-71-4" name="__codelineno-71-4" href="#__codelineno-71-4"></a><span class="c1"># Fast resize for previews</span>
+<a id="__codelineno-71-5" name="__codelineno-71-5" href="#__codelineno-71-5"></a>imgx<span class="w"> </span>resize<span class="w"> </span>photo.jpg<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-f<span class="w"> </span>linear<span class="w"> </span>-o<span class="w"> </span>preview.jpg
+<a id="__codelineno-71-6" name="__codelineno-71-6" href="#__codelineno-71-6"></a>
+<a id="__codelineno-71-7" name="__codelineno-71-7" href="#__codelineno-71-7"></a><span class="c1"># Pixel art (no smoothing)</span>
+<a id="__codelineno-71-8" name="__codelineno-71-8" href="#__codelineno-71-8"></a>imgx<span class="w"> </span>resize<span class="w"> </span>pixelart.png<span class="w"> </span>-w<span class="w"> </span><span class="m">800</span><span class="w"> </span>-f<span class="w"> </span>nearest<span class="w"> </span>-o<span class="w"> </span>scaled-pixelart.png
+</code></pre></div>
+<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
+<p>imgx provides comprehensive help at every level.</p>
+<h3 id="general-help">General Help<a class="headerlink" href="#general-help" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-72-1" name="__codelineno-72-1" href="#__codelineno-72-1"></a><span class="c1"># Show all commands</span>
+<a id="__codelineno-72-2" name="__codelineno-72-2" href="#__codelineno-72-2"></a>imgx<span class="w"> </span>--help
+<a id="__codelineno-72-3" name="__codelineno-72-3" href="#__codelineno-72-3"></a>imgx<span class="w"> </span>-h
+<a id="__codelineno-72-4" name="__codelineno-72-4" href="#__codelineno-72-4"></a>
+<a id="__codelineno-72-5" name="__codelineno-72-5" href="#__codelineno-72-5"></a><span class="c1"># Version information</span>
+<a id="__codelineno-72-6" name="__codelineno-72-6" href="#__codelineno-72-6"></a>imgx<span class="w"> </span>--version
+</code></pre></div>
+<h3 id="command-specific-help">Command-Specific Help<a class="headerlink" href="#command-specific-help" title="Permanent link">&para;</a></h3>
+<p>There are two ways to get help for a specific command:</p>
+<p><strong>Method 1: <code>help</code> before the command name</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-73-1" name="__codelineno-73-1" href="#__codelineno-73-1"></a>imgx<span class="w"> </span><span class="nb">help</span><span class="w"> </span>resize
+<a id="__codelineno-73-2" name="__codelineno-73-2" href="#__codelineno-73-2"></a>imgx<span class="w"> </span><span class="nb">help</span><span class="w"> </span>adjust
+<a id="__codelineno-73-3" name="__codelineno-73-3" href="#__codelineno-73-3"></a>imgx<span class="w"> </span><span class="nb">help</span><span class="w"> </span>watermark
+</code></pre></div></p>
+<p><strong>Method 2: <code>--help</code> flag after the command name</strong> (also shows global options)
+<div class="highlight"><pre><span></span><code><a id="__codelineno-74-1" name="__codelineno-74-1" href="#__codelineno-74-1"></a>imgx<span class="w"> </span>resize<span class="w"> </span>--help
+<a id="__codelineno-74-2" name="__codelineno-74-2" href="#__codelineno-74-2"></a>imgx<span class="w"> </span>adjust<span class="w"> </span>--help
+<a id="__codelineno-74-3" name="__codelineno-74-3" href="#__codelineno-74-3"></a>imgx<span class="w"> </span>watermark<span class="w"> </span>--help
+</code></pre></div></p>
+<p><strong>Note:</strong> Don't use <code>imgx &lt;command&gt; help</code> (help after the command) - this syntax doesn't work correctly.</p>
+<h3 id="shell-completion-scripts">Shell Completion Scripts<a class="headerlink" href="#shell-completion-scripts" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-75-1" name="__codelineno-75-1" href="#__codelineno-75-1"></a>imgx<span class="w"> </span>completion<span class="w"> </span>bash
+<a id="__codelineno-75-2" name="__codelineno-75-2" href="#__codelineno-75-2"></a>imgx<span class="w"> </span>completion<span class="w"> </span>zsh
+<a id="__codelineno-75-3" name="__codelineno-75-3" href="#__codelineno-75-3"></a>imgx<span class="w"> </span>completion<span class="w"> </span>fish
+<a id="__codelineno-75-4" name="__codelineno-75-4" href="#__codelineno-75-4"></a>imgx<span class="w"> </span>completion<span class="w"> </span>pwsh
+</code></pre></div>
+<h2 id="exit-codes">Exit Codes<a class="headerlink" href="#exit-codes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>0</code> - Success</li>
+<li><code>1</code> - Error (invalid arguments, file not found, processing error, etc.)</li>
+</ul>
+<h2 id="supported-formats">Supported Formats<a class="headerlink" href="#supported-formats" title="Permanent link">&para;</a></h2>
+<p><strong>Input formats:</strong> JPEG, PNG, GIF, TIFF, BMP
+<strong>Output formats:</strong> JPEG, PNG, GIF, TIFF, BMP</p>
+<p>Format is automatically detected from file extension or can be forced with <code>--format</code> flag.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "toc.integrate", "search.suggest", "search.highlight", "content.code.copy", "content.tabs.link"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
