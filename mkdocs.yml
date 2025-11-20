@@ -3,53 +3,56 @@ site_description: Comprehensive image processing functions and AI-powered object
 repo_url: https://github.com/razzkumar/imgx
 repo_name: GitHub
 
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: teal
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+
+plugins:
+  - search
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+
 nav:
   - Home: index.md
   - CLI Documentation: CLI.md
   - AI Detection: DETECTION.md
   - Version Management: VERSIONING.md
   - Release Process: RELEASING.md
-
-theme:
-  name: mkdocs
-  features:
-    - navigation.tabs
-    - navigation.sections
-    - toc.integrate
-    - search.suggest
-    - search.highlight
-  palette:
-    - scheme: default
-      primary: blue
-      accent: blue
-      toggle:
-        icon: material/toggle-switch-off-outline
-        name: Switch to dark mode
-    - scheme: slate
-      primary: blue
-      accent: blue
-      toggle:
-        icon: material/toggle-switch
-        name: Switch to light mode
-
-plugins:
-  - search
-
-validation:
-  links:
-    not_found: warn
-  nav:
-    not_found: warn
-
-markdown_extensions:
-  - toc:
-      permalink: true
-  - fenced_code
-  - codehilite
-  - tables
-  - admonition
-  - def_list
-  - footnotes
 
 extra:
   version: 1.0.0
