@@ -13,10 +13,10 @@ as an input, and return a new image of `*image.NRGBA` type (32bit RGBA colors, n
   - [As a Library](#as-a-library)
   - [As a CLI Tool](#as-a-cli-tool)
 - [Documentation](#documentation)
-- [CLI Documentation](./docs/CLI.md) - Complete CLI guide
-  - [Detection API](./docs/DETECTION.md) - AI-powered object detection
-  - [Version Management](./docs/VERSIONING.md) - How versions are managed
-  - [Release Process](./docs/RELEASING.md) - How to create releases
+- [CLI Documentation](CLI.md) - Complete CLI guide
+  - [Detection API](DETECTION.md) - AI-powered object detection
+  - [Version Management](VERSIONING.md) - How versions are managed
+  - [Release Process](RELEASING.md) - How to create releases
 - [Library Usage Examples](#library-usage-examples)
   - [Quick Start](#quick-start---using-as-a-library)
   - [Image Resizing](#image-resizing)
@@ -76,13 +76,13 @@ imgx detect photo.jpg
 imgx metadata photo.jpg
 ```
 
-For complete CLI documentation with all commands, options, and examples, see **[CLI Documentation](./docs/CLI.md)**.
+For complete CLI documentation with all commands, options, and examples, see **[CLI Documentation](CLI.md)**.
 
 ## Documentation
 
 **Library API:** https://pkg.go.dev/github.com/razzkumar/imgx
-**CLI Tool:** [CLI.md](./docs/CLI.md)
-**Object Detection:** [DETECTION.md](./docs/DETECTION.md) - AI vision with Ollama, Google Gemini, AWS Rekognition, OpenAI
+**CLI Tool:** [CLI.md](CLI.md)
+**Object Detection:** [DETECTION.md](DETECTION.md) - AI vision with Ollama, Google Gemini, AWS Rekognition, OpenAI
 
 ## Library Usage Examples
 
@@ -170,15 +170,15 @@ imgFill := img.Fill(100, 100, imgx.Center, imgx.Lanczos)
 
 **Original Image (1280×853):**
 
-![Original flower](testdata/flower.jpg)
+![Original flower](images/flower.jpg)
 
 **After `Resize(src, 200, 0, imgx.Lanczos)` - Resized to width 200px, height auto:**
 
-![Resized flower 200](testdata/flower_resized_200.jpg)
+![Resized flower 200](images/flower_resized_200.jpg)
 
 **After `Fill(src, 300, 300, imgx.Center, imgx.Lanczos)` - Square thumbnail 300×300:**
 
-![Thumbnail flower 300x300](testdata/flower_thumbnail_300x300.jpg)
+![Thumbnail flower 300x300](images/flower_thumbnail_300x300.jpg)
 
 Imaging supports image resizing using various resampling filters. The most notable ones:
 - `Lanczos` - A high-quality resampling filter for photographic images yielding sharp results.
@@ -202,83 +202,14 @@ From faster (lower quality) to slower (higher quality): `NearestNeighbor`, `Line
 img, _ := imgx.Load("input.jpg")
 
 // Rotate 90 degrees clockwise
-rotated90 := img.Rotate90()
-
-// Rotate 180 degrees
-rotated180 := img.Rotate180()
-
-// Rotate 270 degrees clockwise (90 counter-clockwise)
-rotated270 := img.Rotate270()
-
-// Rotate arbitrary angle (45 degrees) with white background
-rotated45 := img.Rotate(45, color.White)
-```
-
-**Example Output:**
 
 **Original Image:**
 
-![Original branch](testdata/branch.jpg)
-
-**After `Rotate90(src)` - Rotated 90° clockwise:**
-
-![Rotated 90](testdata/branch_rotated_90.jpg)
-
-**After `Rotate(src, 45, color.White)` - Rotated 45° with white background:**
-
-![Rotated 45](testdata/branch_rotated_45.jpg)
-
-### Image Flipping
-
-```go
-// Load an image
-img, _ := imgx.Load("input.jpg")
-
-// Flip horizontally
-flippedH := img.FlipH()
-
-// Flip vertically
-flippedV := img.FlipV()
-```
-
-**Example Output:**
-
-**Original Image:**
-
-![Original branch](testdata/branch.jpg)
-
-**After `FlipH(src)` - Flipped horizontally:**
-
-![Flipped horizontal](testdata/branch_flip_horizontal.jpg)
-
-
-### Gaussian Blur
-
-```go
-// Load an image
-img, _ := imgx.Load("input.jpg")
-
-// Light blur
-lightBlur := img.Blur(0.5)
-
-// Medium blur
-mediumBlur := img.Blur(2.0)
-
-// Heavy blur
-heavyBlur := img.Blur(5.0)
-```
-
-Sigma parameter allows to control the strength of the blurring effect. Higher values create stronger blur.
-
-**Example Output:**
-
-**Original Image:**
-
-![Original flower](testdata/flower.jpg)
+![Original flower](images/flower.jpg)
 
 **After `Blur(src, 2.0)` - Gaussian blur with sigma=2.0:**
 
-![Blurred flower](testdata/flower_blur_2.jpg)
+![Blurred flower](images/flower_blur_2.jpg)
 
 ### Sharpening
 
@@ -302,11 +233,11 @@ heavySharp := img.Sharpen(2.0)
 
 **Original Image:**
 
-![Original flower](testdata/flower.jpg)
+![Original flower](images/flower.jpg)
 
 **After `Sharpen(src, 1.5)` - Sharpened with sigma=1.5:**
 
-![Sharpened flower](testdata/flower_sharpen_1.5.jpg)
+![Sharpened flower](images/flower_sharpen_1.5.jpg)
 
 ### Color Adjustments
 
@@ -342,11 +273,11 @@ Range: -100 (min contrast) to 100 (max contrast)
 
 **Original Image:**
 
-![Original flower](testdata/flower.jpg)
+![Original flower](images/flower.jpg)
 
 **After `AdjustContrast(src, 30)` - Increased contrast:**
 
-![Contrast adjusted](testdata/flower_contrast_30.jpg)
+![Contrast adjusted](images/flower_contrast_30.jpg)
 
 #### Brightness Adjustment
 
@@ -367,11 +298,11 @@ Range: -100 (darkest) to 100 (brightest)
 
 **Original Image:**
 
-![Original flower](testdata/flower.jpg)
+![Original flower](images/flower.jpg)
 
 **After `AdjustBrightness(src, 30)` - Increased brightness:**
 
-![Brightness adjusted](testdata/flower_brightness_30.jpg)
+![Brightness adjusted](images/flower_brightness_30.jpg)
 
 #### Saturation Adjustment
 
@@ -395,11 +326,11 @@ Range: -100 (grayscale) to 500 (highly saturated)
 
 **Original Image:**
 
-![Original flower](testdata/flower.jpg)
+![Original flower](images/flower.jpg)
 
 **After `AdjustSaturation(src, 50)` - Increased saturation:**
 
-![Saturation adjusted](testdata/flower_saturation_50.jpg)
+![Saturation adjusted](images/flower_saturation_50.jpg)
 
 #### Hue Adjustment
 
@@ -430,11 +361,11 @@ gray := img.Grayscale()
 
 **Original Image:**
 
-![Original flower](testdata/flower.jpg)
+![Original flower](images/flower.jpg)
 
 **After `Grayscale(src)` - Converted to grayscale:**
 
-![Grayscale flower](testdata/flower_grayscale.jpg)
+![Grayscale flower](images/flower_grayscale.jpg)
 
 **Example:** Complete color adjustment pipeline with method chaining
 ```go
@@ -567,11 +498,11 @@ func main() {
 
 **Original Image:**
 
-![Original flower](testdata/flower.jpg)
+![Original flower](images/flower.jpg)
 
 **After adding watermark with `Overlay()` - Watermark in bottom-right corner with 60% opacity:**
 
-![Watermarked flower](testdata/flower_watermarked.jpg)
+![Watermarked flower](images/flower_watermarked.jpg)
 
 ### Example 4: Image Transformations
 
@@ -779,7 +710,7 @@ func main() {
 }
 ```
 
-For complete detection API documentation including all providers, features, and examples, see **[Detection Documentation](./docs/DETECTION.md)**.
+For complete detection API documentation including all providers, features, and examples, see **[Detection Documentation](DETECTION.md)**.
 
 ## Automatic Processing Metadata Tracking
 

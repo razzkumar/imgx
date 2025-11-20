@@ -96,7 +96,7 @@ func TestBlurGolden(t *testing.T) {
 		"out_blur_1.5.png": 1.5,
 	} {
 		got := testdataFlowerJPG.Blur(sigma).ToNRGBA()
-		want, err := Load("testdata/" + name)
+		want, err := Load("docs/images/" + name)
 		if err != nil {
 			t.Fatalf("failed to open image: %v", err)
 		}
@@ -222,7 +222,7 @@ func TestSharpenGolden(t *testing.T) {
 		"out_sharpen_1.5.png": 1.5,
 	} {
 		got := testdataFlowerJPG.Sharpen(sigma).ToNRGBA()
-		want, err := Load("testdata/" + name)
+		want, err := Load("docs/images/" + name)
 		if err != nil {
 			t.Fatalf("failed to open image: %v", err)
 		}
