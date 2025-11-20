@@ -6,7 +6,7 @@ Advanced AI-powered object detection for images using local Ollama models, Googl
 
 - [Overview](#overview)
 - [Supported Providers](#supported-providers)
-- [Setup & Authentication](#setup--authentication)
+- [Setup & Authentication](#setup-authentication)
 - [Quick Start](#quick-start)
 - [Detection Features](#detection-features)
 - [API Reference](#api-reference)
@@ -676,10 +676,10 @@ result, err := img.Detect(ctx, "gemini")
 - [AWS Rekognition Documentation](https://docs.aws.amazon.com/rekognition/)
 - [OpenAI Vision API Documentation](https://platform.openai.com/docs/guides/vision)
 - [imgx GitHub Repository](https://github.com/razzkumar/imgx)
-- [Example Code](../examples/detection/main.go)
+- [Example Code](https://github.com/razzkumar/imgx/blob/main/examples/detection/main.go)
 
 ## See Also
 
 - [CLI Documentation](./CLI.md) - Command-line usage
-- [Main README](../README.md) - Library overview
+- [Main README](https://github.com/razzkumar/imgx/blob/main/README.md) - Library overview
 - [Versioning](./VERSIONING.md) - Version management

@@ -18,7 +18,7 @@ as an input, and return a new image of `*image.NRGBA` type (32bit RGBA colors, n
   - [Version Management](VERSIONING.md) - How versions are managed
   - [Release Process](RELEASING.md) - How to create releases
 - [Library Usage Examples](#library-usage-examples)
-  - [Quick Start](#quick-start---using-as-a-library)
+  - [Quick Start](#quick-start-using-as-a-library)
   - [Image Resizing](#image-resizing)
   - [Image Rotation](#image-rotation)
   - [Image Flipping](#image-flipping)
@@ -199,13 +199,43 @@ From faster (lower quality) to slower (higher quality): `NearestNeighbor`, `Line
 
 ```go
 // Load an image
-img, _ := imgx.Load("input.jpg")
+img, _ := imgx.Load("branch.jpg")
 
 // Rotate 90 degrees clockwise
+rotated := img.Rotate90()
+```
 
 **Original Image:**
 
-![Original flower](images/flower.jpg)
+![Original branch](images/branch.jpg)
+
+**After `Rotate90(src)`:**
+
+![Rotated branch](images/branch_rotated_90.jpg)
+
+### Image Flipping
+
+```go
+// Load an image
+img, _ := imgx.Load("branch.jpg")
+
+// Flip horizontally
+flipped := img.FlipH()
+```
+
+**After `FlipH(src)`:**
+
+![Flipped branch](images/branch_flip_horizontal.jpg)
+
+### Gaussian Blur
+
+```go
+// Load an image
+img, _ := imgx.Load("input.jpg")
+
+// Apply Gaussian blur with sigma 2.0
+blurred := img.Blur(2.0)
+```
 
 **After `Blur(src, 2.0)` - Gaussian blur with sigma=2.0:**
 
@@ -1027,11 +1057,206 @@ imgx is a complete reimagination with a modern architecture:
 - **Comprehensive CLI**: Full-featured command-line tool with metadata support
 - **Clean architecture**: Modular design with clear separation of concerns
 - **Developer-friendly**: Extensive documentation, examples, and type safety
+### Incorrect image orientation after processing (e.g. an image appears rotated after resizing)
+
+Most probably, the given image contains the EXIF orientation tag.
+The standard `image/*` packages do not support loading and saving
+this kind of information. To fix the issue, try opening images with
+the `AutoOrientation` decode option. If this option is set to `true`,
+the image orientation is changed after decoding, according to the
+orientation tag (if present). Here's the example:
+
+```go
+img, err := imgx.Load("test.jpg", imgx.Options{AutoOrient: true})
+```
+
+### What's the difference between `imaging` and `gift` packages?
+
+[imaging](https://github.com/razzkumar/imgx)
+is designed to be a lightweight and simple image manipulation package.
+It provides basic image processing functions and a few helper functions
+such as `Open` and `Save`. It consistently returns *image.NRGBA image 
+type (8 bits per channel, RGBA).
+
+## Advanced Example: Image Collage
+
+This example demonstrates creating a 2x2 collage with different effects applied to each quadrant:
+
+```go
+package main
+
+import (
+	"image"
+	"image/color"
+	"log"
+
+	"github.com/razzkumar/imgx"
+)
+
+func main() {
+	// Load a test image.
+	img, err := imgx.Load("testdata/flower.jpg")
+	if err != nil {
+		log.Fatalf("failed to load image: %v", err)
+	}
+
+	// Crop and resize using method chaining
+	src := img.CropAnchor(300, 300, imgx.Center).Resize(200, 0, imgx.Lanczos)
+
+	// Create a blurred version of the image.
+	img1 := src.Blur(5)
+
+	// Create a grayscale version with higher contrast and sharpness.
+	img2 := src.Grayscale().AdjustContrast(20).Sharpen(2)
+
+	// Create an inverted version of the image.
+	img3 := src.Invert()
+
+	// Create an embossed version using a convolution filter.
+	img4 := src.Convolve3x3(
+		[9]float64{
+			-1, -1, 0,
+			-1, 1, 1,
+			0, 1, 1,
+		},
+		nil,
+	)
+
+	// Create a new 400x400px image and paste the four produced images into it.
+	dst := imgx.NewImage(400, 400, color.NRGBA{0, 0, 0, 0})
+	dst = dst.Paste(img1, image.Pt(0, 0))      // Top-left: Blurred
+	dst = dst.Paste(img2, image.Pt(0, 200))    // Bottom-left: Grayscale + Enhanced
+	dst = dst.Paste(img3, image.Pt(200, 0))    // Top-right: Inverted
+	dst = dst.Paste(img4, image.Pt(200, 200))  // Bottom-right: Embossed
+
+	// Save the resulting image as JPEG.
+	err = dst.Save("testdata/out_example.jpg")
+	if err != nil {
+		log.Fatalf("failed to save image: %v", err)
+	}
+
+	log.Println("Collage created successfully: testdata/out_example.jpg")
+}
+```
+
+**Output:** A 2x2 grid showing the same image with four different effects applied.
+
+## Features
+
+imgx provides a comprehensive set of image processing capabilities:
+
+**Resizing & Transformations:**
+- Multiple resampling filters (Lanczos, CatmullRom, Linear, Box, NearestNeighbor, etc.)
+- Resize, Fit, Fill, Thumbnail operations
+- Rotate (90°, 180°, 270°, arbitrary angles)
+- Flip horizontal/vertical, Transpose, Transverse
+- Crop with anchor points
+
+**Color Adjustments:**
+- Brightness, Contrast, Gamma correction
+- Saturation, Hue adjustments
+- Grayscale conversion
+- Color inversion
+
+**Effects & Filters:**
+- Gaussian blur
+- Unsharp mask sharpening
+- Custom 3x3 and 5x5 convolution kernels
+- Edge detection, emboss, and custom effects
+
+**Image Composition:**
+- Paste images together
+- Overlay with alpha blending
+- Watermarking support
+- Create collages and thumbnails
+
+**I/O & Format Support:**
+- Formats: JPEG, PNG, GIF, TIFF, BMP
+- EXIF auto-orientation for JPEG files
+- Encode/Decode with custom options
+- Format auto-detection from file extensions
+- Metadata extraction (EXIF, IPTC, XMP with exiftool)
+- Automatic processing metadata tracking and XMP embedding
+
+**AI Object Detection:**
+- Support for Google Gemini, AWS Rekognition, and OpenAI Vision
+- Label/object detection with confidence scores
+- Text extraction (OCR)
+- Face detection with attributes
+- Image quality analysis (brightness, sharpness, contrast)
+- Dominant color extraction
+- Natural language descriptions
+- See [Detection Documentation](DETECTION.md) for details
+
+**API Design:**
+- Instance-based API with method chaining for clean, readable code
+- Automatic operation tracking and metadata embedding
+- Functional API still available for backward compatibility
+- Interoperable with Go's standard `image.Image` interface
+
+**Performance:**
+- Parallel processing across CPU cores
+- Optimized scanners for common image formats
+- Separable filter approach for resize and blur
+- Memory-efficient streaming operations
+
+## Performance
+
+imgx is designed for high performance with parallel processing and optimized algorithms.
+
+### Running Benchmarks
+
+```bash
+# Run all benchmarks
+go test -bench=.
+
+# Run specific benchmark with memory stats
+go test -bench=BenchmarkResize -benchmem
+
+# Run benchmarks multiple times for accuracy
+go test -bench=. -benchtime=10s -count=3
+```
+
+### Example Benchmark Results
+
+```
+BenchmarkResize-8        100   12.3 ms/op   8.2 MB/s   4.5 MB/op
+BenchmarkBlur-8          50    24.5 ms/op   4.1 MB/s   6.2 MB/op
+BenchmarkRotate90-8      200   5.8 ms/op    17.2 MB/s  2.1 MB/op
+BenchmarkGrayscale-8     300   4.2 ms/op    23.8 MB/s  1.8 MB/op
+```
+
+The library automatically utilizes all available CPU cores for operations on large images. You can control parallelism using:
+
+```go
+imgx.SetMaxProcs(4)  // Limit to 4 CPU cores
+```
+
+## Acknowledgments
+
+imgx is a brand new image processing library designed from the ground up with modern Go practices. We drew inspiration from:
+
+- **[imaging](https://github.com/disintegration/imaging)** by Grigory Dryapak - for foundational image processing algorithms and API design patterns
+- **[go-exiftool](https://github.com/barasher/go-exiftool)** - for metadata handling approaches and exiftool integration concepts
+
+### What Makes imgx Different?
+
+imgx is a complete reimagination with a modern architecture:
+
+- **Instance-based API**: Fluent method-chaining design for intuitive, readable code
+- **Automatic metadata tracking**: Built-in operation history with XMP embedding
+- **Modern Go 1.21+ features**:
+  - Range over integers, built-in min/max
+  - WaitGroup.Go() for goroutines
+  - Latest benchmarking patterns
+- **Comprehensive CLI**: Full-featured command-line tool with metadata support
+- **Clean architecture**: Modular design with clear separation of concerns
+- **Developer-friendly**: Extensive documentation, examples, and type safety
 
 Thank you to the Go community and these projects for the inspiration!
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the- [License](https://github.com/razzkumar/imgx/blob/main/LICENSE) file for details.
 
 Copyright (c) 2025 razzkumar

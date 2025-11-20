@@ -17,7 +17,7 @@ A powerful command-line tool for image processing operations including resizing,
   - [Image Information](#image-information)
   - [Object Detection](#object-detection)
 - [Common Use Cases](#common-use-cases)
-- [Tips & Tricks](#tips--tricks)
+- [Tips & Tricks](#tips-tricks)
 
 ## Installation
 
@@ -968,7 +968,7 @@ echo $OPENAI_API_KEY
 
 **See Also:**
 - Detailed API documentation: [docs/DETECTION.md](./DETECTION.md)
-- Example code: [examples/detection/main.go](../examples/detection/main.go)
+- [Example Code](https://github.com/razzkumar/imgx/blob/main/examples/detection/main.go)
 
 ## Common Use Cases
 
