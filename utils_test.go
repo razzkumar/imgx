@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	testdataBranchJPG = mustOpen("testdata/branch.jpg")
-	testdataFlowerJPG = mustOpen("testdata/flower.jpg")
+	testdataBranchJPG = mustOpen("docs/images/branch.jpg")
+	testdataFlowerJPG = mustOpen("docs/images/flower.jpg")
 )
 
 func mustOpen(filename string) *Image {

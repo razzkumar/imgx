@@ -239,15 +239,15 @@ func TestReadOrientation(t *testing.T) {
 		path   string
 		orient orientation
 	}{
-		{"testdata/orientation_0.jpg", 0},
-		{"testdata/orientation_1.jpg", 1},
-		{"testdata/orientation_2.jpg", 2},
-		{"testdata/orientation_3.jpg", 3},
-		{"testdata/orientation_4.jpg", 4},
-		{"testdata/orientation_5.jpg", 5},
-		{"testdata/orientation_6.jpg", 6},
-		{"testdata/orientation_7.jpg", 7},
-		{"testdata/orientation_8.jpg", 8},
+		{"docs/images/orientation_0.jpg", 0},
+		{"docs/images/orientation_1.jpg", 1},
+		{"docs/images/orientation_2.jpg", 2},
+		{"docs/images/orientation_3.jpg", 3},
+		{"docs/images/orientation_4.jpg", 4},
+		{"docs/images/orientation_5.jpg", 5},
+		{"docs/images/orientation_6.jpg", 6},
+		{"docs/images/orientation_7.jpg", 7},
+		{"docs/images/orientation_8.jpg", 8},
 	}
 	for _, tc := range testCases {
 		f, err := os.Open(tc.path)
@@ -394,28 +394,28 @@ func TestAutoOrientation(t *testing.T) {
 		return data
 	}
 
-	f, err := os.Open("testdata/orientation_0.jpg")
+	f, err := os.Open("docs/images/orientation_0.jpg")
 	if err != nil {
-		t.Fatalf("os.Open(%q): %v", "testdata/orientation_0.jpg", err)
+		t.Fatalf("os.Open(%q): %v", "docs/images/orientation_0.jpg", err)
 	}
 	orig, _, err := image.Decode(f)
 	if err != nil {
-		t.Fatalf("image.Decode(%q): %v", "testdata/orientation_0.jpg", err)
+		t.Fatalf("image.Decode(%q): %v", "docs/images/orientation_0.jpg", err)
 	}
 	origBW := toBW(orig)
 
 	testCases := []struct {
 		path string
 	}{
-		{"testdata/orientation_0.jpg"},
-		{"testdata/orientation_1.jpg"},
-		{"testdata/orientation_2.jpg"},
-		{"testdata/orientation_3.jpg"},
-		{"testdata/orientation_4.jpg"},
-		{"testdata/orientation_5.jpg"},
-		{"testdata/orientation_6.jpg"},
-		{"testdata/orientation_7.jpg"},
-		{"testdata/orientation_8.jpg"},
+		{"docs/images/orientation_0.jpg"},
+		{"docs/images/orientation_1.jpg"},
+		{"docs/images/orientation_2.jpg"},
+		{"docs/images/orientation_3.jpg"},
+		{"docs/images/orientation_4.jpg"},
+		{"docs/images/orientation_5.jpg"},
+		{"docs/images/orientation_6.jpg"},
+		{"docs/images/orientation_7.jpg"},
+		{"docs/images/orientation_8.jpg"},
 	}
 	for _, tc := range testCases {
 		img, err := open(tc.path, AutoOrientation(true))
