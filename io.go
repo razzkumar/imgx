@@ -15,6 +15,7 @@ import (
 
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
+	_ "golang.org/x/image/webp"
 )
 
 type fileSystem interface {

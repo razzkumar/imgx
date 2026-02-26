@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"image"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -28,55 +30,55 @@ type ImageMetadata struct {
 	Orientation int     `json:"orientation,omitempty"`
 
 	// Image Technical Details
-	BitDepth           int     `json:"bit_depth,omitempty"`
-	ColorSpace         string  `json:"color_space,omitempty"`
-	Compression        string  `json:"compression,omitempty"`
-	XResolution        float64 `json:"x_resolution,omitempty"`
-	YResolution        float64 `json:"y_resolution,omitempty"`
-	ResolutionUnit     string  `json:"resolution_unit,omitempty"`
-	ImageDescription   string  `json:"image_description,omitempty"`
-	UserComment        string  `json:"user_comment,omitempty"`
+	BitDepth         int     `json:"bit_depth,omitempty"`
+	ColorSpace       string  `json:"color_space,omitempty"`
+	Compression      string  `json:"compression,omitempty"`
+	XResolution      float64 `json:"x_resolution,omitempty"`
+	YResolution      float64 `json:"y_resolution,omitempty"`
+	ResolutionUnit   string  `json:"resolution_unit,omitempty"`
+	ImageDescription string  `json:"image_description,omitempty"`
+	UserComment      string  `json:"user_comment,omitempty"`
 
 	// Extended Metadata
 	Extended    map[string]any `json:"extended,omitempty"`
 	HasExtended bool           `json:"has_extended"`
 
 	// Camera Information
-	CameraMake          string `json:"camera_make,omitempty"`
-	CameraModel         string `json:"camera_model,omitempty"`
-	CameraSerialNumber  string `json:"camera_serial_number,omitempty"`
-	LensMake            string `json:"lens_make,omitempty"`
-	LensModel           string `json:"lens_model,omitempty"`
-	LensSerialNumber    string `json:"lens_serial_number,omitempty"`
-	LensFocalLengthMin  string `json:"lens_focal_length_min,omitempty"`
-	LensFocalLengthMax  string `json:"lens_focal_length_max,omitempty"`
-	FirmwareVersion     string `json:"firmware_version,omitempty"`
+	CameraMake         string `json:"camera_make,omitempty"`
+	CameraModel        string `json:"camera_model,omitempty"`
+	CameraSerialNumber string `json:"camera_serial_number,omitempty"`
+	LensMake           string `json:"lens_make,omitempty"`
+	LensModel          string `json:"lens_model,omitempty"`
+	LensSerialNumber   string `json:"lens_serial_number,omitempty"`
+	LensFocalLengthMin string `json:"lens_focal_length_min,omitempty"`
+	LensFocalLengthMax string `json:"lens_focal_length_max,omitempty"`
+	FirmwareVersion    string `json:"firmware_version,omitempty"`
 
 	// Camera Settings
-	FocalLength        string `json:"focal_length,omitempty"`
-	Aperture           string `json:"aperture,omitempty"` // F-number
-	ShutterSpeed       string `json:"shutter_speed,omitempty"`
-	ISO                string `json:"iso,omitempty"`
+	FocalLength          string `json:"focal_length,omitempty"`
+	Aperture             string `json:"aperture,omitempty"` // F-number
+	ShutterSpeed         string `json:"shutter_speed,omitempty"`
+	ISO                  string `json:"iso,omitempty"`
 	ExposureCompensation string `json:"exposure_compensation,omitempty"`
-	ExposureMode       string `json:"exposure_mode,omitempty"`
-	ExposureProgram    string `json:"exposure_program,omitempty"`
-	MeteringMode       string `json:"metering_mode,omitempty"`
-	WhiteBalance       string `json:"white_balance,omitempty"`
-	Flash              string `json:"flash,omitempty"`
-	FlashMode          string `json:"flash_mode,omitempty"`
-	LightSource        string `json:"light_source,omitempty"`
-	SceneCaptureType   string `json:"scene_capture_type,omitempty"`
-	SubjectDistance    string `json:"subject_distance,omitempty"`
-	FocusMode          string `json:"focus_mode,omitempty"`
-	DigitalZoomRatio   string `json:"digital_zoom_ratio,omitempty"`
+	ExposureMode         string `json:"exposure_mode,omitempty"`
+	ExposureProgram      string `json:"exposure_program,omitempty"`
+	MeteringMode         string `json:"metering_mode,omitempty"`
+	WhiteBalance         string `json:"white_balance,omitempty"`
+	Flash                string `json:"flash,omitempty"`
+	FlashMode            string `json:"flash_mode,omitempty"`
+	LightSource          string `json:"light_source,omitempty"`
+	SceneCaptureType     string `json:"scene_capture_type,omitempty"`
+	SubjectDistance      string `json:"subject_distance,omitempty"`
+	FocusMode            string `json:"focus_mode,omitempty"`
+	DigitalZoomRatio     string `json:"digital_zoom_ratio,omitempty"`
 
 	// Timestamps
-	DateTime         string `json:"date_time,omitempty"`
-	DateTimeOriginal string `json:"date_time_original,omitempty"`
+	DateTime          string `json:"date_time,omitempty"`
+	DateTimeOriginal  string `json:"date_time_original,omitempty"`
 	DateTimeDigitized string `json:"date_time_digitized,omitempty"`
-	CreateDate       string `json:"create_date,omitempty"`
-	ModifyDate       string `json:"modify_date,omitempty"`
-	TimeZone         string `json:"time_zone,omitempty"`
+	CreateDate        string `json:"create_date,omitempty"`
+	ModifyDate        string `json:"modify_date,omitempty"`
+	TimeZone          string `json:"time_zone,omitempty"`
 
 	// GPS Location
 	GPSLatitude   string `json:"gps_latitude,omitempty"`
@@ -221,7 +223,7 @@ func extractBasicMetadata(src string) (*ImageMetadata, error) {
 	}
 
 	// Detect format
-	format, err := FormatFromFilename(src)
+	formatName, contentType, err := detectFormatDetails(src)
 	if err != nil {
 		return nil, fmt.Errorf("failed to detect format: %w", err)
 	}
@@ -239,8 +241,8 @@ func extractBasicMetadata(src string) (*ImageMetadata, error) {
 	metadata := &ImageMetadata{
 		FilePath:    src,
 		FileName:    filepath.Base(src),
-		Format:      formatToString(format),
-		ContentType: mimeFromFormat(format),
+		Format:      formatName,
+		ContentType: contentType,
 		Width:       width,
 		Height:      height,
 		AspectRatio: formatAspectRatio(width, height),
@@ -251,6 +253,66 @@ func extractBasicMetadata(src string) (*ImageMetadata, error) {
 	}
 
 	return metadata, nil
+}
+
+func detectFormatDetails(src string) (string, string, error) {
+	if format, err := FormatFromFilename(src); err == nil {
+		return formatToString(format), mimeFromFormat(format), nil
+	}
+
+	file, err := os.Open(src)
+	if err != nil {
+		return "", "", fmt.Errorf("open file for format detection: %w", err)
+	}
+	defer file.Close()
+
+	_, decodedFormat, err := image.DecodeConfig(file)
+	if err != nil {
+		return "", "", err
+	}
+
+	return normalizeDecodedFormat(decodedFormat), mimeFromDecodedFormat(decodedFormat), nil
+}
+
+func normalizeDecodedFormat(format string) string {
+	switch strings.ToLower(strings.TrimSpace(format)) {
+	case "jpeg", "jpg":
+		return "JPEG"
+	case "png":
+		return "PNG"
+	case "gif":
+		return "GIF"
+	case "tif", "tiff":
+		return "TIFF"
+	case "bmp":
+		return "BMP"
+	case "webp":
+		return "WEBP"
+	default:
+		if strings.TrimSpace(format) == "" {
+			return "Unknown"
+		}
+		return strings.ToUpper(strings.TrimSpace(format))
+	}
+}
+
+func mimeFromDecodedFormat(format string) string {
+	switch strings.ToLower(strings.TrimSpace(format)) {
+	case "jpeg", "jpg":
+		return "image/jpeg"
+	case "png":
+		return "image/png"
+	case "gif":
+		return "image/gif"
+	case "tif", "tiff":
+		return "image/tiff"
+	case "bmp":
+		return "image/bmp"
+	case "webp":
+		return "image/webp"
+	default:
+		return "application/octet-stream"
+	}
 }
 
 // extractWithExiftool executes exiftool and parses JSON output
