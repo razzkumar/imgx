@@ -543,6 +543,8 @@ func formatToString(format Format) string {
 		return "TIFF"
 	case BMP:
 		return "BMP"
+	case WEBP:
+		return "WEBP"
 	default:
 		return "Unknown"
 	}
@@ -561,6 +563,8 @@ func mimeFromFormat(format Format) string {
 		return "image/bmp"
 	case JPEG:
 		return "image/jpeg"
+	case WEBP:
+		return "image/webp"
 	default:
 		return "image/jpeg"
 	}

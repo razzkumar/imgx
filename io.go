@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	gowebp "github.com/gen2brain/webp"
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
 	_ "golang.org/x/image/webp"
@@ -102,6 +103,7 @@ const (
 	GIF
 	TIFF
 	BMP
+	WEBP
 )
 
 var formatExts = map[string]Format{
@@ -112,6 +114,7 @@ var formatExts = map[string]Format{
 	"tif":  TIFF,
 	"tiff": TIFF,
 	"bmp":  BMP,
+	"webp": WEBP,
 }
 
 var formatNames = map[Format]string{
@@ -120,6 +123,7 @@ var formatNames = map[Format]string{
 	GIF:  "GIF",
 	TIFF: "TIFF",
 	BMP:  "BMP",
+	WEBP: "WEBP",
 }
 
 func (f Format) String() string {
@@ -130,7 +134,7 @@ func (f Format) String() string {
 var ErrUnsupportedFormat = errors.New("imaging: unsupported image format")
 
 // FormatFromExtension parses image format from filename extension:
-// "jpg" (or "jpeg"), "png", "gif", "tif" (or "tiff") and "bmp" are supported.
+// "jpg" (or "jpeg"), "png", "gif", "tif" (or "tiff"), "bmp" and "webp" are supported.
 func FormatFromExtension(ext string) (Format, error) {
 	if f, ok := formatExts[strings.ToLower(strings.TrimPrefix(ext, "."))]; ok {
 		return f, nil
@@ -139,7 +143,7 @@ func FormatFromExtension(ext string) (Format, error) {
 }
 
 // FormatFromFilename parses image format from filename:
-// "jpg" (or "jpeg"), "png", "gif", "tif" (or "tiff") and "bmp" are supported.
+// "jpg" (or "jpeg"), "png", "gif", "tif" (or "tiff"), "bmp" and "webp" are supported.
 func FormatFromFilename(filename string) (Format, error) {
 	ext := filepath.Ext(filename)
 	return FormatFromExtension(ext)
@@ -151,6 +155,8 @@ type encodeConfig struct {
 	gifQuantizer        draw.Quantizer
 	gifDrawer           draw.Drawer
 	pngCompressionLevel png.CompressionLevel
+	webpQuality         int
+	webpLossless        bool
 }
 
 var defaultEncodeConfig = encodeConfig{
@@ -159,6 +165,8 @@ var defaultEncodeConfig = encodeConfig{
 	gifQuantizer:        nil,
 	gifDrawer:           nil,
 	pngCompressionLevel: png.DefaultCompression,
+	webpQuality:         80,
+	webpLossless:        false,
 }
 
 // EncodeOption sets an optional parameter for the Encode and Save functions.
@@ -204,7 +212,23 @@ func PNGCompressionLevel(level png.CompressionLevel) EncodeOption {
 	}
 }
 
-// Encode writes the image img to w in the specified format (JPEG, PNG, GIF, TIFF or BMP).
+// WebPQuality returns an EncodeOption that sets the output WebP quality.
+// Quality ranges from 0 to 100 inclusive, higher is better. Default is 80.
+func WebPQuality(quality int) EncodeOption {
+	return func(c *encodeConfig) {
+		c.webpQuality = quality
+	}
+}
+
+// WebPLossless returns an EncodeOption that enables or disables lossless WebP encoding.
+// Default is false (lossy).
+func WebPLossless(lossless bool) EncodeOption {
+	return func(c *encodeConfig) {
+		c.webpLossless = lossless
+	}
+}
+
+// Encode writes the image img to w in the specified format (JPEG, PNG, GIF, TIFF, BMP or WEBP).
 func Encode(w io.Writer, img image.Image, format Format, opts ...EncodeOption) error {
 	cfg := defaultEncodeConfig
 	for _, option := range opts {
@@ -239,6 +263,12 @@ func Encode(w io.Writer, img image.Image, format Format, opts ...EncodeOption) e
 
 	case BMP:
 		return bmp.Encode(w, img)
+
+	case WEBP:
+		return gowebp.Encode(w, img, gowebp.Options{
+			Quality:  cfg.webpQuality,
+			Lossless: cfg.webpLossless,
+		})
 	}
 
 	return ErrUnsupportedFormat
