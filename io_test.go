@@ -99,7 +99,7 @@ func TestOpenSave(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 
-	for _, ext := range []string{"jpg", "jpeg", "png", "gif", "bmp", "tif", "tiff"} {
+	for _, ext := range []string{"jpg", "jpeg", "png", "gif", "bmp", "tif", "tiff", "webp"} {
 		filename := filepath.Join(dir, "test."+ext)
 
 		img := imgWithoutAlpha
@@ -122,6 +122,9 @@ func TestOpenSave(t *testing.T) {
 			delta := 0
 			if ext == "jpg" || ext == "jpeg" || ext == "gif" {
 				delta = 3
+			}
+			if ext == "webp" {
+				delta = 40 // lossy WebP on tiny 4x6 images has significant artifacts
 			}
 
 			if !compareNRGBA(got, img, delta) {
@@ -180,6 +183,7 @@ func TestFormats(t *testing.T) {
 		GIF:        "GIF",
 		BMP:        "BMP",
 		TIFF:       "TIFF",
+		WEBP:       "WEBP",
 		Format(-1): "",
 	}
 	for format, name := range formatNames {
@@ -211,6 +215,16 @@ func TestFormatFromExtension(t *testing.T) {
 			name: "jpg uppercase",
 			ext:  ".JPG",
 			want: JPEG,
+		},
+		{
+			name: "webp without leading dot",
+			ext:  "webp",
+			want: WEBP,
+		},
+		{
+			name: "webp with leading dot",
+			ext:  ".webp",
+			want: WEBP,
 		},
 		{
 			name: "unsupported",
