@@ -84,7 +84,7 @@ func main() {
 
 // Example 1: Basic label detection with default settings
 func basicDetection(ctx context.Context, img *imgx.Image) {
-	result, err := img.Detect(ctx, "gemini")
+	result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini")
 	if err != nil {
 		handleError("Gemini", err)
 		return
@@ -119,7 +119,7 @@ func awsMultiFeature(ctx context.Context, img *imgx.Image) {
 		MinConfidence: 0.7,
 	}
 
-	result, err := img.Detect(ctx, "aws", opts)
+	result, err := detection.Detect(ctx, img.ToNRGBA(), "aws", opts)
 	if err != nil {
 		handleError("AWS", err)
 		return
@@ -178,7 +178,7 @@ func awsImageProperties(ctx context.Context, img *imgx.Image) {
 		Features: []detection.Feature{detection.FeatureProperties},
 	}
 
-	result, err := img.Detect(ctx, "aws", opts)
+	result, err := detection.Detect(ctx, img.ToNRGBA(), "aws", opts)
 	if err != nil {
 		handleError("AWS", err)
 		return
@@ -224,7 +224,7 @@ func customPrompt(ctx context.Context, img *imgx.Image) {
 		CustomPrompt: "Describe this image in detail, including objects, colors, and overall composition.",
 	}
 
-	result, err := img.Detect(ctx, "gemini", opts)
+	result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini", opts)
 	if err != nil {
 		handleError("Gemini", err)
 		return
@@ -259,7 +259,7 @@ func compareProviders(ctx context.Context, img *imgx.Image) {
 	results := make(map[string]*detection.DetectionResult)
 
 	for _, provider := range providers {
-		result, err := img.Detect(ctx, provider)
+		result, err := detection.Detect(ctx, img.ToNRGBA(), provider)
 		if err != nil {
 			if errors.Is(err, detection.ErrProviderNotConfigured) {
 				fmt.Printf("%s: Not configured (skipped)\n", strings.ToUpper(provider))
@@ -294,7 +294,7 @@ func compareProviders(ctx context.Context, img *imgx.Image) {
 
 // Example 6: JSON output
 func jsonOutput(ctx context.Context, img *imgx.Image) {
-	result, err := img.Detect(ctx, "gemini")
+	result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini")
 	if err != nil {
 		handleError("Gemini", err)
 		return

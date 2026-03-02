@@ -147,8 +147,8 @@ func detectAction(ctx context.Context, cmd *cli.Command) error {
 		IncludeRawResponse: cmd.Bool("raw"),
 	}
 
-	// Perform detection
-	result, err := img.Detect(ctx, provider, opts)
+	// Perform detection using standalone function (avoids coupling imgx root to detection)
+	result, err := detection.Detect(ctx, img.ToNRGBA(), provider, opts)
 	if err != nil {
 		return fmt.Errorf("detection failed: %w", err)
 	}
