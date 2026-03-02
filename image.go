@@ -21,7 +21,10 @@ type ProcessingMetadata struct {
 	ProjectURL  string // Fixed: project URL
 	AddMetadata bool
 
-	DetectionResult any `json:"detection_result,omitempty"` // Object detection results (use detection.Detect to populate)
+	// DetectionResult holds detection output. Concrete type is *detection.DetectionResult
+	// when populated via detection.Detect(). Use type assertion to access.
+	// Requires: go get github.com/razzkumar/imgx/detection
+	DetectionResult any `json:"detection_result,omitempty"`
 }
 
 // OperationRecord represents a single image processing operation

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/razzkumar/imgx"
-	"github.com/razzkumar/imgx/commands"
+	"github.com/razzkumar/imgx/cmd/imgx/commands"
 	"github.com/urfave/cli/v3"
 )
 
