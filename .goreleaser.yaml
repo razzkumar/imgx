@@ -6,6 +6,7 @@ project_name: imgx
 
 before:
   hooks:
+    - cp go.work.example go.work
     - go mod tidy
 
 snapshot:
@@ -17,7 +18,8 @@ metadata:
   mod_timestamp: "{{ .CommitTimestamp }}"
 
 builds:
-  - main: ./cmd/imgx
+  - dir: ./cmd/imgx
+    main: .
     binary: imgx
     env:
       - CGO_ENABLED=0
