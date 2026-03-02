@@ -41,7 +41,11 @@ as an input, and return a new image of `*image.NRGBA` type (32bit RGBA colors, n
 ### As a Library
 
 ```bash
+# Image processing only
 go get -u github.com/razzkumar/imgx
+
+# AI-powered detection (optional, separate module)
+go get -u github.com/razzkumar/imgx/detection
 ```
 
 ### As a CLI Tool
@@ -714,7 +718,7 @@ func main() {
 
     // Detect objects using the local Ollama model
     ctx := context.Background()
-    result, err := img.Detect(ctx, "ollama")
+    result, err := detection.Detect(ctx, img.ToNRGBA(), "ollama")
     if err != nil {
         log.Fatal(err)
     }
@@ -729,7 +733,7 @@ func main() {
     opts := &detection.DetectOptions{
         Features: []detection.Feature{detection.FeatureProperties},
     }
-    result, err = img.Detect(ctx, "aws", opts)
+    result, err = detection.Detect(ctx, img.ToNRGBA(), "aws", opts)
     if err != nil {
         log.Fatal(err)
     }

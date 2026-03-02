@@ -16,7 +16,6 @@ import (
 // OpenAIProvider implements the Provider interface for OpenAI Vision
 type OpenAIProvider struct {
 	client *openai.Client
-	apiKey string
 }
 
 // NewOpenAIProvider creates a new OpenAI Vision provider instance
@@ -32,7 +31,6 @@ func NewOpenAIProvider() (*OpenAIProvider, error) {
 
 	return &OpenAIProvider{
 		client: &client,
-		apiKey: apiKey,
 	}, nil
 }
 
@@ -43,7 +41,7 @@ func (o *OpenAIProvider) Name() string {
 
 // IsConfigured checks if the provider is properly configured
 func (o *OpenAIProvider) IsConfigured() bool {
-	return o.apiKey != ""
+	return o.client != nil
 }
 
 // Detect performs object detection using OpenAI Vision

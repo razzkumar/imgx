@@ -1,4 +1,5 @@
 /imgx
+/cmd/imgx/imgx
 /dist
 /manpages/*.gz
 /completions
@@ -8,3 +9,5 @@ examples/metadata/metadata
 metadata
 *.out
 site
+go.work
+go.work.sum

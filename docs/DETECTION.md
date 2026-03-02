@@ -93,6 +93,42 @@ export AWS_PROFILE="myprofile"
 export OPENAI_API_KEY="sk-..."
 ```
 
+## Migration from v1.2.x
+
+In v1.2.x, detection was part of the root `imgx` module. It has been split into a separate module (`github.com/razzkumar/imgx/detection`) so that consumers who only need image processing don't pull in AI/ML dependencies.
+
+**Breaking changes:**
+
+1. **`img.Detect()` method removed** — Use the standalone function instead:
+   ```go
+   // Before (v1.2.x)
+   result, err := img.Detect(ctx, "gemini", opts)
+
+   // After
+   result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini", opts)
+   ```
+
+2. **`ProcessingMetadata.DetectionResult` type changed from `*detection.DetectionResult` to `any`** — The root module can no longer reference detection types. Use a type assertion to access:
+   ```go
+   if dr, ok := img.GetMetadata().DetectionResult.(*detection.DetectionResult); ok {
+       fmt.Println(dr.Labels)
+   }
+   ```
+
+3. **Detection results are no longer auto-stored in metadata** — The old `img.Detect()` method automatically stored results in `ProcessingMetadata` and added an operation record. With the standalone function, you must do this manually if needed:
+   ```go
+   result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini")
+   img.GetMetadata().DetectionResult = result
+   ```
+
+## Installation
+
+The detection package is a separate module to keep AI/ML dependencies out of the core image processing library:
+
+```bash
+go get github.com/razzkumar/imgx/detection
+```
+
 ## Quick Start
 
 ```go
@@ -104,6 +140,7 @@ import (
 	"log"
 
 	"github.com/razzkumar/imgx"
+	"github.com/razzkumar/imgx/detection"
 )
 
 func main() {
@@ -115,7 +152,7 @@ func main() {
 
 	// Detect objects using the default local Ollama model
 	ctx := context.Background()
-	result, err := img.Detect(ctx, "ollama")
+	result, err := detection.Detect(ctx, img.ToNRGBA(), "ollama")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -240,17 +277,18 @@ opts := &detection.DetectOptions{
 
 ### Methods
 
-#### Image.Detect()
+#### detection.Detect()
 
 ```go
-func (img *Image) Detect(ctx context.Context, provider string,
-	opts ...*detection.DetectOptions) (*detection.DetectionResult, error)
+func Detect(ctx context.Context, img *image.NRGBA, provider string,
+	opts ...*DetectOptions) (*DetectionResult, error)
 ```
 
-High-level method on `*imgx.Image` instances.
+Standalone detection function. Pass an `*image.NRGBA` (use `img.ToNRGBA()` from an `*imgx.Image`).
 
 **Parameters:**
 - `ctx`: Context for cancellation and timeouts
+- `img`: NRGBA image data (use `imgxImage.ToNRGBA()`)
 - `provider`: Provider name ("ollama", "gemma3", "qwen3-vl", "gemini", "google", "aws", "rekognition", "openai")
 - `opts`: Optional detection options
 
@@ -288,7 +326,7 @@ result, err := provider.Detect(ctx, img.ToNRGBA(), opts)
 img, _ := imgx.Load("photo.jpg")
 ctx := context.Background()
 
-result, err := img.Detect(ctx, "ollama")
+result, err := detection.Detect(ctx, img.ToNRGBA(), "ollama")
 if err != nil {
 	log.Fatal(err)
 }
@@ -311,7 +349,7 @@ opts := &detection.DetectOptions{
 	MinConfidence: 0.7,
 }
 
-result, err := img.Detect(ctx, "aws", opts)
+result, err := detection.Detect(ctx, img.ToNRGBA(), "aws", opts)
 if err != nil {
 	log.Fatal(err)
 }
@@ -337,7 +375,7 @@ opts := &detection.DetectOptions{
 	Features: []detection.Feature{detection.FeatureProperties},
 }
 
-result, err := img.Detect(ctx, "aws", opts)
+result, err := detection.Detect(ctx, img.ToNRGBA(), "aws", opts)
 if err != nil {
 	log.Fatal(err)
 }
@@ -358,7 +396,7 @@ opts := &detection.DetectOptions{
 	CustomPrompt: "Is there a dog in this image? What breed might it be?",
 }
 
-result, err := img.Detect(ctx, "gemini", opts)
+result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini", opts)
 if err != nil {
 	log.Fatal(err)
 }
@@ -372,7 +410,7 @@ fmt.Println("Description:", result.Description)
 providers := []string{"gemini", "aws", "openai"}
 
 for _, provider := range providers {
-	result, err := img.Detect(ctx, provider)
+	result, err := detection.Detect(ctx, img.ToNRGBA(), provider)
 	if err != nil {
 		fmt.Printf("%s error: %v\n", provider, err)
 		continue
@@ -388,7 +426,7 @@ for _, provider := range providers {
 ### Error Handling
 
 ```go
-result, err := img.Detect(ctx, "aws")
+result, err := detection.Detect(ctx, img.ToNRGBA(), "aws")
 if err != nil {
 	// Check for specific error types
 	if errors.Is(err, detection.ErrProviderNotConfigured) {
@@ -411,7 +449,7 @@ if err != nil {
 ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 defer cancel()
 
-result, err := img.Detect(ctx, "gemini")
+result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini")
 if err != nil {
 	if errors.Is(err, context.DeadlineExceeded) {
 		log.Fatal("Detection timed out")
@@ -433,7 +471,7 @@ for _, imagePath := range images {
 		continue
 	}
 
-	result, err := img.Detect(ctx, "gemini")
+	result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini")
 	if err != nil {
 		log.Printf("Failed to detect %s: %v", imagePath, err)
 		continue
@@ -475,11 +513,11 @@ opts := &detection.DetectOptions{
 import "time"
 
 for _, img := range images {
-	result, err := img.Detect(ctx, "gemini")
+	result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini")
 	if err != nil {
 		if strings.Contains(err.Error(), "rate limit") {
 			time.Sleep(2 * time.Second)
-			result, err = img.Detect(ctx, "gemini") // Retry
+			result, err = detection.Detect(ctx, img.ToNRGBA(), "gemini") // Retry
 		}
 		if err != nil {
 			log.Printf("Error: %v", err)
@@ -503,7 +541,7 @@ go func() {
 	cancel()
 }()
 
-result, err := img.Detect(ctx, "gemini")
+result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini")
 ```
 
 ### 5. Cache Results
@@ -638,7 +676,7 @@ func detectWithRetry(img *imgx.Image, ctx context.Context, provider string) (*de
 	baseDelay := time.Second
 
 	for i := 0; i < maxRetries; i++ {
-		result, err := img.Detect(ctx, provider)
+		result, err := detection.Detect(ctx, img.ToNRGBA(), provider)
 		if err == nil {
 			return result, nil
 		}
@@ -667,7 +705,7 @@ if img.Bounds().Dx() > 2048 || img.Bounds().Dy() > 2048 {
 	img = img.Fit(2048, 2048, imgx.Lanczos)
 }
 
-result, err := img.Detect(ctx, "gemini")
+result, err := detection.Detect(ctx, img.ToNRGBA(), "gemini")
 ```
 
 ## Additional Resources

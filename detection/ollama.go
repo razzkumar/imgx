@@ -130,7 +130,8 @@ func (o *OllamaProvider) Detect(ctx context.Context, img *image.NRGBA, opts *Det
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	const maxResponseSize = 10 << 20 // 10 MB
+	body, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseSize))
 	if err != nil {
 		return nil, NewDetectionError("ollama", "failed to read response", err)
 	}

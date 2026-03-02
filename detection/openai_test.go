@@ -59,8 +59,8 @@ func TestNewOpenAIProviderWithCredentials(t *testing.T) {
 		t.Error("provider.client is nil")
 	}
 
-	if provider.apiKey == "" {
-		t.Error("provider.apiKey is empty")
+	if !provider.IsConfigured() {
+		t.Error("provider.IsConfigured() returned false")
 	}
 }
 
@@ -433,7 +433,7 @@ func TestOpenAIProviderMultipleFeatures(t *testing.T) {
 
 // TestOpenAIProviderBuildPrompt tests prompt building for different features
 func TestOpenAIProviderBuildPrompt(t *testing.T) {
-	provider := &OpenAIProvider{apiKey: "test-key"}
+	provider := &OpenAIProvider{}
 
 	tests := []struct {
 		name     string
@@ -534,7 +534,7 @@ func TestOpenAIProviderBuildPrompt(t *testing.T) {
 
 // TestOpenAIProviderExtractLabelsFromText tests label extraction from natural language
 func TestOpenAIProviderExtractLabelsFromText(t *testing.T) {
-	provider := &OpenAIProvider{apiKey: "test-key"}
+	provider := &OpenAIProvider{}
 
 	tests := []struct {
 		name          string
@@ -661,7 +661,7 @@ func TestOpenAIProviderRawResponse(t *testing.T) {
 
 // TestOpenAIProviderParseJSONResponse tests JSON response parsing
 func TestOpenAIProviderParseJSONResponse(t *testing.T) {
-	provider := &OpenAIProvider{apiKey: "test-key"}
+	provider := &OpenAIProvider{}
 
 	tests := []struct {
 		name        string
