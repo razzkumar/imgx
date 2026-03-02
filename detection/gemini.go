@@ -15,7 +15,6 @@ import (
 // GeminiProvider implements the Provider interface for Google Gemini API
 type GeminiProvider struct {
 	client *genai.Client
-	apiKey string
 }
 
 // NewGeminiProvider creates a new Gemini provider instance
@@ -36,7 +35,6 @@ func NewGeminiProvider() (*GeminiProvider, error) {
 
 	return &GeminiProvider{
 		client: client,
-		apiKey: apiKey,
 	}, nil
 }
 
@@ -47,7 +45,7 @@ func (g *GeminiProvider) Name() string {
 
 // IsConfigured checks if the provider is properly configured
 func (g *GeminiProvider) IsConfigured() bool {
-	return g.apiKey != ""
+	return g.client != nil
 }
 
 // Detect performs object detection using Gemini API
@@ -307,6 +305,7 @@ func (g *GeminiProvider) parseJSONResponse(text string, result *DetectionResult)
 func (g *GeminiProvider) extractLabelsFromText(text string, opts *DetectOptions) []Label {
 	// This is a simple heuristic-based extraction
 	labels := []Label{}
+	seen := make(map[string]bool)
 
 	// Look for common patterns like "I see a dog", "This is a cat", etc.
 	words := strings.Fields(strings.ToLower(text))
@@ -314,7 +313,8 @@ func (g *GeminiProvider) extractLabelsFromText(text string, opts *DetectOptions)
 
 	for _, word := range words {
 		for _, obj := range commonObjects {
-			if strings.Contains(word, obj) {
+			if strings.Contains(word, obj) && !seen[obj] {
+				seen[obj] = true
 				labels = append(labels, Label{
 					Name:       obj,
 					Confidence: 0.7, // Default confidence for extracted labels

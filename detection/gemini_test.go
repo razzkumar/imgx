@@ -59,8 +59,8 @@ func TestNewGeminiProviderWithCredentials(t *testing.T) {
 		t.Error("provider.client is nil")
 	}
 
-	if provider.apiKey == "" {
-		t.Error("provider.apiKey is empty")
+	if !provider.IsConfigured() {
+		t.Error("provider.IsConfigured() returned false")
 	}
 }
 
@@ -433,7 +433,7 @@ func TestGeminiProviderMultipleFeatures(t *testing.T) {
 
 // TestGeminiProviderBuildPrompt tests prompt building for different features
 func TestGeminiProviderBuildPrompt(t *testing.T) {
-	provider := &GeminiProvider{apiKey: "test-key"}
+	provider := &GeminiProvider{}
 
 	tests := []struct {
 		name     string
@@ -622,7 +622,7 @@ func TestContainsFeature(t *testing.T) {
 
 // TestGeminiProviderExtractLabelsFromText tests label extraction from natural language
 func TestGeminiProviderExtractLabelsFromText(t *testing.T) {
-	provider := &GeminiProvider{apiKey: "test-key"}
+	provider := &GeminiProvider{}
 
 	tests := []struct {
 		name          string
