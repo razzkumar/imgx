@@ -1,0 +1,7 @@
+mike==2.1.3
+mkdocs==1.6.1
+mkdocs-get-deps==0.2.0
+mkdocs-github-admonitions-plugin==0.1.1
+mkdocs-material==9.7.0
+mkdocs-material-extensions==1.3.1
+pymdown-extensions==10.17.1
