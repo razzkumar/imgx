@@ -95,6 +95,8 @@ func changeExtension(path string, format imgx.Format) string {
 		ext = ".tiff"
 	case imgx.BMP:
 		ext = ".bmp"
+	case imgx.WEBP:
+		ext = ".webp"
 	default:
 		return path
 	}

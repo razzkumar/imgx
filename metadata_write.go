@@ -7,6 +7,21 @@ import (
 	"time"
 )
 
+// MetadataWriteWarning indicates that the image was saved successfully
+// but metadata writing failed. Callers can use errors.As() to distinguish
+// this from a hard failure.
+type MetadataWriteWarning struct {
+	Err error
+}
+
+func (w *MetadataWriteWarning) Error() string {
+	return "metadata write warning: " + w.Err.Error()
+}
+
+func (w *MetadataWriteWarning) Unwrap() error {
+	return w.Err
+}
+
 // SaveOption configures image saving
 type SaveOption func(*SaveConfig)
 
@@ -51,7 +66,7 @@ func WithGIFNumColors(numColors int) SaveOption {
 func (img *Image) Save(path string, opts ...SaveOption) error {
 	config := &SaveConfig{
 		DisableMetadata: false,
-		JPEGQuality:     90,
+		JPEGQuality:     DefaultJPEGQuality,
 		PNGCompression:  png.DefaultCompression,
 		GIFNumColors:    256,
 	}
@@ -80,9 +95,7 @@ func (img *Image) Save(path string, opts ...SaveOption) error {
 	shouldWriteMetadata := img.metadata.AddMetadata && !config.DisableMetadata
 	if shouldWriteMetadata {
 		if err := img.writeXMPMetadata(path); err != nil {
-			// Don't fail the save if metadata writing fails
-			// Just silently skip (exiftool might not be available)
-			return nil
+			return &MetadataWriteWarning{Err: err}
 		}
 	}
 

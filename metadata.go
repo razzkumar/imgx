@@ -195,20 +195,20 @@ func isExiftoolAvailable() bool {
 	return available
 }
 
-// gcd calculates the greatest common divisor using Euclidean algorithm
-func gcd(a, b int) int {
+// GCD calculates the greatest common divisor using Euclidean algorithm.
+func GCD(a, b int) int {
 	for b != 0 {
 		a, b = b, a%b
 	}
 	return a
 }
 
-// formatAspectRatio formats width and height as a ratio string (e.g., "16:9", "4:3")
-func formatAspectRatio(width, height int) string {
+// FormatAspectRatio formats width and height as a ratio string (e.g., "16:9", "4:3").
+func FormatAspectRatio(width, height int) string {
 	if width == 0 || height == 0 {
 		return "N/A"
 	}
-	divisor := gcd(width, height)
+	divisor := GCD(width, height)
 	w := width / divisor
 	h := height / divisor
 	return fmt.Sprintf("%d:%d", w, h)
@@ -245,7 +245,7 @@ func extractBasicMetadata(src string) (*ImageMetadata, error) {
 		ContentType: contentType,
 		Width:       width,
 		Height:      height,
-		AspectRatio: formatAspectRatio(width, height),
+		AspectRatio: FormatAspectRatio(width, height),
 		FileSize:    fileInfo.Size(),
 		ColorModel:  fmt.Sprintf("%T", img.ColorModel()),
 		Megapixels:  float64(width*height) / 1000000.0,
@@ -257,7 +257,7 @@ func extractBasicMetadata(src string) (*ImageMetadata, error) {
 
 func detectFormatDetails(src string) (string, string, error) {
 	if format, err := FormatFromFilename(src); err == nil {
-		return formatToString(format), mimeFromFormat(format), nil
+		return format.String(), mimeFromFormat(format), nil
 	}
 
 	file, err := os.Open(src)
@@ -530,26 +530,6 @@ func parseCommonFields(metadata *ImageMetadata, data map[string]any) {
 	}
 }
 
-// formatToString converts Format enum to string
-func formatToString(format Format) string {
-	switch format {
-	case JPEG:
-		return "JPEG"
-	case PNG:
-		return "PNG"
-	case GIF:
-		return "GIF"
-	case TIFF:
-		return "TIFF"
-	case BMP:
-		return "BMP"
-	case WEBP:
-		return "WEBP"
-	default:
-		return "Unknown"
-	}
-}
-
 // mimeFromFormat converts Format enum to MIME type string
 func mimeFromFormat(format Format) string {
 	switch format {
@@ -566,6 +546,6 @@ func mimeFromFormat(format Format) string {
 	case WEBP:
 		return "image/webp"
 	default:
-		return "image/jpeg"
+		return "application/octet-stream"
 	}
 }

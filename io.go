@@ -127,11 +127,17 @@ var formatNames = map[Format]string{
 }
 
 func (f Format) String() string {
-	return formatNames[f]
+	if name, ok := formatNames[f]; ok {
+		return name
+	}
+	return "Unknown"
 }
 
+// DefaultJPEGQuality is the default JPEG encoding quality used across the library.
+const DefaultJPEGQuality = 95
+
 // ErrUnsupportedFormat means the given image format is not supported.
-var ErrUnsupportedFormat = errors.New("imaging: unsupported image format")
+var ErrUnsupportedFormat = errors.New("imgx: unsupported image format")
 
 // FormatFromExtension parses image format from filename extension:
 // "jpg" (or "jpeg"), "png", "gif", "tif" (or "tiff"), "bmp" and "webp" are supported.
@@ -160,7 +166,7 @@ type encodeConfig struct {
 }
 
 var defaultEncodeConfig = encodeConfig{
-	jpegQuality:         95,
+	jpegQuality:         DefaultJPEGQuality,
 	gifNumColors:        256,
 	gifQuantizer:        nil,
 	gifDrawer:           nil,
@@ -176,6 +182,12 @@ type EncodeOption func(*encodeConfig)
 // Quality ranges from 1 to 100 inclusive, higher is better. Default is 95.
 func JPEGQuality(quality int) EncodeOption {
 	return func(c *encodeConfig) {
+		if quality < 1 {
+			quality = 1
+		}
+		if quality > 100 {
+			quality = 100
+		}
 		c.jpegQuality = quality
 	}
 }
@@ -184,6 +196,12 @@ func JPEGQuality(quality int) EncodeOption {
 // used in the GIF-encoded image. It ranges from 1 to 256.  Default is 256.
 func GIFNumColors(numColors int) EncodeOption {
 	return func(c *encodeConfig) {
+		if numColors < 1 {
+			numColors = 1
+		}
+		if numColors > 256 {
+			numColors = 256
+		}
 		c.gifNumColors = numColors
 	}
 }
@@ -216,6 +234,12 @@ func PNGCompressionLevel(level png.CompressionLevel) EncodeOption {
 // Quality ranges from 0 to 100 inclusive, higher is better. Default is 80.
 func WebPQuality(quality int) EncodeOption {
 	return func(c *encodeConfig) {
+		if quality < 0 {
+			quality = 0
+		}
+		if quality > 100 {
+			quality = 100
+		}
 		c.webpQuality = quality
 	}
 }
@@ -287,9 +311,14 @@ func save(img image.Image, filename string, opts ...EncodeOption) (err error) {
 	encodeErr := Encode(file, img, f, opts...)
 	closeErr := file.Close()
 	if encodeErr != nil {
+		os.Remove(filename)
 		return encodeErr
 	}
-	return closeErr
+	if closeErr != nil {
+		os.Remove(filename)
+		return closeErr
+	}
+	return nil
 }
 
 // orientation is an EXIF flag that specifies the transformation
