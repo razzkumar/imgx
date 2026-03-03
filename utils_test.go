@@ -1,6 +1,7 @@
 package imgx
 
 import (
+	"context"
 	"image"
 	"math"
 	"runtime"
@@ -336,4 +337,44 @@ func TestHSLToRGB(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestParallelWithContext(t *testing.T) {
+	t.Run("basic", func(t *testing.T) {
+		var counter atomic.Int64
+		parallelWithContext(context.Background(), 0, 100, func(is <-chan int) {
+			for range is {
+				counter.Add(1)
+			}
+		})
+		if counter.Load() != 100 {
+			t.Fatalf("expected counter == 100, got %d", counter.Load())
+		}
+	})
+
+	t.Run("empty range", func(t *testing.T) {
+		var counter atomic.Int64
+		parallelWithContext(context.Background(), 5, 5, func(is <-chan int) {
+			for range is {
+				counter.Add(1)
+			}
+		})
+		if counter.Load() != 0 {
+			t.Fatalf("expected counter == 0, got %d", counter.Load())
+		}
+	})
+
+	t.Run("cancelled context", func(t *testing.T) {
+		var counter atomic.Int64
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+		parallelWithContext(ctx, 0, 1000, func(is <-chan int) {
+			for range is {
+				counter.Add(1)
+			}
+		})
+		if counter.Load() >= 1000 {
+			t.Fatalf("expected counter < 1000, got %d", counter.Load())
+		}
+	})
 }

@@ -449,3 +449,111 @@ func TestAutoOrientation(t *testing.T) {
 		t.Fatal("expected error got nil")
 	}
 }
+
+func TestDefaultJPEGQuality(t *testing.T) {
+	if DefaultJPEGQuality != 95 {
+		t.Errorf("DefaultJPEGQuality = %d, want 95", DefaultJPEGQuality)
+	}
+	if defaultEncodeConfig.jpegQuality != DefaultJPEGQuality {
+		t.Errorf("defaultEncodeConfig.jpegQuality = %d, want %d", defaultEncodeConfig.jpegQuality, DefaultJPEGQuality)
+	}
+}
+
+func TestEncodeOptionClamping(t *testing.T) {
+	img := image.NewNRGBA(image.Rect(0, 0, 1, 1))
+	img.SetNRGBA(0, 0, color.NRGBA{R: 255, G: 0, B: 0, A: 255})
+
+	testCases := []struct {
+		name   string
+		option EncodeOption
+		check  func(cfg encodeConfig) (got, want int)
+	}{
+		{
+			name:   "JPEGQuality(0) clamps to 1",
+			option: JPEGQuality(0),
+			check:  func(cfg encodeConfig) (int, int) { return cfg.jpegQuality, 1 },
+		},
+		{
+			name:   "JPEGQuality(200) clamps to 100",
+			option: JPEGQuality(200),
+			check:  func(cfg encodeConfig) (int, int) { return cfg.jpegQuality, 100 },
+		},
+		{
+			name:   "JPEGQuality(50) passes through",
+			option: JPEGQuality(50),
+			check:  func(cfg encodeConfig) (int, int) { return cfg.jpegQuality, 50 },
+		},
+		{
+			name:   "WebPQuality(-5) clamps to 0",
+			option: WebPQuality(-5),
+			check:  func(cfg encodeConfig) (int, int) { return cfg.webpQuality, 0 },
+		},
+		{
+			name:   "WebPQuality(150) clamps to 100",
+			option: WebPQuality(150),
+			check:  func(cfg encodeConfig) (int, int) { return cfg.webpQuality, 100 },
+		},
+		{
+			name:   "WebPQuality(50) passes through",
+			option: WebPQuality(50),
+			check:  func(cfg encodeConfig) (int, int) { return cfg.webpQuality, 50 },
+		},
+		{
+			name:   "GIFNumColors(0) clamps to 1",
+			option: GIFNumColors(0),
+			check:  func(cfg encodeConfig) (int, int) { return cfg.gifNumColors, 1 },
+		},
+		{
+			name:   "GIFNumColors(500) clamps to 256",
+			option: GIFNumColors(500),
+			check:  func(cfg encodeConfig) (int, int) { return cfg.gifNumColors, 256 },
+		},
+		{
+			name:   "GIFNumColors(128) passes through",
+			option: GIFNumColors(128),
+			check:  func(cfg encodeConfig) (int, int) { return cfg.gifNumColors, 128 },
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			cfg := defaultEncodeConfig
+			tc.option(&cfg)
+			got, want := tc.check(cfg)
+			if got != want {
+				t.Errorf("got %d, want %d", got, want)
+			}
+		})
+	}
+
+	_ = img
+}
+
+func TestSaveCleanupOnError(t *testing.T) {
+	t.Run("unsupported extension does not leave file", func(t *testing.T) {
+		dir := t.TempDir()
+		img := image.NewNRGBA(image.Rect(0, 0, 1, 1))
+		img.SetNRGBA(0, 0, color.NRGBA{R: 255, G: 0, B: 0, A: 255})
+
+		target := filepath.Join(dir, "test.xyz")
+		err := save(img, target)
+		if err == nil {
+			t.Fatal("expected error for unsupported format, got nil")
+		}
+
+		if _, statErr := os.Stat(target); !os.IsNotExist(statErr) {
+			t.Errorf("expected file %q to not exist after failed save, but os.Stat returned: %v", target, statErr)
+		}
+	})
+
+	t.Run("non-existent directory returns error", func(t *testing.T) {
+		img := image.NewNRGBA(image.Rect(0, 0, 1, 1))
+		img.SetNRGBA(0, 0, color.NRGBA{R: 255, G: 0, B: 0, A: 255})
+
+		target := filepath.Join(t.TempDir(), "nonexistent", "subdir", "test.png")
+		err := save(img, target)
+		if err == nil {
+			t.Fatal("expected error saving to non-existent directory, got nil")
+		}
+	})
+}
