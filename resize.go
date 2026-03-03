@@ -382,6 +382,7 @@ func Thumbnail(img image.Image, width, height int, filter ResampleFilter) *image
 //	- NearestNeighbor
 //		Fastest resampling filter, no antialiasing.
 type ResampleFilter struct {
+	Name    string
 	Support float64
 	Kernel  func(float64) float64
 }
@@ -451,10 +452,12 @@ func sinc(x float64) float64 {
 
 func init() {
 	NearestNeighbor = ResampleFilter{
+		Name:    "NearestNeighbor",
 		Support: 0.0, // special case - not applying the filter
 	}
 
 	Box = ResampleFilter{
+		Name:    "Box",
 		Support: 0.5,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -466,6 +469,7 @@ func init() {
 	}
 
 	Linear = ResampleFilter{
+		Name:    "Linear",
 		Support: 1.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -477,6 +481,7 @@ func init() {
 	}
 
 	Hermite = ResampleFilter{
+		Name:    "Hermite",
 		Support: 1.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -488,6 +493,7 @@ func init() {
 	}
 
 	MitchellNetravali = ResampleFilter{
+		Name:    "MitchellNetravali",
 		Support: 2.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -499,6 +505,7 @@ func init() {
 	}
 
 	CatmullRom = ResampleFilter{
+		Name:    "CatmullRom",
 		Support: 2.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -510,6 +517,7 @@ func init() {
 	}
 
 	BSpline = ResampleFilter{
+		Name:    "BSpline",
 		Support: 2.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -521,6 +529,7 @@ func init() {
 	}
 
 	Gaussian = ResampleFilter{
+		Name:    "Gaussian",
 		Support: 2.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -532,6 +541,7 @@ func init() {
 	}
 
 	Bartlett = ResampleFilter{
+		Name:    "Bartlett",
 		Support: 3.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -543,6 +553,7 @@ func init() {
 	}
 
 	Lanczos = ResampleFilter{
+		Name:    "Lanczos",
 		Support: 3.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -554,6 +565,7 @@ func init() {
 	}
 
 	Hann = ResampleFilter{
+		Name:    "Hann",
 		Support: 3.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -565,6 +577,7 @@ func init() {
 	}
 
 	Hamming = ResampleFilter{
+		Name:    "Hamming",
 		Support: 3.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -576,6 +589,7 @@ func init() {
 	}
 
 	Blackman = ResampleFilter{
+		Name:    "Blackman",
 		Support: 3.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -587,6 +601,7 @@ func init() {
 	}
 
 	Welch = ResampleFilter{
+		Name:    "Welch",
 		Support: 3.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -598,6 +613,7 @@ func init() {
 	}
 
 	Cosine = ResampleFilter{
+		Name:    "Cosine",
 		Support: 3.0,
 		Kernel: func(x float64) float64 {
 			x = math.Abs(x)
@@ -651,40 +667,10 @@ func formatFillParams(width, height int, anchor Anchor, filter ResampleFilter) s
 }
 
 func formatFilterName(filter ResampleFilter) string {
-	switch filter.Support {
-	case NearestNeighbor.Support:
-		return "NearestNeighbor"
-	case Box.Support:
-		return "Box"
-	case Linear.Support:
-		return "Linear"
-	case Hermite.Support:
-		return "Hermite"
-	case MitchellNetravali.Support:
-		return "MitchellNetravali"
-	case CatmullRom.Support:
-		return "CatmullRom"
-	case BSpline.Support:
-		return "BSpline"
-	case Gaussian.Support:
-		return "Gaussian"
-	case Lanczos.Support:
-		return "Lanczos"
-	case Hann.Support:
-		return "Hann"
-	case Hamming.Support:
-		return "Hamming"
-	case Blackman.Support:
-		return "Blackman"
-	case Bartlett.Support:
-		return "Bartlett"
-	case Welch.Support:
-		return "Welch"
-	case Cosine.Support:
-		return "Cosine"
-	default:
-		return "Custom"
+	if filter.Name != "" {
+		return filter.Name
 	}
+	return "Custom"
 }
 
 func formatAnchorName(anchor Anchor) string {

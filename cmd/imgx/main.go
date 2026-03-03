@@ -36,8 +36,8 @@ Examples:
 			&cli.IntFlag{
 				Name:    "quality",
 				Aliases: []string{"q"},
-				Usage:   "JPEG quality 1-100 (default: 90)",
-				Value:   90,
+				Usage:   "JPEG quality 1-100 (default: 95)",
+				Value:   95,
 			},
 			&cli.BoolFlag{
 				Name:  "auto-orient",
@@ -46,7 +46,7 @@ Examples:
 			},
 			&cli.StringFlag{
 				Name:  "format",
-				Usage: "force output format (jpg, png, gif, tiff, bmp)",
+				Usage: "force output format (jpg, png, gif, tiff, bmp, webp)",
 			},
 			&cli.BoolFlag{
 				Name:    "verbose",

@@ -544,6 +544,325 @@ func parseSafeSearchFromInterface(value interface{}) *SafeSearchSummary {
 	}
 }
 
+// --- H1a: Shared prompt builder -----------------------------------------------
+
+// buildDetectionPrompt constructs a detection prompt string from opts.
+// All three LLM providers (Ollama, Gemini, OpenAI) delegate to this function.
+func buildDetectionPrompt(opts *DetectOptions) string {
+	if opts.CustomPrompt != "" {
+		return opts.CustomPrompt
+	}
+
+	prompts := []string{responseSchemaPrompt}
+
+	for _, feature := range opts.Features {
+		switch feature {
+		case FeatureLabels, FeatureObjects:
+			prompts = append(prompts, fmt.Sprintf(
+				"Identify all objects in this image and provide labels with confidence scores (0.0-1.0). "+
+					"Return JSON: {\"labels\": [{\"name\": \"object\", \"confidence\": 0.95}]}. "+
+					"Return at most %d labels with confidence >= %.2f.",
+				opts.MaxResults, opts.MinConfidence,
+			))
+		case FeatureDescription:
+			prompts = append(prompts, "Provide a detailed description of this image.")
+		case FeatureText:
+			prompts = append(prompts, "Extract all visible text from this image. "+
+				"Return JSON: {\"text\": [{\"text\": \"extracted text\", \"confidence\": 0.95}]}")
+		case FeatureFaces:
+			prompts = append(prompts, "Detect any faces and describe their count, expressions, and emotions.")
+		case FeatureProperties:
+			prompts = append(prompts, "Analyze image properties: dominant colors, lighting, mood, style.")
+		case FeatureLandmarks:
+			prompts = append(prompts, "Identify any landmarks, monuments, or famous locations.")
+		case FeatureSafeSearch:
+			prompts = append(prompts, "Analyze if the image contains any adult, violent, or inappropriate content.")
+		}
+	}
+
+	if len(prompts) == 1 {
+		prompts = append(prompts, fmt.Sprintf(
+			"Analyze this image and identify all visible objects. "+
+				"Return JSON: {\"labels\": [{\"name\": \"object\", \"confidence\": 0.95}], \"description\": \"...\"} "+
+				"with up to %d labels having confidence >= %.2f.",
+			opts.MaxResults, opts.MinConfidence,
+		))
+	}
+
+	return strings.Join(prompts, "\n\n")
+}
+
+// --- H1b: Shared JSON response parser -----------------------------------------
+
+// parseJSONDetectionResponse parses a JSON string into result.
+// It handles all fields including Ollama-specific label fields (Score, MID,
+// Categories, TopicID). Gemini, Ollama, and OpenAI all delegate to this.
+func parseJSONDetectionResponse(text string, result *DetectionResult) error {
+	text = extractJSONFromMarkdown(text)
+
+	var raw map[string]interface{}
+	if err := json.Unmarshal([]byte(text), &raw); err != nil {
+		return err
+	}
+
+	if provider, ok := raw["provider"].(string); ok {
+		result.Provider = provider
+	}
+
+	if labels, ok := raw["labels"].([]interface{}); ok {
+		for _, item := range labels {
+			if labelMap, ok := item.(map[string]interface{}); ok {
+				label := Label{}
+				if name, ok := labelMap["name"].(string); ok {
+					label.Name = name
+				}
+				if confidence, ok := toFloat32(labelMap["confidence"]); ok {
+					label.Confidence = confidence
+				}
+				// Ollama / extended fields
+				if score, ok := toFloat32(labelMap["score"]); ok {
+					label.Score = score
+				}
+				if mid, ok := labelMap["mid"].(string); ok {
+					label.MID = mid
+				}
+				if categories, ok := labelMap["categories"].([]interface{}); ok {
+					for _, c := range categories {
+						if s, ok := c.(string); ok {
+							label.Categories = append(label.Categories, s)
+						}
+					}
+				}
+				if topicID, ok := labelMap["topic_id"].(string); ok {
+					label.TopicID = topicID
+				}
+				if label.Name != "" {
+					result.Labels = append(result.Labels, label)
+				}
+			}
+		}
+	}
+
+	if description, ok := raw["description"].(string); ok {
+		result.Description = description
+	}
+
+	if textBlocks, ok := raw["text"].([]interface{}); ok {
+		for _, item := range textBlocks {
+			if textMap, ok := item.(map[string]interface{}); ok {
+				block := TextBlock{}
+				if textValue, ok := textMap["text"].(string); ok {
+					block.Text = textValue
+				}
+				if confidence, ok := toFloat32(textMap["confidence"]); ok {
+					block.Confidence = confidence
+				}
+				if language, ok := textMap["language"].(string); ok {
+					block.Language = language
+				}
+				if block.Text != "" {
+					result.Text = append(result.Text, block)
+				}
+			}
+		}
+	}
+
+	if colors := parseColorsFromInterface(raw["colors"]); len(colors) > 0 {
+		result.Colors = append(result.Colors, colors...)
+	}
+
+	if quality := parseImageQualityFromInterface(raw["image_quality"]); quality != nil {
+		result.ImageQuality = quality
+	}
+
+	if moderation := parseModerationFromInterface(raw["moderation"]); len(moderation) > 0 {
+		result.Moderation = moderation
+		if result.SafeSearch == nil {
+			result.SafeSearch = &SafeSearchSummary{Labels: moderation}
+		} else if len(result.SafeSearch.Labels) == 0 {
+			result.SafeSearch.Labels = moderation
+		}
+	}
+
+	if safe := parseSafeSearchFromInterface(raw["safe_search"]); safe != nil {
+		if len(safe.Labels) == 0 && len(result.Moderation) > 0 {
+			safe.Labels = result.Moderation
+		}
+		result.SafeSearch = safe
+	}
+
+	if propsVal, ok := raw["properties"]; ok {
+		result.Properties = parsePropertiesFromInterface(result.Properties, propsVal)
+	}
+
+	if confidence, ok := toFloat32(raw["confidence"]); ok {
+		result.Confidence = confidence
+	} else if len(result.Labels) > 0 {
+		var total float32
+		for _, label := range result.Labels {
+			total += label.Confidence
+		}
+		result.Confidence = total / float32(len(result.Labels))
+	}
+
+	return nil
+}
+
+// --- H1c: Shared plain-text label extractor -----------------------------------
+
+// sharedCommonObjects is the unified object vocabulary used by all providers.
+var sharedCommonObjects = []string{
+	"person", "people", "dog", "cat", "car", "building", "tree", "flower",
+	"animal", "vehicle", "house", "plant",
+}
+
+// extractLabelsFromPlainText extracts plausible labels from a plain-text
+// response using Ollama's richer line-by-line heuristic first, then falling
+// back to a word-scan over sharedCommonObjects.
+func extractLabelsFromPlainText(text string, opts *DetectOptions) []Label {
+	lines := strings.Split(text, "\n")
+	labels := make([]Label, 0, len(lines))
+	added := make(map[string]struct{})
+
+	// Line-by-line pass (Ollama-style: handles "1. item (90%)" and "- item").
+	// A line is only treated as a label candidate if it was formatted as a list
+	// item (had a leading number+dot or leading dash stripped).
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+
+		isList := false
+
+		// Strip leading list numbering, e.g. "1. "
+		if idx := strings.Index(line, "."); idx != -1 && idx < len(line)-1 {
+			prefix := strings.TrimSpace(line[:idx])
+			isNum := len(prefix) > 0
+			for _, ch := range prefix {
+				if ch < '0' || ch > '9' {
+					isNum = false
+					break
+				}
+			}
+			if isNum {
+				line = strings.TrimSpace(line[idx+1:])
+				isList = true
+			}
+		}
+
+		// Strip leading "- "
+		if strings.HasPrefix(line, "- ") {
+			line = strings.TrimPrefix(line, "- ")
+			isList = true
+		}
+
+		// Only treat this line as a label if it was a list item.
+		if !isList {
+			continue
+		}
+
+		if line == "" {
+			continue
+		}
+
+		name := line
+		confidence := float32(0.7)
+
+		// Parse trailing confidence annotation, e.g. "cat (92%)" or "cat (0.92)"
+		if idx := strings.LastIndex(line, "("); idx != -1 && strings.HasSuffix(line, ")") {
+			namePart := strings.TrimSpace(line[:idx])
+			confPart := strings.TrimSuffix(line[idx+1:], ")")
+			confPart = strings.TrimSuffix(confPart, "%")
+			if val, err := strconv.ParseFloat(confPart, 32); err == nil {
+				conf := float32(val)
+				if conf > 1.0 {
+					conf = conf / 100.0
+				}
+				confidence = conf
+				name = namePart
+			}
+		}
+
+		name = strings.TrimSpace(name)
+		if name == "" {
+			continue
+		}
+
+		key := strings.ToLower(name)
+		if _, exists := added[key]; exists {
+			continue
+		}
+		added[key] = struct{}{}
+
+		labels = append(labels, Label{Name: name, Confidence: confidence})
+
+		if len(labels) >= opts.MaxResults {
+			return labels
+		}
+	}
+
+	// Word-scan fallback over known common objects (Gemini/OpenAI-style)
+	words := strings.Fields(strings.ToLower(text))
+	for _, word := range words {
+		for _, obj := range sharedCommonObjects {
+			if strings.Contains(word, obj) {
+				key := obj
+				if _, exists := added[key]; !exists {
+					added[key] = struct{}{}
+					labels = append(labels, Label{Name: obj, Confidence: 0.7})
+					if len(labels) >= opts.MaxResults {
+						return labels
+					}
+				}
+				break
+			}
+		}
+	}
+
+	return labels
+}
+
+// --- H1d: Shared text-response parser skeleton --------------------------------
+
+// parseTextResponse is the common skeleton: initialise result, try JSON parse,
+// fall back to plain-text extraction.  Each provider's parseResponse() unwraps
+// its API-specific envelope, extracts the text content, then calls this.
+func parseTextResponse(responseText string, opts *DetectOptions) *DetectionResult {
+	result := &DetectionResult{
+		Labels:     []Label{},
+		Text:       []TextBlock{},
+		Properties: make(map[string]string),
+	}
+
+	if opts.IncludeRawResponse {
+		result.RawResponse = responseText
+	}
+
+	if responseText == "" {
+		return result
+	}
+
+	if err := parseJSONDetectionResponse(responseText, result); err == nil {
+		return result
+	}
+
+	// Fallback: treat full response as description and extract labels heuristically
+	result.Description = responseText
+	labels := extractLabelsFromPlainText(responseText, opts)
+	result.Labels = append(result.Labels, labels...)
+
+	if len(result.Labels) > 0 {
+		var total float32
+		for _, label := range result.Labels {
+			total += label.Confidence
+		}
+		result.Confidence = total / float32(len(result.Labels))
+	}
+
+	return result
+}
+
 func parsePropertiesFromInterface(dest map[string]string, value interface{}) map[string]string {
 	if dest == nil {
 		dest = make(map[string]string)

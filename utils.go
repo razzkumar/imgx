@@ -1,6 +1,7 @@
 package imgx
 
 import (
+	"context"
 	"image"
 	"math"
 	"runtime"
@@ -37,6 +38,43 @@ func parallel(start, stop int, fn func(<-chan int)) {
 		c <- i
 	}
 	close(c)
+
+	var wg sync.WaitGroup
+	for range procs {
+		wg.Go(func() {
+			fn(c)
+		})
+	}
+	wg.Wait()
+}
+
+// parallelWithContext processes the data in separate goroutines with context cancellation support.
+func parallelWithContext(ctx context.Context, start, stop int, fn func(<-chan int)) {
+	count := stop - start
+	if count < 1 {
+		return
+	}
+
+	procs := runtime.GOMAXPROCS(0)
+	limit := int(atomic.LoadInt64(&maxProcs))
+	if procs > limit && limit > 0 {
+		procs = limit
+	}
+	if procs > count {
+		procs = count
+	}
+
+	c := make(chan int, count)
+	go func() {
+		defer close(c)
+		for i := start; i < stop; i++ {
+			select {
+			case <-ctx.Done():
+				return
+			case c <- i:
+			}
+		}
+	}()
 
 	var wg sync.WaitGroup
 	for range procs {

@@ -1,6 +1,7 @@
 package imgx
 
 import (
+	"encoding/json"
 	"image"
 	"time"
 )
@@ -47,8 +48,25 @@ func (m *ProcessingMetadata) Clone() *ProcessingMetadata {
 		ProjectURL:  m.ProjectURL,
 		AddMetadata: m.AddMetadata,
 
-		DetectionResult: m.DetectionResult,
+		DetectionResult: deepCloneDetectionResult(m.DetectionResult),
 	}
+}
+
+// deepCloneDetectionResult performs a deep copy of the DetectionResult via JSON round-trip.
+// Falls back to shallow copy if marshaling fails.
+func deepCloneDetectionResult(v any) any {
+	if v == nil {
+		return nil
+	}
+	data, err := json.Marshal(v)
+	if err != nil {
+		return v // fallback to shallow copy
+	}
+	var cloned any
+	if err := json.Unmarshal(data, &cloned); err != nil {
+		return v // fallback to shallow copy
+	}
+	return cloned
 }
 
 // AddOperation adds a new operation record to the metadata

@@ -97,215 +97,33 @@ func (o *OpenAIProvider) Detect(ctx context.Context, img *image.NRGBA, opts *Det
 
 // buildPrompt constructs the prompt based on detection options
 func (o *OpenAIProvider) buildPrompt(opts *DetectOptions) string {
-	// If custom prompt provided, use it
-	if opts.CustomPrompt != "" {
-		return opts.CustomPrompt
-	}
-
-	// Build prompt based on features
-	prompts := []string{responseSchemaPrompt}
-
-	for _, feature := range opts.Features {
-		switch feature {
-		case FeatureLabels, FeatureObjects:
-			prompts = append(prompts, fmt.Sprintf(
-				"Identify all objects in this image and provide labels with confidence scores (0.0-1.0). "+
-					"Return JSON: {\"labels\": [{\"name\": \"object\", \"confidence\": 0.95}]}. "+
-					"Return at most %d labels with confidence >= %.2f.",
-				opts.MaxResults, opts.MinConfidence,
-			))
-
-		case FeatureDescription:
-			prompts = append(prompts, "Provide a detailed description of this image.")
-
-		case FeatureText:
-			prompts = append(prompts, "Extract all visible text from this image. "+
-				"Return JSON: {\"text\": [{\"text\": \"extracted text\", \"confidence\": 0.95}]}")
-
-		case FeatureFaces:
-			prompts = append(prompts, "Detect any faces and describe their count, expressions, and emotions.")
-
-		case FeatureProperties:
-			prompts = append(prompts, "Analyze image properties: dominant colors, lighting, mood, style.")
-
-		case FeatureLandmarks:
-			prompts = append(prompts, "Identify any landmarks, monuments, or famous locations.")
-
-		case FeatureSafeSearch:
-			prompts = append(prompts, "Analyze if the image contains any inappropriate content.")
-		}
-	}
-
-	if len(prompts) == 1 {
-		prompts = append(prompts, fmt.Sprintf(
-			"Analyze this image and identify all visible objects. "+
-				"Return JSON: {\"labels\": [{\"name\": \"object\", \"confidence\": 0.95}], \"description\": \"...\"} "+
-				"with up to %d labels having confidence >= %.2f.",
-			opts.MaxResults, opts.MinConfidence,
-		))
-	}
-
-	return strings.Join(prompts, "\n\n")
+	return buildDetectionPrompt(opts)
 }
 
 // parseResponse parses OpenAI API response into DetectionResult
 func (o *OpenAIProvider) parseResponse(resp *openai.ChatCompletion, opts *DetectOptions) (*DetectionResult, error) {
-	result := &DetectionResult{
+	empty := &DetectionResult{
 		Labels:     []Label{},
 		Text:       []TextBlock{},
 		Properties: make(map[string]string),
 	}
 
 	if len(resp.Choices) == 0 {
-		return result, fmt.Errorf("empty response from API")
+		return empty, fmt.Errorf("empty response from API")
 	}
 
 	responseText := strings.TrimSpace(resp.Choices[0].Message.Content)
-
-	// Store raw response if requested
-	if opts.IncludeRawResponse {
-		result.RawResponse = responseText
-	}
-
-	// Try to parse as JSON first
-	if err := o.parseJSONResponse(responseText, result); err == nil {
-		// Successfully parsed as JSON
-		return result, nil
-	}
-
-	// Fallback: treat as natural language description
-	result.Description = responseText
-
-	// Try to extract labels from natural language
-	labels := o.extractLabelsFromText(responseText, opts)
-	result.Labels = append(result.Labels, labels...)
-
-	// Calculate overall confidence
-	if len(result.Labels) > 0 {
-		var totalConf float32
-		for _, label := range result.Labels {
-			totalConf += label.Confidence
-		}
-		result.Confidence = totalConf / float32(len(result.Labels))
-	}
-
-	return result, nil
+	return parseTextResponse(responseText, opts), nil
 }
 
 // parseJSONResponse attempts to parse response as JSON
 func (o *OpenAIProvider) parseJSONResponse(text string, result *DetectionResult) error {
-	// Try to extract JSON from markdown code blocks
-	text = extractJSONFromMarkdown(text)
-
-	// Try to parse JSON
-	var parsed map[string]interface{}
-	if err := parseJSON([]byte(text), &parsed); err != nil {
-		return err
-	}
-
-	// Extract labels
-	if labelsData, ok := parsed["labels"].([]interface{}); ok {
-		for _, item := range labelsData {
-			if labelMap, ok := item.(map[string]interface{}); ok {
-				label := Label{}
-				if name, ok := labelMap["name"].(string); ok {
-					label.Name = name
-				}
-				if conf, ok := labelMap["confidence"].(float64); ok {
-					label.Confidence = float32(conf)
-				}
-				if label.Name != "" {
-					result.Labels = append(result.Labels, label)
-				}
-			}
-		}
-	}
-
-	// Extract description
-	if desc, ok := parsed["description"].(string); ok {
-		result.Description = desc
-	}
-
-	// Extract optional properties
-	if propsVal, ok := parsed["properties"]; ok {
-		result.Properties = parsePropertiesFromInterface(result.Properties, propsVal)
-	}
-
-	// Extract text blocks
-	if textData, ok := parsed["text"].([]interface{}); ok {
-		for _, item := range textData {
-			if textMap, ok := item.(map[string]interface{}); ok {
-				block := TextBlock{}
-				if text, ok := textMap["text"].(string); ok {
-					block.Text = text
-				}
-				if conf, ok := textMap["confidence"].(float64); ok {
-					block.Confidence = float32(conf)
-				}
-				if block.Text != "" {
-					result.Text = append(result.Text, block)
-				}
-			}
-		}
-	}
-
-	// Extract colors
-	if colors := parseColorsFromInterface(parsed["colors"]); len(colors) > 0 {
-		result.Colors = append(result.Colors, colors...)
-	}
-
-	// Extract image quality
-	if quality := parseImageQualityFromInterface(parsed["image_quality"]); quality != nil {
-		result.ImageQuality = quality
-	}
-
-	// Extract moderation details
-	if moderation := parseModerationFromInterface(parsed["moderation"]); len(moderation) > 0 {
-		result.Moderation = moderation
-		if result.SafeSearch == nil {
-			result.SafeSearch = &SafeSearchSummary{Labels: moderation}
-		} else if len(result.SafeSearch.Labels) == 0 {
-			result.SafeSearch.Labels = moderation
-		}
-	}
-
-	if safe := parseSafeSearchFromInterface(parsed["safe_search"]); safe != nil {
-		if len(safe.Labels) == 0 && len(result.Moderation) > 0 {
-			safe.Labels = result.Moderation
-		}
-		result.SafeSearch = safe
-	}
-
-	return nil
+	return parseJSONDetectionResponse(text, result)
 }
 
 // extractLabelsFromText extracts labels from natural language response
 func (o *OpenAIProvider) extractLabelsFromText(text string, opts *DetectOptions) []Label {
-	// Simple heuristic-based extraction
-	labels := []Label{}
-
-	// Look for common object patterns
-	words := strings.Fields(strings.ToLower(text))
-	commonObjects := []string{"person", "people", "dog", "cat", "car", "building", "tree", "flower", "animal", "vehicle", "house", "plant"}
-
-	seen := make(map[string]bool)
-	for _, word := range words {
-		for _, obj := range commonObjects {
-			if strings.Contains(word, obj) && !seen[obj] {
-				labels = append(labels, Label{
-					Name:       obj,
-					Confidence: 0.7, // Default confidence for extracted labels
-				})
-				seen[obj] = true
-				break
-			}
-		}
-		if len(labels) >= opts.MaxResults {
-			break
-		}
-	}
-
-	return labels
+	return extractLabelsFromPlainText(text, opts)
 }
 
 // Close closes the OpenAI client (no-op)

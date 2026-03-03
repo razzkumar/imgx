@@ -964,3 +964,35 @@ func BenchmarkFill(b *testing.B) {
 		}
 	}
 }
+
+func TestFormatFilterName(t *testing.T) {
+	filters := map[string]ResampleFilter{
+		"NearestNeighbor":   NearestNeighbor,
+		"Box":               Box,
+		"Linear":            Linear,
+		"Hermite":           Hermite,
+		"MitchellNetravali": MitchellNetravali,
+		"CatmullRom":        CatmullRom,
+		"BSpline":           BSpline,
+		"Gaussian":          Gaussian,
+		"Bartlett":          Bartlett,
+		"Lanczos":           Lanczos,
+		"Hann":              Hann,
+		"Hamming":           Hamming,
+		"Blackman":          Blackman,
+		"Welch":             Welch,
+		"Cosine":            Cosine,
+	}
+	for name, filter := range filters {
+		got := formatFilterName(filter)
+		if got != name {
+			t.Errorf("formatFilterName(%s): got %q, want %q", name, got, name)
+		}
+	}
+
+	// Custom filter should return "Custom"
+	custom := ResampleFilter{Support: 99.0, Kernel: func(float64) float64 { return 0 }}
+	if got := formatFilterName(custom); got != "Custom" {
+		t.Errorf("formatFilterName(custom): got %q, want %q", got, "Custom")
+	}
+}

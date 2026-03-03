@@ -131,6 +131,8 @@ func ParseFormat(name string) (imgx.Format, error) {
 		return imgx.TIFF, nil
 	case "bmp":
 		return imgx.BMP, nil
+	case "webp":
+		return imgx.WEBP, nil
 	default:
 		return imgx.JPEG, fmt.Errorf("unknown format: %s", name)
 	}
@@ -138,20 +140,7 @@ func ParseFormat(name string) (imgx.Format, error) {
 
 // FormatName returns the string name of a format
 func FormatName(format imgx.Format) string {
-	switch format {
-	case imgx.JPEG:
-		return "JPEG"
-	case imgx.PNG:
-		return "PNG"
-	case imgx.GIF:
-		return "GIF"
-	case imgx.TIFF:
-		return "TIFF"
-	case imgx.BMP:
-		return "BMP"
-	default:
-		return "Unknown"
-	}
+	return format.String()
 }
 
 // FormatBytes formats a byte count as a human-readable string
@@ -168,23 +157,7 @@ func FormatBytes(bytes int64) string {
 	return fmt.Sprintf("%.1f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
 }
 
-// gcd calculates the greatest common divisor using Euclidean algorithm
-func gcd(a, b int) int {
-	for b != 0 {
-		a, b = b, a%b
-	}
-	return a
-}
-
 // FormatAspectRatio formats width and height as a ratio string (e.g., "16:9", "4:3")
 func FormatAspectRatio(width, height int) string {
-	if width == 0 || height == 0 {
-		return "N/A"
-	}
-
-	divisor := gcd(width, height)
-	w := width / divisor
-	h := height / divisor
-
-	return fmt.Sprintf("%d:%d", w, h)
+	return imgx.FormatAspectRatio(width, height)
 }

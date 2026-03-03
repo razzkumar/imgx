@@ -184,7 +184,7 @@ func TestFormats(t *testing.T) {
 		BMP:        "BMP",
 		TIFF:       "TIFF",
 		WEBP:       "WEBP",
-		Format(-1): "",
+		Format(-1): "Unknown",
 	}
 	for format, name := range formatNames {
 		got := format.String()
